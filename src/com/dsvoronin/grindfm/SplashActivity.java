@@ -36,25 +36,20 @@ public class SplashActivity extends Activity {
 
         final MediaPlayer mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(this, Uri.parse("http://radio.goha.ru:8000/grindfm.ogg"));
+            mediaPlayer.setDataSource(this, Uri.parse("http://radio.goha.ru:8000/grindfm.aac"));
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     button.setBackgroundResource(android.R.drawable.ic_media_play);
                     state = MEDIA_READY;
-                }
-            });
-            mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-                @Override
-                public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-                    progressBar.setProgress(i);
+                    progressBar.setVisibility(View.GONE);
+                    button.setVisibility(View.VISIBLE);
                 }
             });
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e(TAG, "Error while opening stream", e);
         }
-
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
