@@ -7,11 +7,30 @@
                   android:layout_height="wrap_content"
                   android:layout_centerInParent="true"
                   android:orientation="vertical">
+        <LinearLayout android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:layout_marginBottom="40dp"
+                      android:orientation="horizontal">
+            <Button android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:background="@android:drawable/ic_media_ff"
+                    android:id="@+id/button"/>
+        </LinearLayout>
+
+        <ProgressBar android:layout_width="200dp"
+                     android:layout_height="50dp"
+                     android:layout_marginBottom="40dp"
+                     android:id="@+id/progressbar"
+                     style="@android:style/Widget.ProgressBar.Horizontal"/>
+
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
+                   android:layout_gravity="center"
                    android:src="@drawable/cat"/>
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
+                   android:layout_gravity="center"
                    android:src="@drawable/grind_logo"/>
     </LinearLayout>
 </RelativeLayout>
