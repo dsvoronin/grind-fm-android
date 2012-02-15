@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.dsvoronin">
     <application android:icon="@drawable/paw_logo" android:label="@string/app_name">
-        <activity android:name=".grindfm.SplashActivity" android:screenOrientation="portrait">
+        <activity android:name=".grindfm.GrindActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
