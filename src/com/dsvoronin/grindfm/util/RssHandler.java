@@ -11,6 +11,7 @@ import java.util.List;
 import static com.dsvoronin.grindfm.util.BaseFeedParser.*;
 
 public class RssHandler extends DefaultHandler {
+
     private List<Message> messages;
     private Message currentMessage;
     private StringBuilder builder;
@@ -20,15 +21,30 @@ public class RssHandler extends DefaultHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
-        super.characters(ch, start, length);
-        builder.append(ch, start, length);
+    public void startDocument() throws SAXException {
+        super.startDocument();
+        messages = new ArrayList<Message>();
+        builder = new StringBuilder();
     }
 
     @Override
-    public void endElement(String uri, String localName, String name)
-            throws SAXException {
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+        super.startElement(uri, localName, name, attributes);
+        if (localName.equalsIgnoreCase(ITEM)) {
+            this.currentMessage = new Message();
+        }
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        super.characters(ch, start, length);
+        if (currentMessage != null) {
+            builder.append(ch, start, length);
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String name) throws SAXException {
         super.endElement(uri, localName, name);
         if (this.currentMessage != null) {
             if (localName.equalsIgnoreCase(TITLE)) {
@@ -43,22 +59,6 @@ public class RssHandler extends DefaultHandler {
                 messages.add(currentMessage);
             }
             builder.setLength(0);
-        }
-    }
-
-    @Override
-    public void startDocument() throws SAXException {
-        super.startDocument();
-        messages = new ArrayList<Message>();
-        builder = new StringBuilder();
-    }
-
-    @Override
-    public void startElement(String uri, String localName, String name,
-                             Attributes attributes) throws SAXException {
-        super.startElement(uri, localName, name, attributes);
-        if (localName.equalsIgnoreCase(ITEM)) {
-            this.currentMessage = new Message();
         }
     }
 }

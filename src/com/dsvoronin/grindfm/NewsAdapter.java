@@ -55,6 +55,9 @@ public class NewsAdapter extends BaseAdapter {
         TextView title = (TextView) view.findViewById(R.id.title);
         title.setText(mContent.get(i).getTitle());
 
+        TextView date = (TextView) view.findViewById(R.id.date);
+        date.setText(mContent.get(i).getDate());
+
         return view;
     }
 }

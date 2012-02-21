@@ -9,7 +9,8 @@ import java.util.Locale;
 
 public class Message implements Comparable<Message> {
 
-    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+    private static SimpleDateFormat PARSER = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMM yyyy");
 
     private String title;
     private URL link;
@@ -50,12 +51,11 @@ public class Message implements Comparable<Message> {
     }
 
     public void setDate(String date) {
-        // pad the date if necessary
         while (!date.endsWith("00")) {
             date += "0";
         }
         try {
-            this.date = FORMATTER.parse(date.trim());
+            this.date = PARSER.parse(date.trim());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
