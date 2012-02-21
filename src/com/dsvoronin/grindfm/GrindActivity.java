@@ -6,17 +6,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import com.dsvoronin.R;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GrindActivity extends Activity {
-
     private static final int MEDIA_NOT_READY = 0;
     private static final int MEDIA_READY = 1;
     private static final int MEDIA_PLAYING = 2;
@@ -24,9 +22,15 @@ public class GrindActivity extends Activity {
     private static final String TAG = GrindActivity.class.getSimpleName();
 
     private int state = MEDIA_NOT_READY;
+
+    private boolean newsFirstStart = true;
+
     private Button button;
     private ProgressBar progressBar;
-    private HorizontalListView listMenu;
+    private GesturableViewFlipper flipper;
+    private ListView newsList;
+
+    private NewsAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +38,20 @@ public class GrindActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
 
+        mAdapter = new NewsAdapter(this);
+        newsList = (ListView) findViewById(R.id.newsList);
+        newsList.setAdapter(mAdapter);
+
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         button = (Button) findViewById(R.id.button);
-        listMenu = (HorizontalListView) findViewById(R.id.main_menu);
-        listMenu.setAdapter(mAdapter);
+        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
+
+        flipper.setOnSwitchListener(new GesturableViewFlipper.OnSwitchListener() {
+            @Override
+            public void onSwitch(int child) {
+                flip(child);
+            }
+        });
 
         final MediaPlayer mediaPlayer = new MediaPlayer();
         try {
@@ -76,60 +90,38 @@ public class GrindActivity extends Activity {
         });
     }
 
-    private class MenuItem {
-        private int resId;
-        private String title;
-
-        private MenuItem(int resId, String title) {
-            this.resId = resId;
-            this.title = title;
+    private void flip(int childId) {
+        if (flipper.getDisplayedChild() > childId) {
+            flipper.setInAnimation(GrindActivity.this, R.anim.in_from_left);
+            flipper.setOutAnimation(GrindActivity.this, R.anim.out_to_right);
+            flipper.setDisplayedChild(childId);
+        } else if (flipper.getDisplayedChild() < childId) {
+            flipper.setInAnimation(GrindActivity.this, R.anim.in_from_right);
+            flipper.setOutAnimation(GrindActivity.this, R.anim.out_to_left);
+            flipper.setDisplayedChild(childId);
+        } else {
+            //do nothing
         }
 
-        public int getResId() {
-            return resId;
+        if (flipper.getDisplayedChild() == 1) {
+            newsList.setSelectionAfterHeaderView();
+            if (newsFirstStart) {
+                RssParseTask task = new RssParseTask(this, mAdapter);
+                task.execute(getString(R.string.news_url));
+                newsFirstStart = false;
+            }
         }
 
-        public String getTitle() {
-            return title;
-        }
+        Log.i("!!!!!", "CURRENT VIEW = " + flipper.getDisplayedChild());
     }
 
-    private List<MenuItem> menuItemList = new ArrayList<MenuItem>() {
-        {
-            add(new MenuItem(R.drawable.microphone, "Радио"));
-            add(new MenuItem(R.drawable.calendar, "Расписание"));
-            add(new MenuItem(R.drawable.news, "Новости"));
-            add(new MenuItem(R.drawable.headphones, "Заказ песен"));
-            add(new MenuItem(R.drawable.youtube_play_icon, "Видео"));
-        }
-    };
+    @SuppressWarnings("unused")
+    public void toRadio(View view) {
+        flip(0);
+    }
 
-    private BaseAdapter mAdapter = new BaseAdapter() {
-
-        @Override
-        public int getCount() {
-            return menuItemList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View retval = getLayoutInflater().inflate(R.layout.listmenu_item, null);
-            TextView title = (TextView) retval.findViewById(R.id.title);
-            title.setText(menuItemList.get(position).getTitle());
-            ImageView imageView = (ImageView) retval.findViewById(R.id.image);
-            imageView.setImageResource(menuItemList.get(position).getResId());
-            return retval;
-        }
-
-    };
+    @SuppressWarnings("unused")
+    public void toNews(View view) {
+        flip(1);
+    }
 }

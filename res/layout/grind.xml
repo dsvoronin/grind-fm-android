@@ -4,47 +4,106 @@
                 android:layout_height="fill_parent"
                 android:background="@drawable/background_gradient">
 
-    <com.dsvoronin.grindfm.HorizontalListView android:layout_width="fill_parent"
-                                              android:layout_height="90dp"
-                                              android:id="@+id/main_menu"
-                                              android:background="@drawable/listmenu_gradient"/>
 
-    <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_centerInParent="true"
-                  android:layout_marginTop="50dp"
-                  android:layout_below="@id/main_menu"
-                  android:orientation="vertical">
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="70dp"
+                  android:id="@+id/footer"
+                  android:background="@drawable/listmenu_gradient"
+                  android:layout_alignParentBottom="true"
+                  android:orientation="horizontal">
 
-        <ImageView android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_gravity="center"
-                   android:src="@drawable/cat"/>
-        <ImageView android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_gravity="center"
-                   android:src="@drawable/grind_logo"/>
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="fill_parent"
+                      android:onClick="toRadio"
+                      android:orientation="vertical">
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="0dp"
+                       android:layout_weight="1"
+                       android:src="@drawable/headphones"
+                       android:layout_gravity="center"/>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:text="@string/app_name"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="fill_parent"
+                      android:onClick="toNews"
+                      android:orientation="vertical">
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="0dp"
+                       android:layout_weight="1"
+                       android:src="@drawable/news"
+                       android:layout_gravity="center"/>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:text="@string/app_name"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical">
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="0dp"
+                       android:layout_weight="1"
+                       android:src="@drawable/headphones"
+                       android:layout_gravity="center"/>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:text="@string/app_name"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical">
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="0dp"
+                       android:layout_weight="1"
+                       android:src="@drawable/headphones"
+                       android:layout_gravity="center"/>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:text="@string/app_name"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_weight="1"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical">
+            <ImageView android:layout_width="wrap_content"
+                       android:layout_height="0dp"
+                       android:layout_weight="1"
+                       android:src="@drawable/headphones"
+                       android:layout_gravity="center"/>
+            <TextView android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center"
+                      android:text="@string/app_name"/>
+        </LinearLayout>
+
     </LinearLayout>
 
-    <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_centerInParent="true"
-                    android:layout_marginBottom="40dp"
-                    android:orientation="horizontal">
-        <Button android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:visibility="gone"
-                android:id="@+id/button"/>
-        <ProgressBar android:layout_width="60dp"
-                     android:layout_height="60dp"
-                     android:id="@+id/progressbar"
-                     style="@android:style/Widget.ProgressBar.Large"/>
-    </RelativeLayout>
+    <com.dsvoronin.grindfm.GesturableViewFlipper android:layout_width="fill_parent"
+                                                 android:layout_height="fill_parent"
+                                                 android:id="@+id/flipper"
+                                                 android:layout_above="@id/footer">
+
+        <include android:id="@+id/radio" layout="@layout/radio"/>
+        <include android:id="@+id/news" layout="@layout/news"/>
+
+    </com.dsvoronin.grindfm.GesturableViewFlipper>
 
     <ImageView android:layout_width="fill_parent"
                android:layout_height="6dp"
-               android:layout_below="@id/main_menu"
+               android:layout_above="@id/footer"
                android:src="@drawable/shadow"/>
 
 </RelativeLayout>
