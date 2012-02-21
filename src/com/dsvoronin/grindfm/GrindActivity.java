@@ -10,11 +10,16 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.dsvoronin.R;
 
 import java.io.IOException;
 
-public class GrindActivity extends Activity {
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener {
+
+    private static final int MENU_ID_RADIO = 0;
+    private static final int MENU_ID_NEWS = 1;
+
     private static final int MEDIA_NOT_READY = 0;
     private static final int MEDIA_READY = 1;
     private static final int MEDIA_PLAYING = 2;
@@ -29,6 +34,8 @@ public class GrindActivity extends Activity {
     private ProgressBar progressBar;
     private GesturableViewFlipper flipper;
     private ListView newsList;
+    private TextView menuTextRadio;
+    private TextView menuTextNews;
 
     private NewsAdapter mAdapter;
 
@@ -38,20 +45,18 @@ public class GrindActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
 
+        menuTextNews = (TextView) findViewById(R.id.menuNewsText);
+        menuTextRadio = (TextView) findViewById(R.id.menuRadioText);
+
         mAdapter = new NewsAdapter(this);
         newsList = (ListView) findViewById(R.id.newsList);
         newsList.setAdapter(mAdapter);
 
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         button = (Button) findViewById(R.id.button);
-        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
 
-        flipper.setOnSwitchListener(new GesturableViewFlipper.OnSwitchListener() {
-            @Override
-            public void onSwitch(int child) {
-                flip(child);
-            }
-        });
+        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
+        flipper.setOnSwitchListener(this);
 
         final MediaPlayer mediaPlayer = new MediaPlayer();
         try {
@@ -90,7 +95,18 @@ public class GrindActivity extends Activity {
         });
     }
 
-    private void flip(int childId) {
+    @SuppressWarnings("unused")
+    public void toRadio(View view) {
+        onSwitch(MENU_ID_RADIO);
+    }
+
+    @SuppressWarnings("unused")
+    public void toNews(View view) {
+        onSwitch(MENU_ID_NEWS);
+    }
+
+    @Override
+    public void onSwitch(int childId) {
         if (flipper.getDisplayedChild() > childId) {
             flipper.setInAnimation(GrindActivity.this, R.anim.in_from_left);
             flipper.setOutAnimation(GrindActivity.this, R.anim.out_to_right);
@@ -103,25 +119,20 @@ public class GrindActivity extends Activity {
             //do nothing
         }
 
-        if (flipper.getDisplayedChild() == 1) {
-            newsList.setSelectionAfterHeaderView();
-            if (newsFirstStart) {
-                RssParseTask task = new RssParseTask(this, mAdapter);
-                task.execute(getString(R.string.news_url));
-                newsFirstStart = false;
-            }
+        switch (flipper.getDisplayedChild()) {
+            case MENU_ID_RADIO:
+                menuTextRadio.setVisibility(View.VISIBLE);
+                menuTextNews.setVisibility(View.GONE);
+                break;
+            case MENU_ID_NEWS:
+                menuTextRadio.setVisibility(View.GONE);
+                menuTextNews.setVisibility(View.VISIBLE);
+                if (newsFirstStart) {
+                    RssParseTask task = new RssParseTask(this, mAdapter);
+                    task.execute(getString(R.string.news_url));
+                    newsFirstStart = false;
+                }
+                break;
         }
-
-        Log.i("!!!!!", "CURRENT VIEW = " + flipper.getDisplayedChild());
-    }
-
-    @SuppressWarnings("unused")
-    public void toRadio(View view) {
-        flip(0);
-    }
-
-    @SuppressWarnings("unused")
-    public void toNews(View view) {
-        flip(1);
     }
 }

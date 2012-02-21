@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Grind.FM</string>
 
+    <string name="menu_radio">Радио</string>
+    <string name="menu_news">Новости</string>
+
     <string name="news_url">http://www.grind.fm/rss.xml</string>
     <string name="loading">Загрузка...</string>
 </resources>

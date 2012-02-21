@@ -97,6 +97,6 @@ public class GesturableViewFlipper extends ViewFlipper implements GestureDetecto
 
 
     public interface OnSwitchListener {
-        void onSwitch(int child);
+        void onSwitch(int childId);
     }
 }
