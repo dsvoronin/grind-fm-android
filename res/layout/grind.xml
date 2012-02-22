@@ -19,7 +19,7 @@
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="0dp"
                        android:layout_weight="1"
-                       android:src="@drawable/microphone"
+                       android:src="@drawable/ic_menu_signal"
                        android:layout_gravity="center"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="0dp"
                        android:layout_weight="1"
-                       android:src="@drawable/news"
+                       android:src="@drawable/ic_menu_feed"
                        android:layout_gravity="center"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="0dp"
                        android:layout_weight="1"
-                       android:src="@drawable/youtube_play_icon"
+                       android:src="@drawable/ic_menu_movie"
                        android:layout_gravity="center"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
@@ -73,14 +73,14 @@
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="0dp"
                        android:layout_weight="1"
-                       android:src="@drawable/vk"
+                       android:src="@drawable/ic_menu_love"
                        android:layout_gravity="center"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:layout_gravity="center"
                       android:visibility="gone"
                       android:id="@+id/menuVkontakteText"
-                      android:text="@string/app_name"/>
+                      android:text="@string/menu_vk"/>
         </LinearLayout>
 
         <LinearLayout android:layout_width="0dp"
@@ -90,7 +90,7 @@
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="0dp"
                        android:layout_weight="1"
-                       android:src="@drawable/headphones"
+                       android:src="@drawable/ic_menu_feed"
                        android:layout_gravity="center"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
