@@ -14,4 +14,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="ActivityDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@drawable/news_dialog_border</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>

@@ -7,15 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import com.dsvoronin.R;
 
 import java.io.IOException;
 
-public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener {
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener {
 
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
@@ -51,6 +48,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         mAdapter = new NewsAdapter(this);
         newsList = (ListView) findViewById(R.id.newsList);
         newsList.setAdapter(mAdapter);
+        newsList.setOnItemClickListener(this);
 
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         button = (Button) findViewById(R.id.button);
@@ -134,5 +132,11 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        NewsDialog dialog = new NewsDialog(this, mAdapter.getItem(i));
+        dialog.show();
     }
 }

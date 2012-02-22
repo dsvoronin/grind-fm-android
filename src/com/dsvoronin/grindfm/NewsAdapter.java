@@ -36,7 +36,7 @@ public class NewsAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Message getItem(int i) {
         return mContent.get(i);
     }
 
@@ -52,7 +52,7 @@ public class NewsAdapter extends BaseAdapter {
             view = mContext.getLayoutInflater().inflate(R.layout.news_item, null);
         }
 
-        TextView title = (TextView) view.findViewById(R.id.title);
+        TextView title = (TextView) view.findViewById(R.id.dialogTitle);
         title.setText(mContent.get(i).getTitle());
 
         TextView date = (TextView) view.findViewById(R.id.date);
