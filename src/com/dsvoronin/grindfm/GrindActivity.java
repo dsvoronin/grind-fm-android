@@ -1,6 +1,8 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,11 +38,15 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     private NewsAdapter mAdapter;
 
+    private NotificationManager notificationManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
+
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         menuTextNews = (TextView) findViewById(R.id.menuNewsText);
         menuTextRadio = (TextView) findViewById(R.id.menuRadioText);
@@ -58,7 +64,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
         final MediaPlayer mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(this, Uri.parse("http://radio.goha.ru:8000/grindfm.ogg"));
+            mediaPlayer.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_ogg)));
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
@@ -81,11 +87,15 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                         mediaPlayer.start();
                         state = MEDIA_PLAYING;
                         button.setBackgroundResource(android.R.drawable.ic_media_pause);
+                        Notification notification = new Notification(R.drawable.paw_logo, "You are listening to Grind.FM", System.currentTimeMillis());
+                        notificationManager.notify(1, notification);
                         break;
                     case MEDIA_PLAYING:
                         mediaPlayer.pause();
                         state = MEDIA_READY;
                         button.setBackgroundResource(android.R.drawable.ic_media_play);
+                        notificationManager.cancel(1);
+                        break;
                     default:
                         break;
                 }

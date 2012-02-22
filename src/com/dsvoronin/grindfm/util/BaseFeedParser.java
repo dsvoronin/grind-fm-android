@@ -17,12 +17,8 @@ public abstract class BaseFeedParser implements FeedParser {
 
     private final URL feedUrl;
 
-    protected BaseFeedParser(String feedUrl) {
-        try {
-            this.feedUrl = new URL(feedUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    protected BaseFeedParser(String feedUrl) throws MalformedURLException {
+        this.feedUrl = new URL(feedUrl);
     }
 
     protected InputStream getInputStream() {
