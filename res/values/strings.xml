@@ -9,5 +9,5 @@
 
     <string name="radio_stream_url_ogg">http://radio.goha.ru:8000/grindfm.ogg</string>
     <string name="news_url">http://www.grind.fm/rss.xml</string>
-    <string name="youtube_playlist_postrelushka">PLCE7DBB07594C04EF</string>
+    <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
 </resources>

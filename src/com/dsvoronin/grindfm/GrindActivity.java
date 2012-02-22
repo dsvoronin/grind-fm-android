@@ -18,6 +18,7 @@ import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
 import com.dsvoronin.grindfm.util.ImageManager;
+import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         videoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(mVideoAdapter.getItem(i).getUrl())));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + mVideoAdapter.getItem(i).getUrl())));
             }
         });
 

@@ -17,6 +17,8 @@ import java.util.List;
 
 public class YouTubeUtil {
 
+    public static final String YOUTUBE_VIDEO = "http://www.youtube.com/watch?v=";
+
     private static final String YOUTUBE_API_LINK_VIDEO = "http://gdata.youtube.com/feeds/api/videos/";
     private static final String YOUTUBE_API_LINK_PLAYLIST = "http://gdata.youtube.com/feeds/api/playlists/";
 
