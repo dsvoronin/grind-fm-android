@@ -1,6 +1,6 @@
 package com.dsvoronin.grindfm.util;
 
-import com.dsvoronin.grindfm.Message;
+import com.dsvoronin.grindfm.model.NewsItem;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -12,18 +12,18 @@ import static com.dsvoronin.grindfm.util.BaseFeedParser.*;
 
 public class RssHandler extends DefaultHandler {
 
-    private List<Message> messages;
-    private Message currentMessage;
+    private List<NewsItem> messages;
+    private NewsItem currentMessage;
     private StringBuilder builder;
 
-    public List<Message> getMessages() {
+    public List<NewsItem> getMessages() {
         return this.messages;
     }
 
     @Override
     public void startDocument() throws SAXException {
         super.startDocument();
-        messages = new ArrayList<Message>();
+        messages = new ArrayList<NewsItem>();
         builder = new StringBuilder();
     }
 
@@ -31,7 +31,7 @@ public class RssHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, name, attributes);
         if (localName.equalsIgnoreCase(ITEM)) {
-            this.currentMessage = new Message();
+            this.currentMessage = new NewsItem();
         }
     }
 

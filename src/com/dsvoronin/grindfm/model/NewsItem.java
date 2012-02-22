@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm;
+package com.dsvoronin.grindfm.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Message implements Comparable<Message> {
+public class NewsItem implements Comparable<NewsItem> {
 
     private static SimpleDateFormat PARSER = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
     private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMM yyyy");
@@ -61,8 +61,8 @@ public class Message implements Comparable<Message> {
         }
     }
 
-    public Message copy() {
-        Message copy = new Message();
+    public NewsItem copy() {
+        NewsItem copy = new NewsItem();
         copy.title = title;
         copy.link = link;
         copy.description = description;
@@ -107,7 +107,7 @@ public class Message implements Comparable<Message> {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Message other = (Message) obj;
+        NewsItem other = (NewsItem) obj;
         if (date == null) {
             if (other.date != null)
                 return false;
@@ -131,7 +131,7 @@ public class Message implements Comparable<Message> {
         return true;
     }
 
-    public int compareTo(Message another) {
+    public int compareTo(NewsItem another) {
         if (another == null) return 1;
         // sort descending, most recent first
         return another.date.compareTo(date);

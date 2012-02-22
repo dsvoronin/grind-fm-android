@@ -5,15 +5,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.widget.TextView;
 import com.dsvoronin.R;
+import com.dsvoronin.grindfm.model.NewsItem;
 
 public class NewsDialog extends Dialog {
 
     private static final String HTML_REGEXP = "<.*?>";
 
 
-    private Message message;
+    private NewsItem message;
 
-    public NewsDialog(Context context, Message message) {
+    public NewsDialog(Context context, NewsItem message) {
         super(context, R.style.ActivityDialog);
         this.message = message;
     }

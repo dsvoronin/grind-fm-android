@@ -1,6 +1,6 @@
 package com.dsvoronin.grindfm.util;
 
-import com.dsvoronin.grindfm.Message;
+import com.dsvoronin.grindfm.model.NewsItem;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,7 +16,7 @@ public class SaxFeedParser extends BaseFeedParser {
         super(feedUrl);
     }
 
-    public List<Message> parse() throws SAXException, ParserConfigurationException, IOException {
+    public List<NewsItem> parse() throws SAXException, ParserConfigurationException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
         RssHandler handler = new RssHandler();

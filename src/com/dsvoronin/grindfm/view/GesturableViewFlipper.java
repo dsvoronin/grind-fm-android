@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm;
+package com.dsvoronin.grindfm.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
