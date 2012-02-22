@@ -5,7 +5,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-import com.dsvoronin.R;
+import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.model.Video;
 import com.dsvoronin.grindfm.util.YouTubeUtil;

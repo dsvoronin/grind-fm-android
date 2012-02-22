@@ -68,16 +68,18 @@
         <LinearLayout android:layout_width="0dp"
                       android:layout_weight="1"
                       android:layout_height="fill_parent"
+                      android:onClick="toVkontakte"
                       android:orientation="vertical">
             <ImageView android:layout_width="wrap_content"
                        android:layout_height="0dp"
                        android:layout_weight="1"
-                       android:src="@drawable/headphones"
+                       android:src="@drawable/vk"
                        android:layout_gravity="center"/>
             <TextView android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:layout_gravity="center"
                       android:visibility="gone"
+                      android:id="@+id/menuVkontakteText"
                       android:text="@string/app_name"/>
         </LinearLayout>
 
@@ -107,6 +109,7 @@
         <include android:id="@+id/radio" layout="@layout/radio"/>
         <include android:id="@+id/news" layout="@layout/news"/>
         <include android:id="@+id/video" layout="@layout/video"/>
+        <include android:id="@+id/vkontakte" layout="@layout/vkontakte"/>
 
     </com.dsvoronin.grindfm.view.GesturableViewFlipper>
 

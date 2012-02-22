@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.TextView;
-import com.dsvoronin.R;
 import com.dsvoronin.grindfm.model.NewsItem;
 
 public class NewsDialog extends Dialog {

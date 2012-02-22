@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.dsvoronin.R;
+import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.model.Video;
 import com.dsvoronin.grindfm.util.ImageManager;
 

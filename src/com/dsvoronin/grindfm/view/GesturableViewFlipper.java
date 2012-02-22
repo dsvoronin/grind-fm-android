@@ -7,7 +7,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
-import com.dsvoronin.R;
+import com.dsvoronin.grindfm.R;
 
 public class GesturableViewFlipper extends ViewFlipper implements GestureDetector.OnGestureListener {
 

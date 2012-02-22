@@ -5,7 +5,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-import com.dsvoronin.R;
+import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.model.NewsItem;
 import com.dsvoronin.grindfm.util.SaxFeedParser;

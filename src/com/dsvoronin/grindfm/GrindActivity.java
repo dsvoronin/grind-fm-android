@@ -11,8 +11,9 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.*;
-import com.dsvoronin.R;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
@@ -28,6 +29,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
     private static final int MENU_ID_VIDEO = 2;
+    private static final int MENU_ID_VKONTAKTE = 3;
 
     private static final int MEDIA_NOT_READY = 0;
     private static final int MEDIA_READY = 1;
@@ -50,9 +52,12 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private TextView menuTextRadio;
     private TextView menuTextNews;
     private TextView menuTextVideo;
+    private TextView menuTextVkontakte;
 
     private NewsAdapter mNewsAdapter;
     private VideoAdapter mVideoAdapter;
+
+    private WebView vkontakteWebView;
 
     private NotificationManager notificationManager;
 
@@ -72,6 +77,16 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         menuTextNews = (TextView) findViewById(R.id.menuNewsText);
         menuTextRadio = (TextView) findViewById(R.id.menuRadioText);
         menuTextVideo = (TextView) findViewById(R.id.menuVideoText);
+        menuTextVkontakte = (TextView) findViewById(R.id.menuVkontakteText);
+
+        vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
+        vkontakteWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        });
 
         mNewsAdapter = new NewsAdapter(this);
         newsList = (ListView) findViewById(R.id.newsList);
@@ -150,6 +165,11 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         onSwitch(MENU_ID_VIDEO);
     }
 
+    @SuppressWarnings("unused")
+    public void toVkontakte(View view) {
+        onSwitch(MENU_ID_VKONTAKTE);
+    }
+
     @Override
     public void onSwitch(int childId) {
         if (flipper.getDisplayedChild() > childId) {
@@ -169,11 +189,15 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 menuTextRadio.setVisibility(View.VISIBLE);
                 menuTextNews.setVisibility(View.GONE);
                 menuTextVideo.setVisibility(View.GONE);
+                menuTextVkontakte.setVisibility(View.GONE);
+
                 break;
             case MENU_ID_NEWS:
                 menuTextRadio.setVisibility(View.GONE);
                 menuTextNews.setVisibility(View.VISIBLE);
                 menuTextVideo.setVisibility(View.GONE);
+                menuTextVkontakte.setVisibility(View.GONE);
+
                 if (newsFirstStart) {
                     RssParseTask task = new RssParseTask(this, mNewsAdapter);
                     task.execute(getString(R.string.news_url));
@@ -184,12 +208,24 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 menuTextRadio.setVisibility(View.GONE);
                 menuTextNews.setVisibility(View.GONE);
                 menuTextVideo.setVisibility(View.VISIBLE);
+                menuTextVkontakte.setVisibility(View.GONE);
+
                 if (videoFirstStart) {
                     VideoTask task = new VideoTask(this, mVideoAdapter);
                     task.execute(getString(R.string.youtube_playlist_postrelushka));
                     videoFirstStart = false;
                 }
                 break;
+            case MENU_ID_VKONTAKTE:
+                menuTextRadio.setVisibility(View.GONE);
+                menuTextNews.setVisibility(View.GONE);
+                menuTextVideo.setVisibility(View.GONE);
+                menuTextVkontakte.setVisibility(View.VISIBLE);
+
+                vkontakteWebView.loadUrl(getString(R.string.vkontakte_url));
+                vkontakteWebView.requestFocus(View.FOCUS_DOWN);
+                break;
+
         }
     }
 

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.dsvoronin.R;
+import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.model.NewsItem;
 
 public class NewsAdapter extends BaseListAdapter<NewsItem> {
