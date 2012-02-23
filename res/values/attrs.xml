@@ -1,0 +1,8 @@
+<resources>
+
+    <declare-styleable name="com.akzia.apps.mdp.view.MenuButton">
+        <attr name="image" format="reference"/>
+        <attr name="label" format="reference"/>
+    </declare-styleable>
+
+</resources>

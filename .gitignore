@@ -1,4 +1,5 @@
 .idea
 gen
 *.iml
+*.apk
 project.properties

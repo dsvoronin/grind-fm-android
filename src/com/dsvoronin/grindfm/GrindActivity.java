@@ -13,7 +13,10 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
@@ -49,11 +52,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private ListView newsList;
     private ListView videoList;
 
-    private TextView menuTextRadio;
-    private TextView menuTextNews;
-    private TextView menuTextVideo;
-    private TextView menuTextVkontakte;
-
     private NewsAdapter mNewsAdapter;
     private VideoAdapter mVideoAdapter;
 
@@ -73,11 +71,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         imageManager.init(this,
                 Environment.getExternalStorageDirectory().getPath() + "/Android/data/" + getPackageName() + "/cache/");
         imageManager.setFileCache(true);
-
-        menuTextNews = (TextView) findViewById(R.id.menuNewsText);
-        menuTextRadio = (TextView) findViewById(R.id.menuRadioText);
-        menuTextVideo = (TextView) findViewById(R.id.menuVideoText);
-        menuTextVkontakte = (TextView) findViewById(R.id.menuVkontakteText);
 
         vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
         vkontakteWebView.setWebViewClient(new WebViewClient() {
@@ -186,18 +179,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
         switch (flipper.getDisplayedChild()) {
             case MENU_ID_RADIO:
-                menuTextRadio.setVisibility(View.VISIBLE);
-                menuTextNews.setVisibility(View.GONE);
-                menuTextVideo.setVisibility(View.GONE);
-                menuTextVkontakte.setVisibility(View.GONE);
-
                 break;
             case MENU_ID_NEWS:
-                menuTextRadio.setVisibility(View.GONE);
-                menuTextNews.setVisibility(View.VISIBLE);
-                menuTextVideo.setVisibility(View.GONE);
-                menuTextVkontakte.setVisibility(View.GONE);
-
                 if (newsFirstStart) {
                     RssParseTask task = new RssParseTask(this, mNewsAdapter);
                     task.execute(getString(R.string.news_url));
@@ -205,11 +188,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 }
                 break;
             case MENU_ID_VIDEO:
-                menuTextRadio.setVisibility(View.GONE);
-                menuTextNews.setVisibility(View.GONE);
-                menuTextVideo.setVisibility(View.VISIBLE);
-                menuTextVkontakte.setVisibility(View.GONE);
-
                 if (videoFirstStart) {
                     VideoTask task = new VideoTask(this, mVideoAdapter);
                     task.execute(getString(R.string.youtube_playlist_postrelushka));
@@ -217,11 +195,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 }
                 break;
             case MENU_ID_VKONTAKTE:
-                menuTextRadio.setVisibility(View.GONE);
-                menuTextNews.setVisibility(View.GONE);
-                menuTextVideo.setVisibility(View.GONE);
-                menuTextVkontakte.setVisibility(View.VISIBLE);
-
                 vkontakteWebView.loadUrl(getString(R.string.vkontakte_url));
                 vkontakteWebView.requestFocus(View.FOCUS_DOWN);
                 break;
