@@ -1,7 +1,6 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -127,8 +126,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                         mediaPlayer.start();
                         state = MEDIA_PLAYING;
                         button.setBackgroundResource(android.R.drawable.ic_media_pause);
-                        Notification notification = new Notification(R.drawable.paw_logo, "You are listening to Grind.FM", System.currentTimeMillis());
-                        notificationManager.notify(1, notification);
                         break;
                     case MEDIA_PLAYING:
                         mediaPlayer.pause();

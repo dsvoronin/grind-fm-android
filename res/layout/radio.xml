@@ -19,23 +19,4 @@
                    android:src="@drawable/grind_logo"/>
     </LinearLayout>
 
-    <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="40dp"
-                    android:orientation="horizontal">
-
-        <Button android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:visibility="gone"
-                android:id="@+id/button"/>
-
-        <ProgressBar android:layout_width="60dp"
-                     android:layout_height="60dp"
-                     android:id="@+id/progressbar"
-                     style="@android:style/Widget.ProgressBar.Large"/>
-
-    </RelativeLayout>
-
 </RelativeLayout>

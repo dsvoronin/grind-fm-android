@@ -7,6 +7,34 @@
 
     <LinearLayout android:layout_width="fill_parent"
                   android:layout_height="70dp"
+                  android:background="@drawable/listmenu_gradient"
+                  android:layout_alignParentTop="true"
+                  android:orientation="horizontal"
+                  android:id="@+id/header">
+
+        <RelativeLayout android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="40dp"
+                        android:orientation="horizontal">
+
+            <Button android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:visibility="gone"
+                    android:id="@+id/button"/>
+
+            <ProgressBar android:layout_width="30dp"
+                         android:layout_height="30dp"
+                         android:id="@+id/progressbar"
+                         style="@android:style/Widget.ProgressBar.Large"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="70dp"
                   android:id="@+id/footer"
                   android:background="@drawable/listmenu_gradient"
                   android:layout_alignParentBottom="true"
@@ -51,7 +79,8 @@
     <com.dsvoronin.grindfm.view.GesturableViewFlipper android:layout_width="fill_parent"
                                                       android:layout_height="fill_parent"
                                                       android:id="@+id/flipper"
-                                                      android:layout_above="@id/footer">
+                                                      android:layout_above="@id/footer"
+                                                      android:layout_below="@id/header">
 
         <include android:id="@+id/radio" layout="@layout/radio"/>
         <include android:id="@+id/news" layout="@layout/news"/>
@@ -63,6 +92,11 @@
     <ImageView android:layout_width="fill_parent"
                android:layout_height="6dp"
                android:layout_above="@id/footer"
-               android:src="@drawable/shadow"/>
+               android:src="@drawable/shadow_footer"/>
+
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_below="@id/header"
+               android:src="@drawable/shadow_header"/>
 
 </RelativeLayout>
