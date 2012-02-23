@@ -10,7 +10,7 @@ import java.util.Locale;
 public class NewsItem implements Comparable<NewsItem> {
 
     private static SimpleDateFormat PARSER = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
-    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMM yyyy");
+    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMMM yyyy");
 
     private String title;
     private URL link;
