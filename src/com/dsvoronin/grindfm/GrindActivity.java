@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
@@ -22,7 +21,7 @@ import com.dsvoronin.grindfm.util.ImageManager;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 
-public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener, Progressable {
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener {
 
     private static final String TAG = GrindActivity.class.getSimpleName();
 
@@ -176,7 +175,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             case MENU_ID_NEWS:
                 if (newsFirstStart) {
                     RssParseTask task = new RssParseTask(this, mNewsAdapter);
-                    task.setProgressable(this);
+                    task.setProgress(newsProgress);
                     task.execute(getString(R.string.news_url));
                     newsFirstStart = false;
                 }
@@ -184,6 +183,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             case MENU_ID_VIDEO:
                 if (videoFirstStart) {
                     VideoTask task = new VideoTask(this, mVideoAdapter);
+                    task.setProgress(videoProgress);
                     task.execute(getString(R.string.youtube_playlist_postrelushka));
                     videoFirstStart = false;
                 }
@@ -200,34 +200,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         NewsDialog dialog = new NewsDialog(this, mNewsAdapter.getItem(i));
         dialog.show();
-    }
-
-    @Override
-    public void taskStarted() {
-        switch (flipper.getDisplayedChild()) {
-            case MENU_ID_NEWS:
-                newsProgress.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fading));
-                newsProgress.setVisibility(View.VISIBLE);
-                break;
-            case MENU_ID_VIDEO:
-                videoProgress.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fading));
-                videoProgress.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
-
-    @Override
-    public void taskComplete() {
-        switch (flipper.getDisplayedChild()) {
-            case MENU_ID_NEWS:
-                newsProgress.setAnimation(null);
-                newsProgress.setVisibility(View.GONE);
-                break;
-            case MENU_ID_VIDEO:
-                videoProgress.setAnimation(null);
-                videoProgress.setVisibility(View.GONE);
-                break;
-        }
     }
 
     private class GrindReceiver extends BroadcastReceiver {

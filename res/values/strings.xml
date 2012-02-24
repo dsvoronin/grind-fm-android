@@ -8,6 +8,7 @@
 
 
     <string name="loading">Загрузка...</string>
+    <string name="load_fail">Не удалось загрузить</string>
 
     <string name="radio_loading">Grind.FM — это игровое радио для настоящих геймеров!</string>
 
