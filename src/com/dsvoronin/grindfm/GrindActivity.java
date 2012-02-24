@@ -19,9 +19,7 @@ import com.dsvoronin.grindfm.task.VideoTask;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 
-public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener {
-
-    private static final String TAG = GrindActivity.class.getSimpleName();
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener {
 
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
@@ -59,29 +57,18 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         setContentView(R.layout.grind);
         initViews();
 
+        vkontakteWebView.setWebViewClient(new VkontakteWebViewClient());
 
-        vkontakteWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
-            }
-        });
-
+        //включает бегущую строку
         headerRunningString.setSelected(true);
 
         mNewsAdapter = new NewsAdapter(this);
         newsList.setAdapter(mNewsAdapter);
-        newsList.setOnItemClickListener(this);
+        newsList.setOnItemClickListener(onNewsItemClickListener);
 
         mVideoAdapter = new VideoAdapter(this);
         videoList.setAdapter(mVideoAdapter);
-        videoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + mVideoAdapter.getItem(i).getUrl())));
-            }
-        });
+        videoList.setOnItemClickListener(onVideoItemClickListener);
 
         flipper.setOnSwitchListener(this);
     }
@@ -181,12 +168,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        NewsDialog dialog = new NewsDialog(this, mNewsAdapter.getItem(i));
-        dialog.show();
-    }
-
     private void initViews() {
         vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
         headerRunningString = (TextView) findViewById(R.id.header_running_string);
@@ -213,4 +194,27 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             state = MEDIA_PLAYING;
         }
     }
+
+    private class VkontakteWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+    }
+
+    private AdapterView.OnItemClickListener onVideoItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + mVideoAdapter.getItem(i).getUrl())));
+        }
+    };
+
+    private AdapterView.OnItemClickListener onNewsItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            NewsDialog dialog = new NewsDialog(GrindActivity.this, mNewsAdapter.getItem(i));
+            dialog.show();
+        }
+    };
 }
