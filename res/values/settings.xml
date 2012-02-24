@@ -1,0 +1,4 @@
+<resources>
+    <string name="service_intent">service-intent</string>
+    <string name="service_intent_info">service-intent-info</string>
+</resources>

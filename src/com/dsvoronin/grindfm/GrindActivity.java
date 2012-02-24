@@ -1,11 +1,13 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -18,14 +20,6 @@ import com.dsvoronin.grindfm.task.VideoTask;
 import com.dsvoronin.grindfm.util.ImageManager;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
-import net.moraleboost.streamscraper.ScrapeException;
-import net.moraleboost.streamscraper.Scraper;
-import net.moraleboost.streamscraper.Stream;
-import net.moraleboost.streamscraper.scraper.IceCastScraper;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 
 public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener {
 
@@ -40,7 +34,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MEDIA_READY = 1;
     private static final int MEDIA_PLAYING = 2;
 
-    private int state = MEDIA_NOT_READY;
+    private int state = MEDIA_READY;
 
     private boolean newsFirstStart = true;
     private boolean videoFirstStart = true;
@@ -55,6 +49,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     private NewsAdapter mNewsAdapter;
     private VideoAdapter mVideoAdapter;
+
+    private GrindReceiver grindReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,39 +94,38 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             }
         });
 
-        Scraper scraper = new IceCastScraper();
-        List<Stream> streams;
-        try {
-            streams = scraper.scrape(new URI(getString(R.string.radio_stream_url_ogg)));
-            if (streams != null) {
-                for (Stream stream : streams) {
-                    if (!stream.getCurrentSong().equals("")) {
-                        headerRunningString.setText(stream.getCurrentSong());
-                    }
-                }
-            }
-        } catch (ScrapeException e) {
-            Log.e(TAG, "Error while parsing icecast", e);
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "Error while parsing icecast", e);
-        }
-
         flipper.setOnSwitchListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        IntentFilter filter = new IntentFilter(getString(R.string.service_intent));
+        grindReceiver = new GrindReceiver();
+        registerReceiver(grindReceiver, filter);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(grindReceiver);
+        super.onPause();
     }
 
     @SuppressWarnings("unused")
     public void onRadioClick(View view) {
         switch (state) {
             case MEDIA_NOT_READY:
+                break;
+            case MEDIA_READY:
                 Intent intent = new Intent(this, GrindService.class);
                 startService(intent);
                 playPause.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
-                break;
-            case MEDIA_READY:
-                state = MEDIA_PLAYING;
+                state = MEDIA_NOT_READY;
                 break;
             case MEDIA_PLAYING:
+                stopService(new Intent(this, GrindService.class));
+                playPause.setImageResource(android.R.drawable.ic_media_play);
                 state = MEDIA_READY;
                 break;
         }
@@ -199,5 +194,20 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         NewsDialog dialog = new NewsDialog(this, mNewsAdapter.getItem(i));
         dialog.show();
+    }
+
+    private class GrindReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String info = intent.getStringExtra(getString(R.string.service_intent_info));
+            headerRunningString.setText(info);
+
+            playPause.setImageResource(android.R.drawable.ic_media_pause);
+
+            playPause.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+
+            state = MEDIA_PLAYING;
+        }
     }
 }
