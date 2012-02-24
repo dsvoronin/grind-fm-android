@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -17,7 +16,6 @@ import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
-import com.dsvoronin.grindfm.util.ImageManager;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 
@@ -59,21 +57,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
+        initViews();
 
-        vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
-        headerRunningString = (TextView) findViewById(R.id.header_running_string);
-        newsList = (ListView) findViewById(R.id.newsList);
-        videoList = (ListView) findViewById(R.id.videoList);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        playPause = (ImageView) findViewById(R.id.play_pause);
-        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
-        newsProgress = (TextView) findViewById(R.id.news_progress);
-        videoProgress = (TextView) findViewById(R.id.video_progress);
-
-        ImageManager imageManager = ImageManager.getInstance();
-        imageManager.init(this,
-                Environment.getExternalStorageDirectory().getPath() + "/Android/data/" + getPackageName() + "/cache/");
-        imageManager.setFileCache(true);
 
         vkontakteWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -200,6 +185,18 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         NewsDialog dialog = new NewsDialog(this, mNewsAdapter.getItem(i));
         dialog.show();
+    }
+
+    private void initViews() {
+        vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
+        headerRunningString = (TextView) findViewById(R.id.header_running_string);
+        newsList = (ListView) findViewById(R.id.newsList);
+        videoList = (ListView) findViewById(R.id.videoList);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        playPause = (ImageView) findViewById(R.id.play_pause);
+        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
+        newsProgress = (TextView) findViewById(R.id.news_progress);
+        videoProgress = (TextView) findViewById(R.id.video_progress);
     }
 
     private class GrindReceiver extends BroadcastReceiver {
