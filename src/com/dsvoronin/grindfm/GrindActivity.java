@@ -1,9 +1,7 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,10 +18,18 @@ import com.dsvoronin.grindfm.task.VideoTask;
 import com.dsvoronin.grindfm.util.ImageManager;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
+import net.moraleboost.streamscraper.ScrapeException;
+import net.moraleboost.streamscraper.Scraper;
+import net.moraleboost.streamscraper.Stream;
+import net.moraleboost.streamscraper.scraper.IceCastScraper;
 
-import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener {
+
+    private static final String TAG = GrindActivity.class.getSimpleName();
 
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
@@ -34,28 +40,21 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MEDIA_READY = 1;
     private static final int MEDIA_PLAYING = 2;
 
-    private static final String TAG = GrindActivity.class.getSimpleName();
-
     private int state = MEDIA_NOT_READY;
 
     private boolean newsFirstStart = true;
     private boolean videoFirstStart = true;
 
-    private Button button;
+    private ImageView playPause;
     private ProgressBar progressBar;
     private GesturableViewFlipper flipper;
-
     private ListView newsList;
     private ListView videoList;
+    private TextView headerRunningString;
+    private WebView vkontakteWebView;
 
     private NewsAdapter mNewsAdapter;
     private VideoAdapter mVideoAdapter;
-
-    private TextView headerRunningString;
-
-    private WebView vkontakteWebView;
-
-    private NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +62,19 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
 
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
+        headerRunningString = (TextView) findViewById(R.id.header_running_string);
+        newsList = (ListView) findViewById(R.id.newsList);
+        videoList = (ListView) findViewById(R.id.videoList);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        playPause = (ImageView) findViewById(R.id.play_pause);
+        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
 
         ImageManager imageManager = ImageManager.getInstance();
         imageManager.init(this,
                 Environment.getExternalStorageDirectory().getPath() + "/Android/data/" + getPackageName() + "/cache/");
         imageManager.setFileCache(true);
 
-        vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
         vkontakteWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -79,16 +83,13 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             }
         });
 
-        headerRunningString = (TextView) findViewById(R.id.header_running_string);
         headerRunningString.setSelected(true);
 
         mNewsAdapter = new NewsAdapter(this);
-        newsList = (ListView) findViewById(R.id.newsList);
         newsList.setAdapter(mNewsAdapter);
         newsList.setOnItemClickListener(this);
 
         mVideoAdapter = new VideoAdapter(this);
-        videoList = (ListView) findViewById(R.id.videoList);
         videoList.setAdapter(mVideoAdapter);
         videoList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,49 +98,42 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             }
         });
 
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
-        button = (Button) findViewById(R.id.button);
-
-        flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
-        flipper.setOnSwitchListener(this);
-
-        final MediaPlayer mediaPlayer = new MediaPlayer();
+        Scraper scraper = new IceCastScraper();
+        List<Stream> streams;
         try {
-            mediaPlayer.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_ogg)));
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    button.setBackgroundResource(android.R.drawable.ic_media_play);
-                    state = MEDIA_READY;
-                    progressBar.setVisibility(View.GONE);
-                    button.setVisibility(View.VISIBLE);
-                }
-            });
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            Log.e(TAG, "Error while opening stream", e);
-        }
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (state) {
-                    case MEDIA_READY:
-                        mediaPlayer.start();
-                        state = MEDIA_PLAYING;
-                        button.setBackgroundResource(android.R.drawable.ic_media_pause);
-                        break;
-                    case MEDIA_PLAYING:
-                        mediaPlayer.pause();
-                        state = MEDIA_READY;
-                        button.setBackgroundResource(android.R.drawable.ic_media_play);
-                        notificationManager.cancel(1);
-                        break;
-                    default:
-                        break;
+            streams = scraper.scrape(new URI(getString(R.string.radio_stream_url_ogg)));
+            if (streams != null) {
+                for (Stream stream : streams) {
+                    if (!stream.getCurrentSong().equals("")) {
+                        headerRunningString.setText(stream.getCurrentSong());
+                    }
                 }
             }
-        });
+        } catch (ScrapeException e) {
+            Log.e(TAG, "Error while parsing icecast", e);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, "Error while parsing icecast", e);
+        }
+
+        flipper.setOnSwitchListener(this);
+    }
+
+    @SuppressWarnings("unused")
+    public void onRadioClick(View view) {
+        switch (state) {
+            case MEDIA_NOT_READY:
+                Intent intent = new Intent(this, GrindService.class);
+                startService(intent);
+                playPause.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                break;
+            case MEDIA_READY:
+                state = MEDIA_PLAYING;
+                break;
+            case MEDIA_PLAYING:
+                state = MEDIA_READY;
+                break;
+        }
     }
 
     @SuppressWarnings("unused")

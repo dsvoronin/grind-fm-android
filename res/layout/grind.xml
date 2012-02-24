@@ -15,6 +15,7 @@
         <RelativeLayout android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
+                        android:onClick="onRadioClick"
                         android:layout_centerHorizontal="true">
 
             <ImageView android:layout_width="65dp"
@@ -25,14 +26,16 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="20dp">
 
-                <Button android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:visibility="gone"
-                        android:id="@+id/button"/>
+                <ImageView android:layout_width="30dp"
+                           android:layout_height="30dp"
+                           android:visibility="visible"
+                           android:src="@android:drawable/ic_media_play"
+                           android:id="@+id/play_pause"/>
 
                 <ProgressBar android:layout_width="30dp"
                              android:layout_height="30dp"
-                             android:id="@+id/progressbar"
+                             android:visibility="gone"
+                             android:id="@+id/progress_bar"
                              style="@android:style/Widget.ProgressBar.Large"/>
 
             </RelativeLayout>
@@ -44,7 +47,7 @@
                   android:id="@+id/header_running_string"
                   android:textSize="16dp"
                   android:textColor="@android:color/white"
-                  android:layout_margin="25dp"
+                  android:layout_margin="22dp"
                   android:ellipsize="marquee"
                   android:text="@string/radio_loading"
                   android:marqueeRepeatLimit="marquee_forever"
