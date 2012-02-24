@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
@@ -21,7 +22,7 @@ import com.dsvoronin.grindfm.util.ImageManager;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 
-public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener {
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, AdapterView.OnItemClickListener, Progressable {
 
     private static final String TAG = GrindActivity.class.getSimpleName();
 
@@ -44,6 +45,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private GesturableViewFlipper flipper;
     private ListView newsList;
     private ListView videoList;
+    private TextView newsProgress;
+    private TextView videoProgress;
     private TextView headerRunningString;
     private WebView vkontakteWebView;
 
@@ -65,6 +68,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         playPause = (ImageView) findViewById(R.id.play_pause);
         flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
+        newsProgress = (TextView) findViewById(R.id.news_progress);
+        videoProgress = (TextView) findViewById(R.id.video_progress);
 
         ImageManager imageManager = ImageManager.getInstance();
         imageManager.init(this,
@@ -171,6 +176,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             case MENU_ID_NEWS:
                 if (newsFirstStart) {
                     RssParseTask task = new RssParseTask(this, mNewsAdapter);
+                    task.setProgressable(this);
                     task.execute(getString(R.string.news_url));
                     newsFirstStart = false;
                 }
@@ -194,6 +200,34 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         NewsDialog dialog = new NewsDialog(this, mNewsAdapter.getItem(i));
         dialog.show();
+    }
+
+    @Override
+    public void taskStarted() {
+        switch (flipper.getDisplayedChild()) {
+            case MENU_ID_NEWS:
+                newsProgress.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fading));
+                newsProgress.setVisibility(View.VISIBLE);
+                break;
+            case MENU_ID_VIDEO:
+                videoProgress.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fading));
+                videoProgress.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    @Override
+    public void taskComplete() {
+        switch (flipper.getDisplayedChild()) {
+            case MENU_ID_NEWS:
+                newsProgress.setAnimation(null);
+                newsProgress.setVisibility(View.GONE);
+                break;
+            case MENU_ID_VIDEO:
+                videoProgress.setAnimation(null);
+                videoProgress.setVisibility(View.GONE);
+                break;
+        }
     }
 
     private class GrindReceiver extends BroadcastReceiver {

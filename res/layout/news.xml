@@ -10,4 +10,12 @@
               android:scrollbars="none"
               android:id="@+id/newsList"/>
 
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerInParent="true"
+              android:textSize="30dp"
+              android:textStyle="bold"
+              android:id="@+id/news_progress"
+              android:text="@string/loading"/>
+
 </RelativeLayout>

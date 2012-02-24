@@ -1,11 +1,10 @@
 package com.dsvoronin.grindfm.task;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.Progressable;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.model.Video;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
@@ -18,7 +17,8 @@ public class VideoTask extends AsyncTask<String, Void, ArrayList<Video>> {
 
     private Activity mContext;
     private VideoAdapter mAdapter;
-    private ProgressDialog progressDialog;
+
+    private Progressable progressable;
 
     public VideoTask(Activity context, VideoAdapter adapter) {
         mContext = context;
@@ -27,9 +27,9 @@ public class VideoTask extends AsyncTask<String, Void, ArrayList<Video>> {
 
     @Override
     protected void onPreExecute() {
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setMessage(mContext.getString(R.string.loading));
-        progressDialog.show();
+        if (progressable != null) {
+            progressable.taskStarted();
+        }
     }
 
     @Override
@@ -45,12 +45,18 @@ public class VideoTask extends AsyncTask<String, Void, ArrayList<Video>> {
 
     @Override
     protected void onPostExecute(ArrayList<Video> videos) {
-        progressDialog.dismiss();
+        if (progressable != null) {
+            progressable.taskComplete();
+        }
         if (videos.size() > 0) {
             mAdapter.replaceContent(videos);
             mAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(mContext, "Не удалось загрузить новости", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void setProgressable(Progressable progressable) {
+        this.progressable = progressable;
     }
 }

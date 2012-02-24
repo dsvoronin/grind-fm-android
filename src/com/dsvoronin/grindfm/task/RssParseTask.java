@@ -1,11 +1,10 @@
 package com.dsvoronin.grindfm.task;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.Progressable;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.model.NewsItem;
 import com.dsvoronin.grindfm.util.SaxFeedParser;
@@ -18,7 +17,8 @@ public class RssParseTask extends AsyncTask<String, Void, ArrayList<NewsItem>> {
 
     private Activity mContext;
     private NewsAdapter mAdapter;
-    private ProgressDialog progressDialog;
+
+    private Progressable progressable;
 
     public RssParseTask(Activity context, NewsAdapter adapter) {
         mContext = context;
@@ -27,9 +27,9 @@ public class RssParseTask extends AsyncTask<String, Void, ArrayList<NewsItem>> {
 
     @Override
     protected void onPreExecute() {
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setMessage(mContext.getString(R.string.loading));
-        progressDialog.show();
+        if (progressable != null) {
+            progressable.taskStarted();
+        }
     }
 
     @Override
@@ -45,12 +45,18 @@ public class RssParseTask extends AsyncTask<String, Void, ArrayList<NewsItem>> {
 
     @Override
     protected void onPostExecute(ArrayList<NewsItem> messages) {
-        progressDialog.dismiss();
+        if (progressable != null) {
+            progressable.taskComplete();
+        }
         if (messages.size() > 0) {
             mAdapter.replaceContent(messages);
             mAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(mContext, "Не удалось загрузить новости", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void setProgressable(Progressable progressable) {
+        this.progressable = progressable;
     }
 }
