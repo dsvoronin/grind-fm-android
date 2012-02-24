@@ -12,10 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.*;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
@@ -54,6 +51,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private NewsAdapter mNewsAdapter;
     private VideoAdapter mVideoAdapter;
 
+    private TextView headerRunningString;
+
     private WebView vkontakteWebView;
 
     private NotificationManager notificationManager;
@@ -79,6 +78,9 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 return true;
             }
         });
+
+        headerRunningString = (TextView) findViewById(R.id.header_running_string);
+        headerRunningString.setSelected(true);
 
         mNewsAdapter = new NewsAdapter(this);
         newsList = (ListView) findViewById(R.id.newsList);

@@ -15,21 +15,41 @@
         <RelativeLayout android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:padding="20dp">
+                        android:layout_centerHorizontal="true">
 
-            d
-            <Button android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:visibility="gone"
-                    android:id="@+id/button"/>
+            <ImageView android:layout_width="65dp"
+                       android:layout_height="65dp"
+                       android:src="@drawable/cat"/>
 
-            <ProgressBar android:layout_width="30dp"
-                         android:layout_height="30dp"
-                         android:id="@+id/progressbar"
-                         style="@android:style/Widget.ProgressBar.Large"/>
+            <RelativeLayout android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="20dp">
+
+                <Button android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:visibility="gone"
+                        android:id="@+id/button"/>
+
+                <ProgressBar android:layout_width="30dp"
+                             android:layout_height="30dp"
+                             android:id="@+id/progressbar"
+                             style="@android:style/Widget.ProgressBar.Large"/>
+
+            </RelativeLayout>
 
         </RelativeLayout>
+
+        <TextView android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/header_running_string"
+                  android:textSize="16dp"
+                  android:textColor="@android:color/white"
+                  android:layout_margin="25dp"
+                  android:ellipsize="marquee"
+                  android:text="@string/radio_loading"
+                  android:marqueeRepeatLimit="marquee_forever"
+                  android:scrollHorizontally="true">
+        </TextView>
 
     </LinearLayout>
 

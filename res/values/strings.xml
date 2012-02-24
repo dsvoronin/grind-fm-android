@@ -9,6 +9,8 @@
 
     <string name="loading">Загрузка...</string>
 
+    <string name="radio_loading">sadsadasdasdsadasddadasdsadasdasdasdasdadasdssa</string>
+
     <string name="radio_stream_url_ogg">http://radio.goha.ru:8000/grindfm.ogg</string>
     <string name="news_url">http://www.grind.fm/rss.xml</string>
     <string name="vkontakte_url">http://m.vk.com/club10770176</string>
