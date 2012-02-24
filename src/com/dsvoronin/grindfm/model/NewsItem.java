@@ -1,16 +1,13 @@
 package com.dsvoronin.grindfm.model;
 
+import com.dsvoronin.grindfm.util.StringUtil;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 public class NewsItem implements Comparable<NewsItem> {
 
-    private static SimpleDateFormat PARSER = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
-    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMMM yyyy");
 
     private String title;
     private URL link;
@@ -47,18 +44,14 @@ public class NewsItem implements Comparable<NewsItem> {
     }
 
     public String getDate() {
-        return FORMATTER.format(this.date);
+        return StringUtil.formatDate(date);
     }
 
     public void setDate(String date) {
         while (!date.endsWith("00")) {
             date += "0";
         }
-        try {
-            this.date = PARSER.parse(date.trim());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        this.date = StringUtil.parseDate(date);
     }
 
     public NewsItem copy() {

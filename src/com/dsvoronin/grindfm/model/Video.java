@@ -1,12 +1,16 @@
 package com.dsvoronin.grindfm.model;
 
+import com.dsvoronin.grindfm.util.StringUtil;
+
+import java.util.Date;
+
 public class Video {
 
     private String url;
 
     private String thumb;
 
-    private String date;
+    private Date date;
 
     private String title;
 
@@ -30,11 +34,11 @@ public class Video {
     }
 
     public String getDate() {
-        return date;
+        return StringUtil.formatDate(date);
     }
 
     public void setDate(String date) {
-        this.date = date;
+        this.date = StringUtil.parseDate(date);
     }
 
     public String getTitle() {

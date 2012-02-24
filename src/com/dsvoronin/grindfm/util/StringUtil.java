@@ -2,10 +2,31 @@ package com.dsvoronin.grindfm.util;
 
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtil {
+
+    private static SimpleDateFormat PARSER_GRIND = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+    private static SimpleDateFormat PARSER_YOUTUBE = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+
+    private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMMM yyyy");
+
+    public static String formatDate(Date date) {
+        return FORMATTER.format(date);
+    }
+
+    public static Date parseDate(String rawDate) {
+        try {
+            return PARSER_GRIND.parse(rawDate);
+        } catch (ParseException e) {
+            return new Date();
+        }
+    }
 
     public static String getImage(String description) {
         String imgRegex = "<img[^>]+src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>";
