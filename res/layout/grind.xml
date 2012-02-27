@@ -47,7 +47,7 @@
                   android:id="@+id/header_running_string"
                   android:textSize="16dp"
                   android:textColor="@android:color/white"
-                  android:layout_margin="22dp"
+                  android:layout_marginTop="22dp"
                   android:ellipsize="marquee"
                   android:text="@string/radio_loading"
                   android:marqueeRepeatLimit="marquee_forever"

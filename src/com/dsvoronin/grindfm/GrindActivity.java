@@ -1,6 +1,7 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -78,6 +79,9 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         IntentFilter filter = new IntentFilter(getString(R.string.service_intent));
         grindReceiver = new GrindReceiver();
         registerReceiver(grindReceiver, filter);
+        if (isMyServiceRunning()) {
+            setState(MEDIA_PLAYING);
+        }
         super.onResume();
     }
 
@@ -89,22 +93,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     @SuppressWarnings("unused")
     public void onRadioClick(View view) {
-        switch (state) {
-            case MEDIA_NOT_READY:
-                break;
-            case MEDIA_READY:
-                Intent intent = new Intent(this, GrindService.class);
-                startService(intent);
-                playPause.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                state = MEDIA_NOT_READY;
-                break;
-            case MEDIA_PLAYING:
-                stopService(new Intent(this, GrindService.class));
-                playPause.setImageResource(android.R.drawable.ic_media_play);
-                state = MEDIA_READY;
-                break;
-        }
+        setState(state);
     }
 
     @SuppressWarnings("unused")
@@ -178,6 +167,35 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
         newsProgress = (TextView) findViewById(R.id.news_progress);
         videoProgress = (TextView) findViewById(R.id.video_progress);
+    }
+
+    public void setState(int state) {
+        switch (state) {
+            case MEDIA_NOT_READY:
+                break;
+            case MEDIA_READY:
+                Intent intent = new Intent(this, GrindService.class);
+                startService(intent);
+                playPause.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                state = MEDIA_NOT_READY;
+                break;
+            case MEDIA_PLAYING:
+                stopService(new Intent(this, GrindService.class));
+                playPause.setImageResource(android.R.drawable.ic_media_play);
+                state = MEDIA_READY;
+                break;
+        }
+    }
+
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (GrindService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class GrindReceiver extends BroadcastReceiver {
