@@ -57,7 +57,7 @@
     </LinearLayout>
 
     <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="70dp"
+                  android:layout_height="80dp"
                   android:id="@+id/footer"
                   android:background="@drawable/listmenu_gradient"
                   android:layout_alignParentBottom="true"
@@ -66,36 +66,38 @@
         <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                                android:layout_weight="1"
                                                android:layout_height="fill_parent"
-                                               android:onClick="toRadio"
-                                               grind:image="@drawable/ic_menu_signal"
+                                               android:id="@+id/menu_radio"
+                                               grind:image="@drawable/menu_radio_selector"
                                                grind:label="@string/menu_radio"/>
 
         <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                                android:layout_weight="1"
                                                android:layout_height="fill_parent"
-                                               android:onClick="toNews"
-                                               grind:image="@drawable/ic_menu_feed"
+                                               android:id="@+id/menu_news"
+                                               grind:image="@drawable/menu_news_selector"
                                                grind:label="@string/menu_news"/>
 
         <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                                android:layout_weight="1"
                                                android:layout_height="fill_parent"
-                                               android:onClick="toVideo"
-                                               grind:image="@drawable/ic_menu_movie"
+                                               android:id="@+id/menu_video"
+                                               grind:image="@drawable/menu_youtube_selector"
                                                grind:label="@string/menu_video"/>
 
         <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                                android:layout_weight="1"
                                                android:layout_height="fill_parent"
                                                android:onClick="toVkontakte"
-                                               grind:image="@drawable/ic_menu_love"
+                                               android:id="@+id/menu_vk"
+                                               grind:image="@drawable/menu_vk_selector"
                                                grind:label="@string/menu_vk"/>
 
         <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                                android:layout_weight="1"
+                                               android:id="@+id/menu_schedule"
                                                android:layout_height="fill_parent"
-                                               grind:image="@drawable/ic_menu_signal"
-                                               grind:label="@string/menu_radio"/>
+                                               grind:image="@drawable/menu_schedule_selector"
+                                               grind:label="@string/menu_schedule"/>
 
     </LinearLayout>
 
@@ -109,6 +111,7 @@
         <include android:id="@+id/news" layout="@layout/news"/>
         <include android:id="@+id/video" layout="@layout/video"/>
         <include android:id="@+id/vkontakte" layout="@layout/vkontakte"/>
+        <include android:id="@+id/schedule" layout="@layout/schedule"/>
 
     </com.dsvoronin.grindfm.view.GesturableViewFlipper>
 

@@ -1,4 +1,4 @@
 <resources>
-    <color name="menu_text_selected">#ffeff5f5</color>
-    <color name="menu_text">#ff37918d</color>
+    <color name="menu_text_selected">#c5f9f9</color>
+    <color name="menu_text">#ffffff</color>
 </resources>

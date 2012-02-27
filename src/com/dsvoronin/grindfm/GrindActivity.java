@@ -19,17 +19,35 @@ import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
+import com.dsvoronin.grindfm.view.MenuButton;
 
-public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener {
+import java.util.HashMap;
+import java.util.Map;
+
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, MenuButton.Pickable {
 
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
     private static final int MENU_ID_VIDEO = 2;
     private static final int MENU_ID_VKONTAKTE = 3;
+    private static final int MENU_ID_SCHEDULE = 4;
 
     private static final int MEDIA_NOT_READY = 0;
     private static final int MEDIA_READY = 1;
     private static final int MEDIA_PLAYING = 2;
+
+    public static final String MSG = "MESSAGE";
+    public static final int UPDATE = 0;
+    public static final int STOP = 1;
+    public static final int START = 2;
+    public static final int SPIN = 3;
+    public static final int STOPSPIN = 4;
+    public static final int TROUBLEWITHAUDIO = 5;
+    public static final int RAISEPRIORITY = 6;
+    public static final int CHECKRIORITY = 7;
+    public static final int LOWERPRIORITY = 8;
+    public static final int RESETPLAYSTATUS = 9;
+    public static final int TROUBLEWITHRSSFEED = 10;
 
     private int state = MEDIA_READY;
 
@@ -51,12 +69,18 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     private GrindReceiver grindReceiver;
 
+    private IStreamingMediaPlayer.Stub streamerBinder = null;
+
+    private Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
         initViews();
+
+        menuButtons.get(0).performClick();
 
         vkontakteWebView.setWebViewClient(new VkontakteWebViewClient());
 
@@ -96,26 +120,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         setState(state);
     }
 
-    @SuppressWarnings("unused")
-    public void toRadio(View view) {
-        onSwitch(MENU_ID_RADIO);
-    }
-
-    @SuppressWarnings("unused")
-    public void toNews(View view) {
-        onSwitch(MENU_ID_NEWS);
-    }
-
-    @SuppressWarnings("unused")
-    public void toVideo(View view) {
-        onSwitch(MENU_ID_VIDEO);
-    }
-
-    @SuppressWarnings("unused")
-    public void toVkontakte(View view) {
-        onSwitch(MENU_ID_VKONTAKTE);
-    }
-
     @Override
     public void onSwitch(int childId) {
         if (flipper.getDisplayedChild() > childId) {
@@ -130,31 +134,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             //do nothing
         }
 
-        switch (flipper.getDisplayedChild()) {
-            case MENU_ID_RADIO:
-                break;
-            case MENU_ID_NEWS:
-                if (newsFirstStart) {
-                    RssParseTask task = new RssParseTask(this, mNewsAdapter);
-                    task.setProgress(newsProgress);
-                    task.execute(getString(R.string.news_url));
-                    newsFirstStart = false;
-                }
-                break;
-            case MENU_ID_VIDEO:
-                if (videoFirstStart) {
-                    VideoTask task = new VideoTask(this, mVideoAdapter);
-                    task.setProgress(videoProgress);
-                    task.execute(getString(R.string.youtube_playlist_postrelushka));
-                    videoFirstStart = false;
-                }
-                break;
-            case MENU_ID_VKONTAKTE:
-                vkontakteWebView.loadUrl(getString(R.string.vkontakte_url));
-                vkontakteWebView.requestFocus(View.FOCUS_DOWN);
-                break;
-
-        }
+//        menuButtons.get(childId).performClick();
     }
 
     private void initViews() {
@@ -167,6 +147,65 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
         newsProgress = (TextView) findViewById(R.id.news_progress);
         videoProgress = (TextView) findViewById(R.id.video_progress);
+
+        MenuButton radioButton = (MenuButton) findViewById(R.id.menu_radio);
+        radioButton.setOnPickListener(new MenuButton.OnPickListener() {
+            @Override
+            public void onPick() {
+                onSwitch(MENU_ID_RADIO);
+            }
+        });
+        menuButtons.put(MENU_ID_RADIO, radioButton);
+
+        MenuButton newsButton = (MenuButton) findViewById(R.id.menu_news);
+        newsButton.setOnPickListener(new MenuButton.OnPickListener() {
+            @Override
+            public void onPick() {
+                if (newsFirstStart) {
+                    RssParseTask task = new RssParseTask(GrindActivity.this, mNewsAdapter);
+                    task.setProgress(newsProgress);
+                    task.execute(getString(R.string.news_url));
+                    newsFirstStart = false;
+                }
+                onSwitch(MENU_ID_NEWS);
+            }
+        });
+        menuButtons.put(MENU_ID_NEWS, newsButton);
+
+        MenuButton videoButton = (MenuButton) findViewById(R.id.menu_video);
+        videoButton.setOnPickListener(new MenuButton.OnPickListener() {
+            @Override
+            public void onPick() {
+                if (videoFirstStart) {
+                    VideoTask task = new VideoTask(GrindActivity.this, mVideoAdapter);
+                    task.setProgress(videoProgress);
+                    task.execute(getString(R.string.youtube_playlist_postrelushka));
+                    videoFirstStart = false;
+                }
+                onSwitch(MENU_ID_VIDEO);
+            }
+        });
+        menuButtons.put(MENU_ID_VIDEO, videoButton);
+
+        MenuButton vkButton = (MenuButton) findViewById(R.id.menu_vk);
+        vkButton.setOnPickListener(new MenuButton.OnPickListener() {
+            @Override
+            public void onPick() {
+                vkontakteWebView.loadUrl(getString(R.string.vkontakte_url));
+                vkontakteWebView.requestFocus(View.FOCUS_DOWN);
+                onSwitch(MENU_ID_VKONTAKTE);
+            }
+        });
+        menuButtons.put(MENU_ID_VKONTAKTE, vkButton);
+
+        MenuButton scheduleButton = (MenuButton) findViewById(R.id.menu_schedule);
+        scheduleButton.setOnPickListener(new MenuButton.OnPickListener() {
+            @Override
+            public void onPick() {
+                onSwitch(MENU_ID_SCHEDULE);
+            }
+        });
+        menuButtons.put(MENU_ID_SCHEDULE, scheduleButton);
     }
 
     public void setState(int state) {
@@ -198,6 +237,15 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         return false;
     }
 
+    @Override
+    public void pick(MenuButton pickedButton) {
+        for (MenuButton button : menuButtons.values()) {
+            if (!button.equals(pickedButton)) {
+                button.setUnpicked();
+            }
+        }
+    }
+
     private class GrindReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -212,6 +260,49 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             state = MEDIA_PLAYING;
         }
     }
+
+//    public Handler handler = new Handler() {
+//
+//        String TAG = "handleMessage";
+//
+//        @Override
+//        public void handleMessage(Message msg) {
+//            if (msg.what == GrindActivity.TROUBLEWITHAUDIO) {
+//                //Trouble with Audio downloading
+//                Log.d(TAG, "Send screen message about trouble with audio");
+//                Toast.makeText(maincontext, "Could not connect with Audio Stream", Toast.LENGTH_LONG).show();
+//                stopplayer();
+//
+//                Intent i = new Intent(Intent.ACTION_SEND);
+//                i.setType("text/plain");
+//                i.putExtra(Intent.EXTRA_STREAM, new File(maincontext.getCacheDir(), "log.txt").toURI());
+//                i.putExtra(Intent.EXTRA_SUBJECT, "myNPR Error");
+//                startActivity(Intent.createChooser(i, "Send Error Log..."));
+//
+//                stopplayer();
+//            }
+//        }
+//    };
+
+//    private void stopplayer() {
+//        String TAG = "stopplayer";
+//
+//        try {
+//            if (streamerBinder != null) {
+//                Log.d(TAG, "Tell player to stop");
+//                streamerBinder.stopAudio();
+//            }
+//        } catch (RemoteException e) {
+//            Log.e(TAG, e.toString());
+//        }
+//
+//        Log.d(TAG, "set status");
+//        setplaystatus(false);
+//
+//        Log.d(TAG, "Turn off notify");
+//        turnOffNotify();
+//    }
+
 
     private class VkontakteWebViewClient extends WebViewClient {
         @Override

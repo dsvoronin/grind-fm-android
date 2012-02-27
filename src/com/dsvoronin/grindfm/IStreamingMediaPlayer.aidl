@@ -1,5 +1,5 @@
 //AIDL file for StreamMediaPlayer
-package com.dsvoronin.grindfm.util;
+package com.dsvoronin.grindfm;
 
 // Interface for Streaming Player.
 interface IStreamingMediaPlayer {

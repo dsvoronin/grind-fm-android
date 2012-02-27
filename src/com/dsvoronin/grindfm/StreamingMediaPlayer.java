@@ -1,10 +1,5 @@
 package com.dsvoronin.grindfm;
 
-//package com.pocketjourney.media;
-//Code taken from below URL.
-//http://blog.pocketjourney.com/2008/04/04/tutorial-custom-media-streaming-for-androids-mediaplayer/
-//Good looking out!
-
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
@@ -17,19 +12,13 @@ import android.os.Process;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import com.dsvoronin.grindfm.util.IStreamingMediaPlayer;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Vector;
 
-/**
- * MediaPlayer does not yet support "Shoutcast"-like streaming from external URLs so this class provides a pseudo-streaming function
- * by downloading the content incrementally & playing as soon as we get enough audio in our temporary storage.
- */
 public class StreamingMediaPlayer extends Service {
 
     final static public String AUDIO_MPEG = "audio/mpeg";
@@ -38,7 +27,6 @@ public class StreamingMediaPlayer extends Service {
     final private int BIT = 8;
     final private int SECONDS = 30;
 
-
     private File downloadingMediaFile;
     final private String DOWNFILE = "downloadingMediaFile";
 
@@ -46,7 +34,6 @@ public class StreamingMediaPlayer extends Service {
     private Context context;
     private int counter;
     private int playedcounter;
-    //TODO should convert to Stack object instead of Vector
     private Vector<MediaPlayer> mediaplayers;
     private boolean started;
     private boolean processHasStarted;
@@ -67,12 +54,10 @@ public class StreamingMediaPlayer extends Service {
 
     boolean waitingForPlayer;
 
-    //Setup all the variables
     private void setupVars() {
         totalKbRead = 0;
         counter = 0;
         playedcounter = 0;
-        //TODO should convert to Stack object instead of Vector
         mediaplayers = new Vector<MediaPlayer>(3);
         started = false;
         processHasStarted = false;
@@ -111,7 +96,6 @@ public class StreamingMediaPlayer extends Service {
             }
         }
     };
-
 
     //This object will allow other processes to interact with our service
     private final IStreamingMediaPlayer.Stub ourBinder = new IStreamingMediaPlayer.Stub() {
@@ -240,6 +224,9 @@ public class StreamingMediaPlayer extends Service {
 
     /**
      * Progressivly download the media to a temporary location and update the MediaPlayer as new content becomes available.
+     *
+     * @param mediaUrl url
+     * @throws java.io.IOException ioe
      */
     public void startStreaming(final String mediaUrl) throws IOException {
 
@@ -254,7 +241,7 @@ public class StreamingMediaPlayer extends Service {
 
         try {
             url = new URL(mediaUrl);
-            urlConn = (HttpURLConnection) url.openConnection();
+            urlConn = url.openConnection();
             urlConn.setReadTimeout(1000 * 20);
             urlConn.setConnectTimeout(1000 * 5);
 
@@ -272,7 +259,7 @@ public class StreamingMediaPlayer extends Service {
                 String temp = urlConn.getHeaderField(BITERATE_HEADER);
                 Log.d(TAG, "Bitrate: " + temp);
                 if (temp != null) {
-                    bitrate = new Integer(temp).intValue();
+                    bitrate = new Integer(temp);
                 }
             } else {
                 Log.e(TAG, "Does not look like we can play this audio type: " + ctype);
@@ -650,7 +637,7 @@ public class StreamingMediaPlayer extends Service {
 
         stopping = true;
 
-        if (regularStream == true) {
+        if (regularStream) {
 //            sendMessage(PlayListTab.RESETPLAYSTATUS);
         }
 
