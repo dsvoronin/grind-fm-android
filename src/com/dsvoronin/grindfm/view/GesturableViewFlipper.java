@@ -51,14 +51,14 @@ public class GesturableViewFlipper extends ViewFlipper implements GestureDetecto
             // right to left swipe
             if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                 this.setOutAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.out_to_left));
-                this.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.in_from_left));
+                this.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.in_from_right));
                 this.showNext();
                 onSwitchListener.onSwitch(getDisplayedChild());
                 return true;
 
             } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                 this.setOutAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.out_to_right));
-                this.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.in_from_right));
+                this.setInAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.in_from_left));
                 this.showPrevious();
                 onSwitchListener.onSwitch(getDisplayedChild());
                 return true;

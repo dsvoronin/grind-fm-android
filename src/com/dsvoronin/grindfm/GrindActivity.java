@@ -122,6 +122,10 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     @Override
     public void onSwitch(int childId) {
+        menuButtons.get(childId).performClick();
+    }
+
+    private void performSwitch(int childId) {
         if (flipper.getDisplayedChild() > childId) {
             flipper.setInAnimation(GrindActivity.this, R.anim.in_from_left);
             flipper.setOutAnimation(GrindActivity.this, R.anim.out_to_right);
@@ -133,8 +137,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         } else {
             //do nothing
         }
-
-//        menuButtons.get(childId).performClick();
     }
 
     private void initViews() {
@@ -152,7 +154,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         radioButton.setOnPickListener(new MenuButton.OnPickListener() {
             @Override
             public void onPick() {
-                onSwitch(MENU_ID_RADIO);
+                performSwitch(MENU_ID_RADIO);
             }
         });
         menuButtons.put(MENU_ID_RADIO, radioButton);
@@ -167,7 +169,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                     task.execute(getString(R.string.news_url));
                     newsFirstStart = false;
                 }
-                onSwitch(MENU_ID_NEWS);
+                performSwitch(MENU_ID_NEWS);
             }
         });
         menuButtons.put(MENU_ID_NEWS, newsButton);
@@ -182,7 +184,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                     task.execute(getString(R.string.youtube_playlist_postrelushka));
                     videoFirstStart = false;
                 }
-                onSwitch(MENU_ID_VIDEO);
+                performSwitch(MENU_ID_VIDEO);
             }
         });
         menuButtons.put(MENU_ID_VIDEO, videoButton);
@@ -193,7 +195,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             public void onPick() {
                 vkontakteWebView.loadUrl(getString(R.string.vkontakte_url));
                 vkontakteWebView.requestFocus(View.FOCUS_DOWN);
-                onSwitch(MENU_ID_VKONTAKTE);
+                performSwitch(MENU_ID_VKONTAKTE);
             }
         });
         menuButtons.put(MENU_ID_VKONTAKTE, vkButton);
@@ -202,7 +204,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         scheduleButton.setOnPickListener(new MenuButton.OnPickListener() {
             @Override
             public void onPick() {
-                onSwitch(MENU_ID_SCHEDULE);
+                performSwitch(MENU_ID_SCHEDULE);
             }
         });
         menuButtons.put(MENU_ID_SCHEDULE, scheduleButton);

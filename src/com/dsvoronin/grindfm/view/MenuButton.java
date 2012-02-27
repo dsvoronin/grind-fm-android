@@ -47,12 +47,10 @@ public class MenuButton extends RelativeLayout {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 image.setSelected(true);
                 label.setTextColor(getContext().getResources().getColor(R.color.menu_text_selected));
                 pickable.pick(MenuButton.this);
                 onPickListener.onPick();
-
             }
         });
     }
