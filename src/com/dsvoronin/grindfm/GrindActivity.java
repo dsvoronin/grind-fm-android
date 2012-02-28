@@ -68,7 +68,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         setContentView(R.layout.grind);
         initViews();
 
-        startStreamingAudio();
+//        startStreamingAudio();
 
         menuButtons.get(0).performClick();
 
@@ -210,17 +210,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 playPause.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 state = MEDIA_NOT_READY;
-
-
-                if (audioStreamer.getMediaPlayer().isPlaying()) {
-                    audioStreamer.getMediaPlayer().pause();
-                    playPause.setImageResource(android.R.drawable.ic_media_play);
-                } else {
-                    audioStreamer.getMediaPlayer().start();
-                    audioStreamer.startPlayProgressUpdater();
-                    playPause.setImageResource(android.R.drawable.ic_media_pause);
-                }
-
                 break;
             case MEDIA_PLAYING:
 //                stopService(new Intent(this, GrindService.class));
@@ -292,11 +281,11 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private void startStreamingAudio() {
         try {
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-            if (audioStreamer != null) {
-                audioStreamer.interrupt();
-            }
+//            if (audioStreamer != null) {
+//                audioStreamer.interrupt();
+//            }
             audioStreamer = new StreamingMediaPlayer(this, headerRunningString, playPause, progressBar);
-            audioStreamer.startStreaming(getString(R.string.radio_stream_url_ogg), 5208, 216);
+            audioStreamer.startStreaming(getString(R.string.radio_stream_url_ogg));
             playPause.setEnabled(false);
         } catch (IOException e) {
             Log.e(getClass().getName(), "Error starting to stream audio.", e);
