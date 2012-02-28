@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -17,10 +18,12 @@ import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
+import com.dsvoronin.grindfm.util.StreamingMediaPlayer;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 import com.dsvoronin.grindfm.view.MenuButton;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,19 +38,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MEDIA_NOT_READY = 0;
     private static final int MEDIA_READY = 1;
     private static final int MEDIA_PLAYING = 2;
-
-    public static final String MSG = "MESSAGE";
-    public static final int UPDATE = 0;
-    public static final int STOP = 1;
-    public static final int START = 2;
-    public static final int SPIN = 3;
-    public static final int STOPSPIN = 4;
-    public static final int TROUBLEWITHAUDIO = 5;
-    public static final int RAISEPRIORITY = 6;
-    public static final int CHECKRIORITY = 7;
-    public static final int LOWERPRIORITY = 8;
-    public static final int RESETPLAYSTATUS = 9;
-    public static final int TROUBLEWITHRSSFEED = 10;
 
     private int state = MEDIA_READY;
 
@@ -69,8 +59,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     private GrindReceiver grindReceiver;
 
-    private IStreamingMediaPlayer.Stub streamerBinder = null;
-
     private Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
 
     @Override
@@ -79,6 +67,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
         initViews();
+
+        startStreamingAudio();
 
         menuButtons.get(0).performClick();
 
@@ -215,14 +205,25 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             case MEDIA_NOT_READY:
                 break;
             case MEDIA_READY:
-                Intent intent = new Intent(this, GrindService.class);
-                startService(intent);
+//                Intent intent = new Intent(this, GrindService.class);
+//                startService(intent);
                 playPause.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 state = MEDIA_NOT_READY;
+
+
+                if (audioStreamer.getMediaPlayer().isPlaying()) {
+                    audioStreamer.getMediaPlayer().pause();
+                    playPause.setImageResource(android.R.drawable.ic_media_play);
+                } else {
+                    audioStreamer.getMediaPlayer().start();
+                    audioStreamer.startPlayProgressUpdater();
+                    playPause.setImageResource(android.R.drawable.ic_media_pause);
+                }
+
                 break;
             case MEDIA_PLAYING:
-                stopService(new Intent(this, GrindService.class));
+//                stopService(new Intent(this, GrindService.class));
                 playPause.setImageResource(android.R.drawable.ic_media_play);
                 state = MEDIA_READY;
                 break;
@@ -263,49 +264,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         }
     }
 
-//    public Handler handler = new Handler() {
-//
-//        String TAG = "handleMessage";
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            if (msg.what == GrindActivity.TROUBLEWITHAUDIO) {
-//                //Trouble with Audio downloading
-//                Log.d(TAG, "Send screen message about trouble with audio");
-//                Toast.makeText(maincontext, "Could not connect with Audio Stream", Toast.LENGTH_LONG).show();
-//                stopplayer();
-//
-//                Intent i = new Intent(Intent.ACTION_SEND);
-//                i.setType("text/plain");
-//                i.putExtra(Intent.EXTRA_STREAM, new File(maincontext.getCacheDir(), "log.txt").toURI());
-//                i.putExtra(Intent.EXTRA_SUBJECT, "myNPR Error");
-//                startActivity(Intent.createChooser(i, "Send Error Log..."));
-//
-//                stopplayer();
-//            }
-//        }
-//    };
-
-//    private void stopplayer() {
-//        String TAG = "stopplayer";
-//
-//        try {
-//            if (streamerBinder != null) {
-//                Log.d(TAG, "Tell player to stop");
-//                streamerBinder.stopAudio();
-//            }
-//        } catch (RemoteException e) {
-//            Log.e(TAG, e.toString());
-//        }
-//
-//        Log.d(TAG, "set status");
-//        setplaystatus(false);
-//
-//        Log.d(TAG, "Turn off notify");
-//        turnOffNotify();
-//    }
-
-
     private class VkontakteWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -328,4 +286,21 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             dialog.show();
         }
     };
+
+    private StreamingMediaPlayer audioStreamer;
+
+    private void startStreamingAudio() {
+        try {
+            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+            if (audioStreamer != null) {
+                audioStreamer.interrupt();
+            }
+            audioStreamer = new StreamingMediaPlayer(this, headerRunningString, playPause, progressBar);
+            audioStreamer.startStreaming(getString(R.string.radio_stream_url_ogg), 5208, 216);
+            playPause.setEnabled(false);
+        } catch (IOException e) {
+            Log.e(getClass().getName(), "Error starting to stream audio.", e);
+        }
+
+    }
 }
