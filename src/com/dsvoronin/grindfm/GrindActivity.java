@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -18,12 +17,10 @@ import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
-import com.dsvoronin.grindfm.util.StreamingMediaPlayer;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 import com.dsvoronin.grindfm.view.MenuButton;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,8 +64,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.grind);
         initViews();
-
-//        startStreamingAudio();
 
         menuButtons.get(0).performClick();
 
@@ -205,14 +200,14 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             case MEDIA_NOT_READY:
                 break;
             case MEDIA_READY:
-//                Intent intent = new Intent(this, GrindService.class);
-//                startService(intent);
+                Intent intent = new Intent(this, GrindService.class);
+                startService(intent);
                 playPause.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 state = MEDIA_NOT_READY;
                 break;
             case MEDIA_PLAYING:
-//                stopService(new Intent(this, GrindService.class));
+                stopService(new Intent(this, GrindService.class));
                 playPause.setImageResource(android.R.drawable.ic_media_play);
                 state = MEDIA_READY;
                 break;
@@ -275,21 +270,4 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             dialog.show();
         }
     };
-
-    private StreamingMediaPlayer audioStreamer;
-
-    private void startStreamingAudio() {
-        try {
-            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-//            if (audioStreamer != null) {
-//                audioStreamer.interrupt();
-//            }
-            audioStreamer = new StreamingMediaPlayer(this, headerRunningString, playPause, progressBar);
-            audioStreamer.startStreaming(getString(R.string.radio_stream_url_ogg));
-            playPause.setEnabled(false);
-        } catch (IOException e) {
-            Log.e(getClass().getName(), "Error starting to stream audio.", e);
-        }
-
-    }
 }

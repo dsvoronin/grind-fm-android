@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import net.moraleboost.streamscraper.ScrapeException;
 import net.moraleboost.streamscraper.Scraper;
@@ -44,15 +46,34 @@ public class GrindService extends Service {
 
         try {
             player = new MediaPlayer();
-            player.setLooping(true);
-            player.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_ogg)));
+            player.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_mp3)));
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
+
+                    TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                    tm.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+
                     player.start();
 
                     String info = getInfo();
 
+                    announceNewSong(info);
+                    showNotification(info);
+                }
+            });
+            player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    Log.e(TAG, "ERROR!");
+                    stopSelf();
+                    return false;
+                }
+            });
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    String info = getInfo();
                     announceNewSong(info);
                     showNotification(info);
                 }
@@ -62,14 +83,35 @@ public class GrindService extends Service {
             Log.e(TAG, "Error while loading url", e);
             onDestroy();
         }
+
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         notificationManager.cancel(NOTIFICATION_ID);
-        player.stop();
+        player.release();
     }
+
+    final PhoneStateListener phoneListener = new PhoneStateListener() {
+        public void onCallStateChanged(int state, String incomingNumber) {
+            String TAG = "PhoneStateListener";
+
+            switch (state) {
+                case TelephonyManager.CALL_STATE_RINGING:
+                    Log.d(TAG, "Someone's calling. Stop playback");
+                    player.stop();
+                    break;
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE:
+                    player.start();
+                    break;
+                default:
+                    Log.d(TAG, "Unknown phone state = " + state);
+            }
+        }
+    };
 
     private void showNotification(String info) {
         String appName = getString(R.string.app_name);

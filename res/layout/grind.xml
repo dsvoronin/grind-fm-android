@@ -51,8 +51,7 @@
                   android:ellipsize="marquee"
                   android:text="@string/radio_loading"
                   android:marqueeRepeatLimit="marquee_forever"
-                  android:scrollHorizontally="true">
-        </TextView>
+                  android:scrollHorizontally="true"/>
 
     </LinearLayout>
 
