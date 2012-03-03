@@ -15,7 +15,7 @@
         <RelativeLayout android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
-                        android:onClick="onRadioClick"
+                        android:id="@+id/radio_contol"
                         android:layout_centerHorizontal="true">
 
             <ImageView android:layout_width="65dp"

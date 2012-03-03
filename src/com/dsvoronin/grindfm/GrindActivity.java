@@ -32,12 +32,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MENU_ID_VKONTAKTE = 3;
     private static final int MENU_ID_SCHEDULE = 4;
 
-    private static final int MEDIA_NOT_READY = 0;
-    private static final int MEDIA_READY = 1;
-    private static final int MEDIA_PLAYING = 2;
-
-    private int state = MEDIA_READY;
-
     private boolean newsFirstStart = true;
     private boolean videoFirstStart = true;
 
@@ -50,6 +44,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private TextView videoProgress;
     private TextView headerRunningString;
     private WebView vkontakteWebView;
+    private RelativeLayout radioControl;
 
     private NewsAdapter mNewsAdapter;
     private VideoAdapter mVideoAdapter;
@@ -81,16 +76,14 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         videoList.setOnItemClickListener(onVideoItemClickListener);
 
         flipper.setOnSwitchListener(this);
+
+        initStream();
     }
 
     @Override
     protected void onResume() {
-        IntentFilter filter = new IntentFilter(getString(R.string.service_intent));
         grindReceiver = new GrindReceiver();
-        registerReceiver(grindReceiver, filter);
-        if (isMyServiceRunning()) {
-            setState(MEDIA_PLAYING);
-        }
+        registerReceiver(grindReceiver, new IntentFilter(getString(R.string.service_intent)));
         super.onResume();
     }
 
@@ -98,11 +91,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     protected void onPause() {
         unregisterReceiver(grindReceiver);
         super.onPause();
-    }
-
-    @SuppressWarnings("unused")
-    public void onRadioClick(View view) {
-        setState(state);
     }
 
     @Override
@@ -134,6 +122,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
         newsProgress = (TextView) findViewById(R.id.news_progress);
         videoProgress = (TextView) findViewById(R.id.video_progress);
+        radioControl = (RelativeLayout) findViewById(R.id.radio_contol);
 
         MenuButton radioButton = (MenuButton) findViewById(R.id.menu_radio);
         radioButton.setOnPickListener(new MenuButton.OnPickListener() {
@@ -195,34 +184,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         menuButtons.put(MENU_ID_SCHEDULE, scheduleButton);
     }
 
-    public void setState(int state) {
-        switch (state) {
-            case MEDIA_NOT_READY:
-                break;
-            case MEDIA_READY:
-                Intent intent = new Intent(this, GrindService.class);
-                startService(intent);
-                playPause.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                state = MEDIA_NOT_READY;
-                break;
-            case MEDIA_PLAYING:
-                stopService(new Intent(this, GrindService.class));
-                playPause.setImageResource(android.R.drawable.ic_media_play);
-                state = MEDIA_READY;
-                break;
-        }
-    }
-
-    private boolean isMyServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (GrindService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     public void pick(MenuButton pickedButton) {
@@ -238,14 +199,38 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         public void onReceive(Context context, Intent intent) {
             String info = intent.getStringExtra(getString(R.string.service_intent_info));
             headerRunningString.setText(info);
-
-            playPause.setImageResource(android.R.drawable.ic_media_pause);
-
-            playPause.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-
-            state = MEDIA_PLAYING;
+            startStream();
         }
+    }
+
+    private void initStream() {
+        playPause.setImageResource(android.R.drawable.ic_media_play);
+        radioControl.setOnClickListener(playClickListener);
+        playPause.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void prepareStream() {
+        radioControl.setOnClickListener(null);
+        playPause.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void startStream() {
+        radioControl.setOnClickListener(stopClickListener);
+        playPause.setImageResource(android.R.drawable.ic_media_pause);
+        playPause.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (GrindService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class VkontakteWebViewClient extends WebViewClient {
@@ -256,6 +241,9 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         }
     }
 
+    /**
+     * Отправляем линк на ютуб видео внешней программе
+     */
     private AdapterView.OnItemClickListener onVideoItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -263,11 +251,37 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         }
     };
 
+    /**
+     * Показываем диалог с текстом новости
+     */
     private AdapterView.OnItemClickListener onNewsItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             NewsDialog dialog = new NewsDialog(GrindActivity.this, mNewsAdapter.getItem(i));
             dialog.show();
+        }
+    };
+
+    /**
+     * Запускаем стрим по клику на плей
+     */
+    private View.OnClickListener playClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(GrindActivity.this, GrindService.class);
+            startService(intent);
+            prepareStream();
+        }
+    };
+
+    /**
+     * Останавливаем стрим по клику на паузу
+     */
+    private View.OnClickListener stopClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            stopService(new Intent(GrindActivity.this, GrindService.class));
+            initStream();
         }
     };
 }
