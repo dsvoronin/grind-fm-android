@@ -58,7 +58,7 @@ public class GrindService extends Service {
 
                     String info = getInfo();
 
-                    announceNewSong(info);
+                    sendMessage(info);
                     showNotification(info);
                 }
             });
@@ -70,14 +70,14 @@ public class GrindService extends Service {
                     return false;
                 }
             });
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            player.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
                 @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    String info = getInfo();
-                    announceNewSong(info);
-                    showNotification(info);
+                public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+                    Log.d(TAG, "BUFF");
                 }
             });
+
             player.prepareAsync();
         } catch (IOException e) {
             Log.e(TAG, "Error while loading url", e);
@@ -121,7 +121,7 @@ public class GrindService extends Service {
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
-    private void announceNewSong(String info) {
+    private void sendMessage(String info) {
         Intent intent = new Intent(getString(R.string.service_intent));
         intent.putExtra(getString(R.string.service_intent_info), info);
         sendBroadcast(intent);

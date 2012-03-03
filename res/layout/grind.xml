@@ -47,9 +47,10 @@
                   android:id="@+id/header_running_string"
                   android:textSize="16dp"
                   android:textColor="@android:color/white"
-                  android:layout_marginTop="22dp"
                   android:ellipsize="marquee"
                   android:text="@string/radio_loading"
+                  android:typeface="serif"
+                  android:layout_gravity="center"
                   android:marqueeRepeatLimit="marquee_forever"
                   android:scrollHorizontally="true"/>
 

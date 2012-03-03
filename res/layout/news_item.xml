@@ -13,24 +13,12 @@
               android:ellipsize="marquee"
               android:textStyle="bold"/>
 
-    <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="70dp">
-
-        <ImageView android:layout_width="0dp"
-                   android:layout_weight=".4"
-                   android:layout_height="fill_parent"
-                   android:layout_marginRight="5dp"
-                   android:id="@+id/news_image"/>
-
-        <TextView android:layout_width="0dp"
-                  android:layout_weight=".6"
-                  android:layout_height="fill_parent"
-                  android:singleLine="false"
-                  android:maxLines="4"
-                  android:ellipsize="marquee"
-                  android:id="@+id/news_lead"/>
-
-    </LinearLayout>
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:singleLine="false"
+              android:maxLines="5"
+              android:ellipsize="marquee"
+              android:id="@+id/news_lead"/>
 
     <TextView android:layout_width="fill_parent"
               android:layout_height="wrap_content"

@@ -2,6 +2,7 @@ package com.dsvoronin.grindfm.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class MenuButton extends RelativeLayout {
         TypedArray arr = getContext().obtainStyledAttributes(attrs, R.styleable.com_akzia_apps_mdp_view_MenuButton);
 
         label = (TextView) findViewById(R.id.menuButtonTitle);
+        label.setTypeface(Typeface.SERIF);
         int attrLabel = arr.getResourceId(R.styleable.com_akzia_apps_mdp_view_MenuButton_label, -1);
         if (attrLabel != -1) {
             label.setText(attrLabel);
