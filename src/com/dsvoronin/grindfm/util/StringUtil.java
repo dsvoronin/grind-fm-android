@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 public class StringUtil {
 
     private static SimpleDateFormat PARSER_GRIND = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
-    private static SimpleDateFormat PARSER_YOUTUBE = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 
     private static SimpleDateFormat FORMATTER = new SimpleDateFormat("d MMMM yyyy");
 
@@ -25,6 +24,21 @@ public class StringUtil {
             return PARSER_GRIND.parse(rawDate);
         } catch (ParseException e) {
             return new Date();
+        }
+    }
+
+    public static Date parseYoutubeDate(String rawDate) {
+        final String TAG = "StringUtil.parseYoutubeDate";
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.US);
+        String minusTimezone = rawDate.substring(0, rawDate.indexOf('.'));
+        String cleanSpecials = minusTimezone.replace('T', ' ');
+
+        try {
+            return sdf.parse(cleanSpecials);
+        } catch (ParseException pe) {
+            Log.e(TAG, "Error while parsing date: " + cleanSpecials + " with pattern: " + pattern, pe);
+            return null;
         }
     }
 

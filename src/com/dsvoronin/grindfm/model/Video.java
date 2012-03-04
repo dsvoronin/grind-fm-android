@@ -38,7 +38,7 @@ public class Video {
     }
 
     public void setDate(String date) {
-        this.date = StringUtil.parseDate(date);
+        this.date = StringUtil.parseYoutubeDate(date);
     }
 
     public String getTitle() {
