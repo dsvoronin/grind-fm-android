@@ -28,7 +28,7 @@ public class YouTubeUtil {
 
     public List<Video> getPlayList(String playlistId) throws JSONException, IOException {
 
-        StringBuilder url = new StringBuilder(YOUTUBE_API_LINK_PLAYLIST + playlistId + "?v=2&alt=jsonc");
+        StringBuilder url = new StringBuilder(YOUTUBE_API_LINK_PLAYLIST + playlistId + "?v=2&alt=jsonc&orderby=published");
 
         HttpClient client = new DefaultHttpClient();
         HttpGet get = new HttpGet(url.toString());
