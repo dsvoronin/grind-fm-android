@@ -29,7 +29,6 @@
                 <ImageView android:layout_width="30dp"
                            android:layout_height="30dp"
                            android:visibility="visible"
-                           android:src="@android:drawable/ic_media_play"
                            android:id="@+id/play_pause"/>
 
                 <ProgressBar android:layout_width="30dp"

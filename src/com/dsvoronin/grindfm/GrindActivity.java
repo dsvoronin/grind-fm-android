@@ -76,14 +76,19 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         videoList.setOnItemClickListener(onVideoItemClickListener);
 
         flipper.setOnSwitchListener(this);
-
-        initStream();
     }
 
     @Override
     protected void onResume() {
         grindReceiver = new GrindReceiver();
         registerReceiver(grindReceiver, new IntentFilter(getString(R.string.service_intent)));
+
+        if (!isMyServiceRunning()) {
+            initStream();
+        } else {
+            startStream();
+        }
+
         super.onResume();
     }
 

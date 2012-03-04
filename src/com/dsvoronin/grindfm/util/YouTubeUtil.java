@@ -37,8 +37,8 @@ public class YouTubeUtil {
         HttpEntity e = r.getEntity();
         String data = EntityUtils.toString(e);
         JSONObject json = new JSONObject(data);
-        JSONObject dataObject = json.getJSONObject("data"); // this is the "data": { } part
-        JSONArray items = dataObject.getJSONArray("items"); // this is the "items: [ ] part
+        JSONObject dataObject = json.getJSONObject("data");
+        JSONArray items = dataObject.getJSONArray("items");
 
         List<Video> result = new ArrayList<Video>();
 
