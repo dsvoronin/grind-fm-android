@@ -17,6 +17,7 @@
                    android:layout_height="wrap_content"
                    android:layout_gravity="center"
                    android:src="@drawable/grind_logo"/>
+
     </LinearLayout>
 
 </RelativeLayout>

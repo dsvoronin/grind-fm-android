@@ -32,14 +32,12 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MENU_ID_NEWS = 1;
     private static final int MENU_ID_VIDEO = 2;
     private static final int MENU_ID_VKONTAKTE = 3;
-    private static final int MENU_ID_SCHEDULE = 4;
 
     private Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
 
     //flags
     private boolean newsFirstStart = true;
     private boolean videoFirstStart = true;
-    private boolean calendarFirstStart = true;
 
     //control
     private ImageView playPause;
@@ -52,12 +50,13 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     //lists
     private ListView newsList;
     private ListView videoList;
-    private ListView calendarList;
 
     //progress
     private ImageView newsProgress;
     private ImageView videoProgress;
-    private ImageView calendarProgress;
+
+    private Button newsTryAgain;
+    private Button videoTryAgain;
 
     //header string
     private TextView headerRunningString;
@@ -153,6 +152,27 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         newsProgress = (ImageView) findViewById(R.id.news_progress);
         videoProgress = (ImageView) findViewById(R.id.video_progress);
 
+        newsTryAgain = (Button) findViewById(R.id.news_try_again);
+        newsTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RssParseTask task = new RssParseTask(GrindActivity.this, newsAdapter);
+                task.setProgress(newsProgress);
+                task.setTryAgain(newsTryAgain);
+                task.execute(getString(R.string.news_url));
+            }
+        });
+        videoTryAgain = (Button) findViewById(R.id.video_try_again);
+        videoTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                VideoTask task = new VideoTask(GrindActivity.this, videoAdapter);
+                task.setProgress(videoProgress);
+                task.setTryAgain(videoTryAgain);
+                task.execute(getString(R.string.youtube_playlist_postrelushka));
+            }
+        });
+
         radioControl = (RelativeLayout) findViewById(R.id.radio_contol);
 
         MenuButton radioButton = (MenuButton) findViewById(R.id.menu_radio);
@@ -171,6 +191,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 if (newsFirstStart) {
                     RssParseTask task = new RssParseTask(GrindActivity.this, newsAdapter);
                     task.setProgress(newsProgress);
+                    task.setTryAgain(newsTryAgain);
                     task.execute(getString(R.string.news_url));
                     newsFirstStart = false;
                 }
@@ -186,6 +207,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
                 if (videoFirstStart) {
                     VideoTask task = new VideoTask(GrindActivity.this, videoAdapter);
                     task.setProgress(videoProgress);
+                    task.setTryAgain(videoTryAgain);
                     task.execute(getString(R.string.youtube_playlist_postrelushka));
                     videoFirstStart = false;
                 }

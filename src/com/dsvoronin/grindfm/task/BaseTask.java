@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.adapter.BaseListAdapter;
@@ -18,6 +19,7 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
     private Context mContext;
     private BaseListAdapter mAdapter;
     private ImageView mProgress;
+    private Button tryAgain;
 
     public BaseTask(Context mContext, BaseListAdapter mAdapter) {
         this.mContext = mContext;
@@ -28,12 +30,19 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
         this.mProgress = mProgress;
     }
 
+    public void setTryAgain(Button tryAgain) {
+        this.tryAgain = tryAgain;
+    }
+
     @Override
     protected void onPreExecute() {
         if (mProgress != null) {
             mProgress.setImageResource(R.drawable.cat_logo);
             mProgress.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fading));
             mProgress.setVisibility(View.VISIBLE);
+        }
+        if (tryAgain != null) {
+            tryAgain.setVisibility(View.GONE);
         }
     }
 
@@ -62,6 +71,9 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
         } else {
             if (mProgress != null) {
                 mProgress.setImageResource(R.drawable.cat_logo_x_x);
+            }
+            if (tryAgain != null) {
+                tryAgain.setVisibility(View.VISIBLE);
             }
         }
     }

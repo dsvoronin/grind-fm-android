@@ -15,4 +15,12 @@
                android:layout_centerInParent="true"
                android:id="@+id/news_progress"/>
 
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/news_try_again"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/news_progress"
+            android:text="Еще раз!"
+            android:visibility="gone"/>
+
 </RelativeLayout>
