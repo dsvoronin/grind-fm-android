@@ -26,32 +26,51 @@ import java.util.Map;
 
 public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, MenuButton.Pickable {
 
+    private static final String TAG = "GrindActivity";
+
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
     private static final int MENU_ID_VIDEO = 2;
     private static final int MENU_ID_VKONTAKTE = 3;
     private static final int MENU_ID_SCHEDULE = 4;
 
+    private Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
+
+    //flags
     private boolean newsFirstStart = true;
     private boolean videoFirstStart = true;
+    private boolean calendarFirstStart = true;
 
+    //control
     private ImageView playPause;
     private ProgressBar progressBar;
-    private GesturableViewFlipper flipper;
-    private ListView newsList;
-    private ListView videoList;
-    private TextView newsProgress;
-    private TextView videoProgress;
-    private TextView headerRunningString;
-    private WebView vkontakteWebView;
     private RelativeLayout radioControl;
 
-    private NewsAdapter mNewsAdapter;
-    private VideoAdapter mVideoAdapter;
+    //flipper
+    private GesturableViewFlipper flipper;
 
+    //lists
+    private ListView newsList;
+    private ListView videoList;
+    private ListView calendarList;
+
+    //progress
+    private ImageView newsProgress;
+    private ImageView videoProgress;
+    private ImageView calendarProgress;
+
+    //header string
+    private TextView headerRunningString;
+
+    //web
+    private WebView vkontakteWebView;
+
+    //adapters
+    private NewsAdapter newsAdapter;
+    private VideoAdapter videoAdapter;
+
+    //recievers
     private GrindReceiver grindReceiver;
-
-    private Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +79,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         setContentView(R.layout.grind);
         initViews();
 
+        //щелкаем по первому пункту меню
         menuButtons.get(0).performClick();
 
         vkontakteWebView.setWebViewClient(new VkontakteWebViewClient());
@@ -67,12 +87,12 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         //включает бегущую строку
         headerRunningString.setSelected(true);
 
-        mNewsAdapter = new NewsAdapter(this);
-        newsList.setAdapter(mNewsAdapter);
+        newsAdapter = new NewsAdapter(this);
+        newsList.setAdapter(newsAdapter);
         newsList.setOnItemClickListener(onNewsItemClickListener);
 
-        mVideoAdapter = new VideoAdapter(this);
-        videoList.setAdapter(mVideoAdapter);
+        videoAdapter = new VideoAdapter(this);
+        videoList.setAdapter(videoAdapter);
         videoList.setOnItemClickListener(onVideoItemClickListener);
 
         flipper.setOnSwitchListener(this);
@@ -120,13 +140,19 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private void initViews() {
         vkontakteWebView = (WebView) findViewById(R.id.vkontakteWebView);
         headerRunningString = (TextView) findViewById(R.id.header_running_string);
+
+        //lists
         newsList = (ListView) findViewById(R.id.newsList);
         videoList = (ListView) findViewById(R.id.videoList);
+
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         playPause = (ImageView) findViewById(R.id.play_pause);
         flipper = (GesturableViewFlipper) findViewById(R.id.flipper);
-        newsProgress = (TextView) findViewById(R.id.news_progress);
-        videoProgress = (TextView) findViewById(R.id.video_progress);
+
+        //progress
+        newsProgress = (ImageView) findViewById(R.id.news_progress);
+        videoProgress = (ImageView) findViewById(R.id.video_progress);
+
         radioControl = (RelativeLayout) findViewById(R.id.radio_contol);
 
         MenuButton radioButton = (MenuButton) findViewById(R.id.menu_radio);
@@ -143,7 +169,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             @Override
             public void onPick() {
                 if (newsFirstStart) {
-                    RssParseTask task = new RssParseTask(GrindActivity.this, mNewsAdapter);
+                    RssParseTask task = new RssParseTask(GrindActivity.this, newsAdapter);
                     task.setProgress(newsProgress);
                     task.execute(getString(R.string.news_url));
                     newsFirstStart = false;
@@ -158,7 +184,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             @Override
             public void onPick() {
                 if (videoFirstStart) {
-                    VideoTask task = new VideoTask(GrindActivity.this, mVideoAdapter);
+                    VideoTask task = new VideoTask(GrindActivity.this, videoAdapter);
                     task.setProgress(videoProgress);
                     task.execute(getString(R.string.youtube_playlist_postrelushka));
                     videoFirstStart = false;
@@ -179,16 +205,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         });
         menuButtons.put(MENU_ID_VKONTAKTE, vkButton);
 
-        MenuButton scheduleButton = (MenuButton) findViewById(R.id.menu_schedule);
-        scheduleButton.setOnPickListener(new MenuButton.OnPickListener() {
-            @Override
-            public void onPick() {
-                performSwitch(MENU_ID_SCHEDULE);
-            }
-        });
-        menuButtons.put(MENU_ID_SCHEDULE, scheduleButton);
     }
-
 
     @Override
     public void pick(MenuButton pickedButton) {
@@ -252,7 +269,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private AdapterView.OnItemClickListener onVideoItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + mVideoAdapter.getItem(i).getUrl())));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + videoAdapter.getItem(i).getUrl())));
         }
     };
 
@@ -262,7 +279,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private AdapterView.OnItemClickListener onNewsItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            NewsDialog dialog = new NewsDialog(GrindActivity.this, mNewsAdapter.getItem(i));
+            NewsDialog dialog = new NewsDialog(GrindActivity.this, newsAdapter.getItem(i));
             dialog.show();
         }
     };

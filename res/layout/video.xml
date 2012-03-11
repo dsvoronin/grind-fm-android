@@ -10,12 +10,9 @@
               android:scrollbars="none"
               android:id="@+id/videoList"/>
 
-    <TextView android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerInParent="true"
-              android:textSize="30dp"
-              android:textStyle="bold"
-              android:id="@+id/video_progress"
-              android:text="@string/loading"/>
+    <ImageView android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_centerInParent="true"
+               android:id="@+id/video_progress"/>
 
 </RelativeLayout>

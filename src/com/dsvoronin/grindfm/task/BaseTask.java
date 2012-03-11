@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
+import android.widget.ImageView;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.adapter.BaseListAdapter;
 
@@ -17,20 +17,21 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
 
     private Context mContext;
     private BaseListAdapter mAdapter;
-    private View mProgress;
+    private ImageView mProgress;
 
     public BaseTask(Context mContext, BaseListAdapter mAdapter) {
         this.mContext = mContext;
         this.mAdapter = mAdapter;
     }
 
-    public void setProgress(View mProgress) {
+    public void setProgress(ImageView mProgress) {
         this.mProgress = mProgress;
     }
 
     @Override
     protected void onPreExecute() {
         if (mProgress != null) {
+            mProgress.setImageResource(R.drawable.cat_logo);
             mProgress.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fading));
             mProgress.setVisibility(View.VISIBLE);
         }
@@ -50,14 +51,18 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
     protected void onPostExecute(ArrayList list) {
         if (mProgress != null) {
             mProgress.setAnimation(null);
-            mProgress.setVisibility(View.GONE);
         }
 
         if (list.size() > 0) {
             mAdapter.replaceContent(list);
             mAdapter.notifyDataSetChanged();
+            if (mProgress != null) {
+                mProgress.setVisibility(View.GONE);
+            }
         } else {
-            Toast.makeText(mContext, mContext.getString(R.string.load_fail), Toast.LENGTH_SHORT).show();
+            if (mProgress != null) {
+                mProgress.setImageResource(R.drawable.cat_logo_x_x);
+            }
         }
     }
 
