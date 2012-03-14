@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:padding="7dp"
+              android:orientation="vertical">
+
+    <EditText android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:id="@+id/search_query"
+              android:hint="@string/request_hint"/>
+
+    <Button android:layout_width="fill_parent"
+            android:id="@+id/search_button"
+            android:layout_height="wrap_content"
+            android:text="@string/request_button"/>
+
+    <TextView android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:text="@string/request_info"/>
+
+</LinearLayout>

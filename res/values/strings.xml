@@ -5,7 +5,7 @@
     <string name="menu_news">Новости</string>
     <string name="menu_video">Видео</string>
     <string name="menu_vk">VK</string>
-    <string name="menu_schedule">Сетка</string>
+    <string name="menu_request">Заказать</string>
 
 
     <string name="loading">Загрузка...</string>
@@ -20,4 +20,13 @@
 
     <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
     <string name="calendar_id">i043gfpofvu1v8bc31qsbqtvu0@group.calendar.google.com</string>
+
+    <string name="request_info">На этой страничке вы можете заказать композицию, однако если любимого трека вдруг не
+        найдется, не расстраивайтесь. Дело в том, что мелодии проигрываются из нашей базы, которая пока не
+        бесконечна.\n\nНе получится заказать треки, которые недавно проигрывались.\n\nПосле того, как вы сделали заказ,
+        ваша
+        композиция встанет в очередь, и, возможно, придется немного подождать, прежде чем она выйдет в эфир.
+    </string>
+    <string name="request_hint">Введите исполнителя или композицию...</string>
+    <string name="request_button">Поиск</string>
 </resources>

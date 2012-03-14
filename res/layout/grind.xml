@@ -6,7 +6,7 @@
                 android:background="@drawable/background">
 
     <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="70dp"
+                  android:layout_height="60dp"
                   android:background="@drawable/listmenu_gradient"
                   android:layout_alignParentTop="true"
                   android:orientation="horizontal"
@@ -14,30 +14,20 @@
 
         <RelativeLayout android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:id="@+id/radio_contol"
-                        android:layout_centerHorizontal="true">
+                        android:layout_gravity="center"
+                        android:layout_margin="7dp"
+                        android:id="@+id/radio_contol">
 
-            <ImageView android:layout_width="65dp"
-                       android:layout_height="65dp"
-                       android:src="@drawable/cat"/>
+            <ImageView android:layout_width="40dp"
+                       android:layout_height="40dp"
+                       android:visibility="visible"
+                       android:id="@+id/play_pause"/>
 
-            <RelativeLayout android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="20dp">
-
-                <ImageView android:layout_width="30dp"
-                           android:layout_height="30dp"
-                           android:visibility="visible"
-                           android:id="@+id/play_pause"/>
-
-                <ProgressBar android:layout_width="30dp"
-                             android:layout_height="30dp"
-                             android:visibility="gone"
-                             android:id="@+id/progress_bar"
-                             style="@android:style/Widget.ProgressBar.Large"/>
-
-            </RelativeLayout>
+            <ProgressBar android:layout_width="30dp"
+                         android:layout_height="30dp"
+                         android:visibility="gone"
+                         android:id="@+id/progress_bar"
+                         style="@android:style/Widget.ProgressBar.Large"/>
 
         </RelativeLayout>
 
@@ -86,10 +76,16 @@
         <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                                android:layout_weight="1"
                                                android:layout_height="fill_parent"
-                                               android:onClick="toVkontakte"
                                                android:id="@+id/menu_vk"
                                                grind:image="@drawable/menu_vk_selector"
                                                grind:label="@string/menu_vk"/>
+
+        <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
+                                               android:layout_weight="1"
+                                               android:layout_height="fill_parent"
+                                               android:id="@+id/menu_request"
+                                               grind:image="@drawable/menu_request_selector"
+                                               grind:label="@string/menu_request"/>
 
     </LinearLayout>
 
@@ -103,6 +99,7 @@
         <include android:id="@+id/news" layout="@layout/news"/>
         <include android:id="@+id/video" layout="@layout/video"/>
         <include android:id="@+id/vkontakte" layout="@layout/vkontakte"/>
+        <include android:id="@+id/request" layout="@layout/request"/>
 
     </com.dsvoronin.grindfm.view.GesturableViewFlipper>
 

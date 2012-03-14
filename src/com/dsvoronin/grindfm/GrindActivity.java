@@ -32,6 +32,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private static final int MENU_ID_NEWS = 1;
     private static final int MENU_ID_VIDEO = 2;
     private static final int MENU_ID_VKONTAKTE = 3;
+    private static final int MENU_ID_REQUEST = 4;
 
     private Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
 
@@ -226,6 +227,15 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             }
         });
         menuButtons.put(MENU_ID_VKONTAKTE, vkButton);
+
+        MenuButton requestButton = (MenuButton) findViewById(R.id.menu_request);
+        requestButton.setOnPickListener(new MenuButton.OnPickListener() {
+            @Override
+            public void onPick() {
+                performSwitch(MENU_ID_REQUEST);
+            }
+        });
+        menuButtons.put(MENU_ID_REQUEST, requestButton);
 
     }
 
