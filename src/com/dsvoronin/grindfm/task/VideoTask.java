@@ -16,6 +16,6 @@ public class VideoTask extends BaseTask {
     @Override
     protected ArrayList processAsync(String url) throws Exception {
         YouTubeUtil youTubeUtil = new YouTubeUtil();
-        return new ArrayList<Video>(youTubeUtil.getPlayList(url));
+        return new ArrayList<Video>(youTubeUtil.getVideos());
     }
 }

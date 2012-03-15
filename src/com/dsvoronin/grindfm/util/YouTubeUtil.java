@@ -19,14 +19,12 @@ public class YouTubeUtil {
 
     public static final String YOUTUBE_VIDEO = "http://www.youtube.com/watch?v=";
 
-    private static final String YOUTUBE_API_LINK_PLAYLIST = "http://gdata.youtube.com/feeds/api/playlists/";
+    private static final String YOUTUBE_API_LINK_ALL_VIDEOS = "http://gdata.youtube.com/feeds/api/users/GrindNetwork/uploads?v=2&alt=jsonc&orderby=published";
 
-    public List<Video> getPlayList(String playlistId) throws JSONException, IOException {
-
-        StringBuilder url = new StringBuilder(YOUTUBE_API_LINK_PLAYLIST + playlistId + "?v=2&alt=jsonc&orderby=published");
+    public List<Video> getVideos() throws JSONException, IOException {
 
         HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(url.toString());
+        HttpGet get = new HttpGet(YOUTUBE_API_LINK_ALL_VIDEOS);
         HttpResponse r = client.execute(get);
         int status = r.getStatusLine().getStatusCode();
         HttpEntity e = r.getEntity();
@@ -38,7 +36,7 @@ public class YouTubeUtil {
         List<Video> result = new ArrayList<Video>();
 
         for (int i = 0; i < items.length(); i++) {
-            JSONObject videoObject = items.getJSONObject(i).getJSONObject("video");
+            JSONObject videoObject = items.getJSONObject(i);
 
             Video video = new Video();
             video.setTitle(videoObject.getString("title"));
