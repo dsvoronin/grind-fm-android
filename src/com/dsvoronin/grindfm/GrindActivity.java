@@ -89,7 +89,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
         newsAdapter = new NewsAdapter(this);
         newsList.setAdapter(newsAdapter);
-        newsList.setOnItemClickListener(onNewsItemClickListener);
 
         videoAdapter = new VideoAdapter(this);
         videoList.setAdapter(videoAdapter);
@@ -302,17 +301,6 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + videoAdapter.getItem(i).getUrl())));
-        }
-    };
-
-    /**
-     * Показываем диалог с текстом новости
-     */
-    private AdapterView.OnItemClickListener onNewsItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            NewsDialog dialog = new NewsDialog(GrindActivity.this, newsAdapter.getItem(i));
-            dialog.show();
         }
     };
 
