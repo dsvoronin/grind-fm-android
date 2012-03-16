@@ -10,13 +10,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.*;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
+import com.dsvoronin.grindfm.adapter.RequestSongAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
+import com.dsvoronin.grindfm.task.RequestSearchTask;
 import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
+import com.dsvoronin.grindfm.util.RequestUtil;
 import com.dsvoronin.grindfm.util.YouTubeUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 import com.dsvoronin.grindfm.view.MenuButton;
@@ -51,6 +55,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     //lists
     private ListView newsList;
     private ListView videoList;
+    private ListView requestList;
 
     //progress
     private ImageView newsProgress;
@@ -68,9 +73,14 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     //adapters
     private NewsAdapter newsAdapter;
     private VideoAdapter videoAdapter;
+    private RequestSongAdapter requestSongAdapter;
 
     //recievers
     private GrindReceiver grindReceiver;
+
+    //request
+    private Button searchButton;
+    private EditText searchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +103,10 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         videoAdapter = new VideoAdapter(this);
         videoList.setAdapter(videoAdapter);
         videoList.setOnItemClickListener(onVideoItemClickListener);
+
+        requestSongAdapter = new RequestSongAdapter(this);
+        requestList.setAdapter(requestSongAdapter);
+        requestList.setOnItemClickListener(onSongClickListener);
 
         flipper.setOnSwitchListener(this);
     }
@@ -143,6 +157,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         //lists
         newsList = (ListView) findViewById(R.id.newsList);
         videoList = (ListView) findViewById(R.id.videoList);
+        requestList = (ListView) findViewById(R.id.request_list);
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         playPause = (ImageView) findViewById(R.id.play_pause);
@@ -236,6 +251,19 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         });
         menuButtons.put(MENU_ID_REQUEST, requestButton);
 
+        searchText = (EditText) findViewById(R.id.search_query);
+
+        searchButton = (Button) findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RequestSearchTask task = new RequestSearchTask(GrindActivity.this, requestSongAdapter);
+                task.execute(searchText.getText().toString());
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+            }
+        });
     }
 
     @Override
@@ -301,6 +329,13 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(YouTubeUtil.YOUTUBE_VIDEO + videoAdapter.getItem(i).getUrl())));
+        }
+    };
+
+    private AdapterView.OnItemClickListener onSongClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Toast.makeText(GrindActivity.this, RequestUtil.request(requestSongAdapter.getItem(i).getId()), Toast.LENGTH_SHORT).show();
         }
     };
 

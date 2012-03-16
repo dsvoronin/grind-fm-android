@@ -49,7 +49,9 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
     @Override
     protected ArrayList doInBackground(String... url) {
         try {
+
             return processAsync(url[0]);
+
         } catch (Exception e) {
             Log.e(TAG, "Error in async task", e);
         }
@@ -76,7 +78,11 @@ public abstract class BaseTask extends AsyncTask<String, Void, ArrayList> {
                 tryAgain.setVisibility(View.VISIBLE);
             }
         }
+
+        afterTaskActions();
     }
 
     protected abstract ArrayList processAsync(String url) throws Exception;
+
+    protected abstract void afterTaskActions();
 }

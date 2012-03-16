@@ -18,4 +18,8 @@ public class VideoTask extends BaseTask {
         YouTubeUtil youTubeUtil = new YouTubeUtil();
         return new ArrayList<Video>(youTubeUtil.getVideos());
     }
+
+    @Override
+    protected void afterTaskActions() {
+    }
 }

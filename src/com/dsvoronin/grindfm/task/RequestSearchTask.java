@@ -2,6 +2,8 @@ package com.dsvoronin.grindfm.task;
 
 import android.content.Context;
 import com.dsvoronin.grindfm.adapter.BaseListAdapter;
+import com.dsvoronin.grindfm.model.RequestSong;
+import com.dsvoronin.grindfm.util.RequestUtil;
 
 import java.util.ArrayList;
 
@@ -13,6 +15,11 @@ public class RequestSearchTask extends BaseTask {
 
     @Override
     protected ArrayList processAsync(String url) throws Exception {
-        return null;
+        return new ArrayList<RequestSong>(RequestUtil.search(url));
+    }
+
+    @Override
+    protected void afterTaskActions() {
+
     }
 }

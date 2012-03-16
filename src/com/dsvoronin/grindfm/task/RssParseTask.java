@@ -18,4 +18,8 @@ public class RssParseTask extends BaseTask {
         SaxFeedParser parser = new SaxFeedParser(url);
         return new ArrayList<NewsItem>(parser.parse());
     }
+
+    @Override
+    protected void afterTaskActions() {
+    }
 }
