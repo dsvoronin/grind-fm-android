@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm.util;
+package com.dsvoronin.grindfm.rss;
 
 import com.dsvoronin.grindfm.model.NewsItem;
 import org.xml.sax.SAXException;

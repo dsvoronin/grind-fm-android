@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm.util;
+package com.dsvoronin.grindfm.rss;
 
 import com.dsvoronin.grindfm.model.NewsItem;
 import org.xml.sax.Attributes;
@@ -8,7 +8,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dsvoronin.grindfm.util.BaseFeedParser.*;
+import static com.dsvoronin.grindfm.rss.BaseFeedParser.*;
 
 public class RssHandler extends DefaultHandler {
 

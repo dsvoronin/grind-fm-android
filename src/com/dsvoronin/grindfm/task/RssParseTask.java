@@ -3,7 +3,7 @@ package com.dsvoronin.grindfm.task;
 import android.content.Context;
 import com.dsvoronin.grindfm.adapter.BaseListAdapter;
 import com.dsvoronin.grindfm.model.NewsItem;
-import com.dsvoronin.grindfm.util.SaxFeedParser;
+import com.dsvoronin.grindfm.rss.SaxFeedParser;
 
 import java.util.ArrayList;
 

@@ -18,9 +18,9 @@ import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.RequestSongAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
 import com.dsvoronin.grindfm.task.RequestSearchTask;
+import com.dsvoronin.grindfm.task.RequestTask;
 import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
-import com.dsvoronin.grindfm.util.RequestUtil;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 import com.dsvoronin.grindfm.view.MenuButton;
 
@@ -334,7 +334,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private AdapterView.OnItemClickListener onSongClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Toast.makeText(GrindActivity.this, RequestUtil.request(requestSongAdapter.getItem(i).getId()), Toast.LENGTH_SHORT).show();
+            RequestTask task = new RequestTask(GrindActivity.this);
+            task.execute(requestSongAdapter.getItem(i).getId());
         }
     };
 
