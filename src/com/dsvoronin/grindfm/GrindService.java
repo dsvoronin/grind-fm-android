@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -23,30 +24,72 @@ import java.util.List;
 
 public class GrindService extends Service {
 
-    private static final String TAG = GrindService.class.getSimpleName();
-
     private static final int NOTIFICATION_ID = 6;
 
     private MediaPlayer player;
 
+    private boolean processHasStarted = false;
+
     private NotificationManager notificationManager;
+
+    private final IGrindPlayer.Stub binder = new IGrindPlayer.Stub() {
+
+        @Override
+        public String getInfo() throws RemoteException {
+            return GrindService.this.getInfo();
+        }
+
+        @Override
+        public boolean playing() throws RemoteException {
+            return processHasStarted;
+        }
+
+        @Override
+        public void startAudio() throws RemoteException {
+            start();
+        }
+
+        @Override
+        public void stopAudio() throws RemoteException {
+            stop();
+        }
+    };
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        String TAG = "GrindService:onBind";
+        Log.d(TAG, "START");
+        return binder;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         setForeground(true);
+        processHasStarted = true;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        start();
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        notificationManager.cancel(NOTIFICATION_ID);
+        player.release();
+    }
+
+    private void start() {
+        String TAG = "GrindService:start";
+        Log.d(TAG, "STARTED");
 
         try {
             player = new MediaPlayer();
-            player.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_mp3)));
+            player.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_ogg)));
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
@@ -65,16 +108,11 @@ public class GrindService extends Service {
             player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    String TAG = "GrindService:start:MediaPlayer:onError";
                     Log.e(TAG, "ERROR!");
-                    stopSelf();
+                    stop();
+                    start();
                     return false;
-                }
-            });
-
-            player.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-                @Override
-                public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
-                    Log.d(TAG, "BUFF");
                 }
             });
 
@@ -83,13 +121,9 @@ public class GrindService extends Service {
             Log.e(TAG, "Error while loading url", e);
             onDestroy();
         }
-
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        notificationManager.cancel(NOTIFICATION_ID);
+    private void stop() {
         player.release();
     }
 
@@ -128,14 +162,19 @@ public class GrindService extends Service {
     }
 
     private String getInfo() {
+        String TAG = "GrindService:getInfo";
+
         Scraper scraper = new IceCastScraper();
         List<Stream> streams;
         try {
-            streams = scraper.scrape(new URI(getString(R.string.radio_stream_url_ogg)));
+            URI streamURI = new URI(getString(R.string.radio_stream_url_ogg));
+            streams = scraper.scrape(streamURI);
             if (streams != null) {
                 for (Stream stream : streams) {
-                    if (!stream.getCurrentSong().equals("")) {
-                        return stream.getCurrentSong();
+                    if (stream.getUri().equals(streamURI)) {
+                        if (!stream.getCurrentSong().equals("")) {
+                            return stream.getCurrentSong();
+                        }
                     }
                 }
             }

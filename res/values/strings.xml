@@ -7,19 +7,10 @@
     <string name="menu_vk">VK</string>
     <string name="menu_request">Заказать</string>
 
-
     <string name="loading">Загрузка...</string>
     <string name="load_fail">Не удалось загрузить</string>
 
     <string name="radio_loading">Grind.FM — это игровое радио для настоящих геймеров!</string>
-
-    <string name="radio_stream_url_ogg">http://radio.goha.ru:8000/grindfm.ogg</string>
-    <string name="radio_stream_url_mp3">http://radio.goha.ru:8000/grind.fm</string>
-    <string name="news_url">http://www.grind.fm/rss.xml</string>
-    <string name="vkontakte_url">http://m.vk.com/club10770176</string>
-
-    <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
-    <string name="calendar_id">i043gfpofvu1v8bc31qsbqtvu0@group.calendar.google.com</string>
 
     <string name="request_info">На этой страничке вы можете заказать композицию, однако если любимого трека вдруг не
         найдется, не расстраивайтесь. Дело в том, что мелодии проигрываются из нашей базы, которая пока не

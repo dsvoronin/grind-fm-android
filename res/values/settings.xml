@@ -3,4 +3,11 @@
     <string name="service_intent_info">service-intent-info</string>
 
     <string name="youtube_channel">GrindNetwork</string>
+    <string name="radio_stream_url_ogg">http://radio.goha.ru:8000/grindfm.ogg</string>
+    <string name="radio_stream_url_mp3">http://radio.goha.ru:8000/grind.fm</string>
+    <string name="radio_stream_url_aac">http://radio.goha.ru:8000/grindfm.aac</string>
+    <string name="news_url">http://www.grind.fm/rss.xml</string>
+    <string name="vkontakte_url">http://m.vk.com/club10770176</string>
+    <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
+    <string name="calendar_id">i043gfpofvu1v8bc31qsbqtvu0@group.calendar.google.com</string>
 </resources>

@@ -2,12 +2,12 @@ package com.dsvoronin.grindfm;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -27,9 +27,7 @@ import com.dsvoronin.grindfm.view.MenuButton;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, MenuButton.Pickable {
-
-    private static final String TAG = "GrindActivity";
+public class GrindActivity extends Activity implements GesturableViewFlipper.OnSwitchListener, MenuButton.Pickable, ServiceConnection {
 
     private static final int MENU_ID_RADIO = 0;
     private static final int MENU_ID_NEWS = 1;
@@ -76,6 +74,8 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
 
     //recievers
     private GrindReceiver grindReceiver;
+
+    private IGrindPlayer.Stub binder = null;
 
     //request
     private Button searchButton;
@@ -274,6 +274,30 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         }
     }
 
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        String TAG = "OnServiceConnected";
+        Log.d(TAG, "START");
+
+        binder = (IGrindPlayer.Stub) service;
+
+        try {
+            Log.d(TAG, "Is service playing audio? " + binder.playing());
+
+            startService(new Intent(this, GrindService.class));
+        } catch (RemoteException e) {
+            Log.e(TAG, "onServiceConnected", e);
+        }
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+        String TAG = "OnServiceDisconnected";
+        Log.d(TAG, "START");
+        Log.d(TAG, "Binder = null");
+        binder = null;
+    }
+
     private class GrindReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -345,8 +369,18 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private View.OnClickListener playClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(GrindActivity.this, GrindService.class);
-            startService(intent);
+            String TAG = "PlayClick";
+
+            Intent i = new Intent(GrindActivity.this, GrindService.class);
+            try {
+                if (binder != null && binder.playing()) {
+                    binder.stopAudio();
+                }
+            } catch (RemoteException e) {
+                Log.e(TAG, "Cant stop");
+            }
+            Log.d(TAG, "Bind to our Streamer service");
+            GrindActivity.this.bindService(i, GrindActivity.this, Context.BIND_AUTO_CREATE);
             prepareStream();
         }
     };
@@ -357,7 +391,12 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
     private View.OnClickListener stopClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            stopService(new Intent(GrindActivity.this, GrindService.class));
+            String TAG = "StopClick";
+            try {
+                binder.stopAudio();
+            } catch (RemoteException e) {
+                Log.e(TAG, "Cant stop");
+            }
             initStream();
         }
     };
