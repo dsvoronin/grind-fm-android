@@ -2,5 +2,7 @@
     <color name="menu_text_selected">#c5f9f9</color>
     <color name="menu_text">#ffffff</color>
 
+    <color name="list_selected">#ff0e6374</color>
+
     <color name="disabled">#999999</color>
 </resources>

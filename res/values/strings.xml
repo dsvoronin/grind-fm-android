@@ -24,4 +24,6 @@
     <string name="request_ok">Композиция добавлена в очередь</string>
     <string name="request_false">Не удалось заказать композицию</string>
     <string name="request_error">Ошибка сервиса</string>
+    <string name="content_description_image">Картинка</string>
+    <string name="error_try_again">Еще раз!</string>
 </resources>

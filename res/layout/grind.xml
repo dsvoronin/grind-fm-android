@@ -96,7 +96,7 @@
                                                       android:layout_below="@id/header">
 
         <include android:id="@+id/radio" layout="@layout/radio"/>
-        <include android:id="@+id/news" layout="@layout/news"/>
+        <include android:id="@+id/news" layout="@layout/oldnews"/>
         <include android:id="@+id/video" layout="@layout/video"/>
         <include android:id="@+id/vkontakte" layout="@layout/vkontakte"/>
         <include android:id="@+id/request" layout="@layout/request"/>
