@@ -5,8 +5,24 @@
                 android:layout_height="fill_parent"
                 android:background="@drawable/background">
 
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="45dp"
+                  android:background="@drawable/listmenu_gradient"
+                  android:layout_alignParentTop="true"
+                  android:orientation="horizontal"
+                  android:id="@+id/header"/>
+
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="50dp"
+                  android:id="@+id/footer"
+                  android:background="@drawable/listmenu_gradient"
+                  android:layout_alignParentBottom="true"
+                  android:orientation="horizontal"/>
+
     <ListView android:layout_width="fill_parent"
               android:layout_height="fill_parent"
+              android:layout_below="@id/header"
+              android:layout_above="@id/footer"
               android:cacheColorHint="@android:color/transparent"
               android:scrollbars="none"
               android:divider="@drawable/divider"
@@ -25,5 +41,18 @@
             android:layout_below="@id/news_progress"
             android:text="@string/error_try_again"
             android:visibility="gone"/>
+
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_above="@id/footer"
+               android:src="@drawable/shadow_footer"
+               android:contentDescription="@string/content_description_image"/>
+
+
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_below="@id/header"
+               android:src="@drawable/shadow_header"
+               android:contentDescription="@string/content_description_image"/>
 
 </RelativeLayout>

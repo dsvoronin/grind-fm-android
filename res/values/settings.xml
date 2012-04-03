@@ -11,4 +11,5 @@
     <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
     <string name="calendar_id">i043gfpofvu1v8bc31qsbqtvu0@group.calendar.google.com</string>
     <string name="rss_goha_grindfm">http://www.goha.ru/feed/54/rss</string>
+    <string name="rss_goha_main">http://www.goha.ru/feed/0/rss</string>
 </resources>

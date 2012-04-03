@@ -35,7 +35,7 @@ public class VideoTask extends BaseTask {
     }
 
     @Override
-    protected ArrayList processAsync(String url) throws Exception {
+    protected ArrayList processAsync(String... url) throws Exception {
         HttpClient client = new DefaultHttpClient();
         HttpGet get = new HttpGet(query);
         HttpResponse r = client.execute(get);

@@ -28,6 +28,6 @@ public class NewsActivity extends BaseActivity {
         NewsTask task = new NewsTask(this, adapter);
         task.setProgress((ImageView) findViewById(R.id.news_progress));
         task.setTryAgain((Button) findViewById(R.id.news_try_again));
-        task.execute(getString(R.string.rss_goha_grindfm));
+        task.execute(getString(R.string.rss_goha_grindfm), getString(R.string.rss_goha_main));
     }
 }

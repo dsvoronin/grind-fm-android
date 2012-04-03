@@ -26,9 +26,9 @@ public class RequestSearchTask extends BaseTask {
     }
 
     @Override
-    protected ArrayList processAsync(String url) throws Exception {
+    protected ArrayList processAsync(String... url) throws Exception {
         HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(REQUEST_SEARCH_URL + url.trim());
+        HttpGet get = new HttpGet(REQUEST_SEARCH_URL + url[0].trim());
         HttpResponse r = client.execute(get);
 
         int status = r.getStatusLine().getStatusCode();

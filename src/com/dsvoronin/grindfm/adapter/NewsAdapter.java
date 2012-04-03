@@ -28,6 +28,7 @@ public class NewsAdapter extends BaseListAdapter<NewsItem> {
         TextView newsTitle = (TextView) view.findViewById(R.id.news_title);
         newsTitle.setText(Jsoup.parse(n.getTitle()).text());
 
+        ImageView newsImage = (ImageView) view.findViewById(R.id.news_image);
         String imageSrc;
         try {
             imageSrc = Jsoup.parse(n.getDescription()).select("img").first().absUrl("src");
@@ -36,8 +37,9 @@ public class NewsAdapter extends BaseListAdapter<NewsItem> {
             imageSrc = null;
         }
         if (imageSrc != null) {
-            ImageView newsImage = (ImageView) view.findViewById(R.id.news_image);
             ImageManager.getInstance().displayImage(newsImage, imageSrc);
+        } else {
+            ImageManager.getInstance().displayImage(newsImage, R.drawable.goharu);
         }
 
         TextView newsLead = (TextView) view.findViewById(R.id.news_lead);
