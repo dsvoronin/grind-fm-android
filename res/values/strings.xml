@@ -7,7 +7,7 @@
     <string name="menu_vk">VK</string>
     <string name="menu_request">Заказать</string>
 
-    <string name="loading">Загрузка...</string>
+    <string name="loading">Загрузка…</string>
     <string name="load_fail">Не удалось загрузить</string>
 
     <string name="radio_loading">Grind.FM — это игровое радио для настоящих геймеров!</string>
@@ -18,7 +18,7 @@
         ваша
         композиция встанет в очередь, и, возможно, придется немного подождать, прежде чем она выйдет в эфир.
     </string>
-    <string name="request_hint">Введите исполнителя или композицию...</string>
+    <string name="request_hint">Введите исполнителя или композицию…</string>
     <string name="request_button">Поиск</string>
 
     <string name="request_ok">Композиция добавлена в очередь</string>
@@ -26,4 +26,8 @@
     <string name="request_error">Ошибка сервиса</string>
     <string name="content_description_image">Картинка</string>
     <string name="error_try_again">Еще раз!</string>
+    <string name="main_menu_settings">Настройки</string>
+    <string name="main_menu_refresh">Обновить</string>
+    <string name="news_feed">Поток новостей</string>
+    <string name="news_feed_source">Укажите источники новостей</string>
 </resources>

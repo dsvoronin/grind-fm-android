@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
-import com.dsvoronin.grindfm.task.RssParseTask;
+import com.dsvoronin.grindfm.task.NewsTask;
 
 /**
  * User: dsvoronin
@@ -25,7 +25,7 @@ public class NewsActivity extends BaseActivity {
         ListView newsList = (ListView) findViewById(R.id.news_list);
         newsList.setAdapter(adapter);
 
-        RssParseTask task = new RssParseTask(this, adapter);
+        NewsTask task = new NewsTask(this, adapter);
         task.setProgress((ImageView) findViewById(R.id.news_progress));
         task.setTryAgain((Button) findViewById(R.id.news_try_again));
         task.execute(getString(R.string.rss_goha_grindfm));

@@ -17,9 +17,9 @@ import android.widget.*;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
 import com.dsvoronin.grindfm.adapter.RequestSongAdapter;
 import com.dsvoronin.grindfm.adapter.VideoAdapter;
+import com.dsvoronin.grindfm.task.NewsTask;
 import com.dsvoronin.grindfm.task.RequestSearchTask;
 import com.dsvoronin.grindfm.task.RequestTask;
-import com.dsvoronin.grindfm.task.RssParseTask;
 import com.dsvoronin.grindfm.task.VideoTask;
 import com.dsvoronin.grindfm.view.GesturableViewFlipper;
 import com.dsvoronin.grindfm.view.MenuButton;
@@ -170,7 +170,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
         newsTryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RssParseTask task = new RssParseTask(GrindActivity.this, newsAdapter);
+                NewsTask task = new NewsTask(GrindActivity.this, newsAdapter);
                 task.setProgress(newsProgress);
                 task.setTryAgain(newsTryAgain);
                 task.execute(getString(R.string.news_url));
@@ -203,7 +203,7 @@ public class GrindActivity extends Activity implements GesturableViewFlipper.OnS
             @Override
             public void onPick() {
                 if (newsFirstStart) {
-                    RssParseTask task = new RssParseTask(GrindActivity.this, newsAdapter);
+                    NewsTask task = new NewsTask(GrindActivity.this, newsAdapter);
                     task.setProgress(newsProgress);
                     task.setTryAgain(newsTryAgain);
                     task.execute(getString(R.string.news_url));

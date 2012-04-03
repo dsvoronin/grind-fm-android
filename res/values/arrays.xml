@@ -1,0 +1,12 @@
+<resources>
+    <string-array name="newsStrings">
+        <item>Grind.FM</item>
+        <item>GoHa.Ru</item>
+        <item>Grind.FM + GoHa.Ru</item>
+    </string-array>
+    <string-array name="newsValues">
+        <item>grind</item>
+        <item>goha</item>
+        <item>grindgoha</item>
+    </string-array>
+</resources>

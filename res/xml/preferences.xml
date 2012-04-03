@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/menu_news">
+        <ListPreference android:key="news_feeds"
+                        android:title="@string/news_feed"
+                        android:summary="@string/news_feed_source"
+                        android:entries="@array/newsStrings"
+                        android:entryValues="@array/newsValues"/>
+    </PreferenceCategory>
+</PreferenceScreen>

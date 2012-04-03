@@ -14,13 +14,14 @@
                  android:icon="@drawable/cat"
                  android:label="@string/app_name">
 
-        <activity android:name=".activity.NewsActivity"
-                  android:screenOrientation="portrait">
+        <activity android:name=".activity.NewsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity android:name=".activity.GrindPreferencesActivity"/>
 
         <service android:name=".GrindService"/>
 

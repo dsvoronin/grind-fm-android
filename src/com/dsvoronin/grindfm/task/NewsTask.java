@@ -7,9 +7,9 @@ import com.dsvoronin.grindfm.rss.SaxFeedParser;
 
 import java.util.ArrayList;
 
-public class RssParseTask extends BaseTask {
+public class NewsTask extends BaseTask {
 
-    public RssParseTask(Context mContext, BaseListAdapter mAdapter) {
+    public NewsTask(Context mContext, BaseListAdapter mAdapter) {
         super(mContext, mAdapter);
     }
 
