@@ -2,7 +2,6 @@ package com.dsvoronin.grindfm.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,12 +30,12 @@ public class MenuButton extends RelativeLayout {
 
         TypedArray arr = getContext().obtainStyledAttributes(attrs, R.styleable.com_akzia_apps_mdp_view_MenuButton);
 
-        label = (TextView) findViewById(R.id.menuButtonTitle);
-        label.setTypeface(Typeface.SERIF);
-        int attrLabel = arr.getResourceId(R.styleable.com_akzia_apps_mdp_view_MenuButton_label, -1);
-        if (attrLabel != -1) {
-            label.setText(attrLabel);
-        }
+//        label = (TextView) findViewById(R.id.menuButtonTitle);
+//        label.setTypeface(Typeface.SERIF);
+//        int attrLabel = arr.getResourceId(R.styleable.com_akzia_apps_mdp_view_MenuButton_label, -1);
+//        if (attrLabel != -1) {
+//            label.setText(attrLabel);
+//        }
 
         image = (ImageView) findViewById(R.id.menuButtonIcon);
         int attrImage = arr.getResourceId(R.styleable.com_akzia_apps_mdp_view_MenuButton_image, -1);
@@ -50,7 +49,7 @@ public class MenuButton extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 image.setSelected(true);
-                label.setTextColor(getContext().getResources().getColor(R.color.menu_text_selected));
+//                label.setTextColor(getContext().getResources().getColor(R.color.menu_text_selected));
                 pickable.pick(MenuButton.this);
                 onPickListener.onPick();
             }

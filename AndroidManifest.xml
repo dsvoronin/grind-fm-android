@@ -21,6 +21,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.NewsDetailsActivity"/>
+
         <activity android:name=".activity.GrindPreferencesActivity"/>
 
         <service android:name=".GrindService"/>

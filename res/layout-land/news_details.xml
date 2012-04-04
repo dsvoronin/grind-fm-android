@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/background">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/background"
+                android:scrollbars="none">
+        <LinearLayout android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:padding="7dp"
+                      android:orientation="vertical">
+            <TextView android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:textColor="@android:color/white"
+                      android:textStyle="bold"
+                      android:textSize="16dp"
+                      android:id="@+id/news_details_title"/>
+
+            <LinearLayout android:layout_width="fill_parent"
+                          android:layout_height="wrap_content"
+                          android:orientation="horizontal">
+
+                <ImageView android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_marginTop="5dp"
+                           android:layout_marginBottom="5dp"
+                           android:background="@drawable/image_bg"
+                           android:scaleType="centerCrop"
+                           android:id="@+id/news_details_image"
+                           android:contentDescription="@string/content_description_image"/>
+
+                <LinearLayout android:layout_width="fill_parent"
+                              android:layout_height="fill_parent"
+                              android:orientation="vertical"
+                              android:padding="10dp">
+
+                    <TextView android:layout_width="fill_parent"
+                              android:layout_height="wrap_content"
+                              android:id="@+id/news_details_date"/>
+                    <TextView android:layout_width="fill_parent"
+                              android:layout_height="wrap_content"
+                              android:autoLink="web"
+                              android:id="@+id/news_details_link"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView android:layout_width="fill_parent"
+                      android:layout_height="wrap_content"
+                      android:textColor="@android:color/white"
+                      android:textSize="13dp"
+                      android:id="@+id/news_details_description"/>
+
+            <RelativeLayout android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:id="@+id/news_details_video_layout"
+                            android:padding="7dp"
+                            android:visibility="gone">
+                <ImageView android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_centerInParent="true"
+                           android:scaleType="fitCenter"
+                           android:id="@+id/news_details_video"
+                           android:contentDescription="@string/content_description_image"/>
+                <ImageView android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_centerInParent="true"
+                           android:id="@+id/news_detail_video_play"
+                           android:focusable="true"
+                           android:clickable="true"
+                           android:contentDescription="@string/content_description_image"
+                           android:src="@drawable/youtubeplay_selector"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

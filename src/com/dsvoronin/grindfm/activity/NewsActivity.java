@@ -1,6 +1,9 @@
 package com.dsvoronin.grindfm.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,10 +27,20 @@ public class NewsActivity extends BaseActivity {
 
         ListView newsList = (ListView) findViewById(R.id.news_list);
         newsList.setAdapter(adapter);
+        newsList.setOnItemClickListener(onNewsClickListener);
 
         NewsTask task = new NewsTask(this, adapter);
         task.setProgress((ImageView) findViewById(R.id.news_progress));
         task.setTryAgain((Button) findViewById(R.id.news_try_again));
-        task.execute(getString(R.string.rss_goha_grindfm), getString(R.string.rss_goha_main));
+        task.execute(getString(R.string.rss_goha_main));
     }
+
+    private AdapterView.OnItemClickListener onNewsClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Intent intent = new Intent(NewsActivity.this, NewsDetailsActivity.class);
+            intent.putExtra(getString(R.string.intent_news_detail), ((NewsAdapter) adapterView.getAdapter()).getItem(i));
+            startActivity(intent);
+        }
+    };
 }

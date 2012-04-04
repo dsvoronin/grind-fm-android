@@ -2,17 +2,22 @@ package com.dsvoronin.grindfm.model;
 
 import com.dsvoronin.grindfm.util.StringUtil;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-public class NewsItem implements Comparable<NewsItem> {
-
+public class NewsItem implements Comparable<NewsItem>, Serializable {
 
     private String title;
     private URL link;
     private String description;
     private Date date;
+
+    private String textDescription;
+    private String thumbImage;
+
+    private String video;
 
     public String getTitle() {
         return title;
@@ -52,6 +57,30 @@ public class NewsItem implements Comparable<NewsItem> {
             date += "0";
         }
         this.date = StringUtil.parseDate(date);
+    }
+
+    public String getTextDescription() {
+        return textDescription;
+    }
+
+    public void setTextDescription(String textDescription) {
+        this.textDescription = textDescription;
+    }
+
+    public String getThumbImage() {
+        return thumbImage;
+    }
+
+    public void setThumbImage(String thumbImage) {
+        this.thumbImage = thumbImage;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
     }
 
     public NewsItem copy() {

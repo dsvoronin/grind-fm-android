@@ -1,6 +1,7 @@
 package com.dsvoronin.grindfm.rss;
 
 import com.dsvoronin.grindfm.model.NewsItem;
+import org.jsoup.Jsoup;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -48,11 +49,23 @@ public class RssHandler extends DefaultHandler {
         super.endElement(uri, localName, name);
         if (this.currentMessage != null) {
             if (localName.equalsIgnoreCase(TITLE)) {
-                currentMessage.setTitle(builder.toString());
+                currentMessage.setTitle(Jsoup.parse(builder.toString()).text());
             } else if (localName.equalsIgnoreCase(LINK)) {
                 currentMessage.setLink(builder.toString());
             } else if (localName.equalsIgnoreCase(DESCRIPTION)) {
-                currentMessage.setDescription(builder.toString());
+                String desc = builder.toString();
+                currentMessage.setDescription(desc);
+                try {
+                    currentMessage.setThumbImage(Jsoup.parse(desc).select("img").first().absUrl("src"));
+                } catch (NullPointerException pne) {
+                    currentMessage.setThumbImage(null);
+                }
+                currentMessage.setTextDescription(Jsoup.parse(desc).text().replace("(Читать далее...)", ""));
+                try {
+                    currentMessage.setVideo(Jsoup.parse(desc).select("embed").first().absUrl("src"));
+                } catch (NullPointerException npe) {
+                    currentMessage.setVideo(null);
+                }
             } else if (localName.equalsIgnoreCase(PUB_DATE)) {
                 currentMessage.setDate(builder.toString());
             } else if (localName.equalsIgnoreCase(ITEM)) {

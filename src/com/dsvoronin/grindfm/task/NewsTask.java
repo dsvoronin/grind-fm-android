@@ -24,7 +24,6 @@ public class NewsTask extends BaseTask {
         }
 
         Collections.sort(result);
-
         return result;
     }
 
