@@ -12,6 +12,7 @@ import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import com.dsvoronin.grindfm.activity.NewsActivity;
 import net.moraleboost.streamscraper.ScrapeException;
 import net.moraleboost.streamscraper.Scraper;
 import net.moraleboost.streamscraper.Stream;
@@ -71,6 +72,9 @@ public class GrindService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (playing) {
+            sendMessage(getInfo());
+        }
         return START_STICKY;
     }
 
@@ -125,6 +129,7 @@ public class GrindService extends Service {
     }
 
     private void stop() {
+        notificationManager.cancel(NOTIFICATION_ID);
         playing = false;
         player.release();
     }
@@ -152,7 +157,7 @@ public class GrindService extends Service {
     private void showNotification(String info) {
         String appName = getString(R.string.app_name);
         Notification notification = new Notification(R.drawable.cat, appName, System.currentTimeMillis());
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, GrindActivity.class), 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, NewsActivity.class), 0);
         notification.setLatestEventInfo(this, appName, info, pendingIntent);
         notificationManager.notify(NOTIFICATION_ID, notification);
     }

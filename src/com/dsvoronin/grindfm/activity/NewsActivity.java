@@ -23,6 +23,8 @@ public class NewsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news);
 
+        String feed = getIntent().getStringExtra(getString(R.string.intent_news_feed));
+
         NewsAdapter adapter = new NewsAdapter(this);
 
         ListView newsList = (ListView) findViewById(R.id.news_list);
@@ -32,13 +34,19 @@ public class NewsActivity extends BaseActivity {
         NewsTask task = new NewsTask(this, adapter);
         task.setProgress((ImageView) findViewById(R.id.news_progress));
         task.setTryAgain((Button) findViewById(R.id.news_try_again));
-        task.execute(getString(R.string.rss_goha_main));
+
+        if (feed == null) {
+            task.execute(getString(R.string.rss_goha_grindfm));
+        } else {
+            task.execute(feed);
+        }
     }
 
     private AdapterView.OnItemClickListener onNewsClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Intent intent = new Intent(NewsActivity.this, NewsDetailsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             intent.putExtra(getString(R.string.intent_news_detail), ((NewsAdapter) adapterView.getAdapter()).getItem(i));
             startActivity(intent);
         }

@@ -12,8 +12,31 @@
     <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
                                            android:layout_weight="1"
                                            android:layout_height="fill_parent"
+                                           android:id="@+id/menu_radio"
+                                           grind:image="@drawable/menu_radio_selector"/>
+
+    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
+                                           android:layout_weight="1"
+                                           android:layout_height="fill_parent"
                                            android:id="@+id/menu_news"
-                                           grind:image="@drawable/menu_news_selector"
-                                           grind:label="@string/menu_news"/>
+                                           grind:image="@drawable/menu_news_selector"/>
+
+    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
+                                           android:layout_weight="1"
+                                           android:layout_height="fill_parent"
+                                           android:id="@+id/menu_news_goha"
+                                           grind:image="@drawable/menu_goha_selector"/>
+
+    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
+                                           android:layout_weight="1"
+                                           android:layout_height="fill_parent"
+                                           android:id="@+id/menu_video"
+                                           grind:image="@drawable/menu_youtube_selector"/>
+
+    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
+                                           android:layout_weight="1"
+                                           android:layout_height="fill_parent"
+                                           android:id="@+id/menu_vk"
+                                           grind:image="@drawable/menu_vk_selector"/>
 
 </LinearLayout>

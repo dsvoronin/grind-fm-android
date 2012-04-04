@@ -3,32 +3,51 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:padding="7dp">
+                android:background="@drawable/background">
 
-    <LinearLayout android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="10dp"
-                  android:id="@+id/request_search_layout"
-                  android:orientation="vertical">
+    <com.dsvoronin.grindfm.view.Header android:layout_width="fill_parent"
+                                       android:layout_height="45dp"
+                                       android:layout_alignParentTop="true"
+                                       android:id="@+id/header"/>
 
-        <EditText android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/search_query"
-                  android:hint="@string/request_hint"/>
-
-        <Button android:layout_width="fill_parent"
-                android:id="@+id/search_button"
-                android:layout_height="wrap_content"
-                android:text="@string/request_button"/>
-
-    </LinearLayout>
+    <com.dsvoronin.grindfm.view.Footer android:layout_width="fill_parent"
+                                       android:layout_height="50dp"
+                                       android:layout_alignParentBottom="true"
+                                       android:id="@+id/footer"/>
 
     <ListView android:layout_width="fill_parent"
               android:layout_height="wrap_content"
+              android:layout_below="@id/header"
+              android:layout_above="@id/footer"
               android:cacheColorHint="@android:color/transparent"
-              android:layout_below="@id/request_search_layout"
-              android:divider="@null"
+              android:divider="@drawable/divider"
               android:scrollbars="none"
               android:id="@+id/request_list"/>
+
+    <ImageView android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_centerInParent="true"
+               android:id="@+id/request_progress"
+               android:contentDescription="@string/content_description_image"/>
+
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/request_try_again"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/news_progress"
+            android:text="@string/error_try_again"
+            android:visibility="gone"/>
+
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_above="@id/footer"
+               android:src="@drawable/shadow_footer"
+               android:contentDescription="@string/content_description_image"/>
+
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_below="@id/header"
+               android:src="@drawable/shadow_header"
+               android:contentDescription="@string/content_description_image"/>
 
 </RelativeLayout>

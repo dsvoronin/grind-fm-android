@@ -1,21 +1,21 @@
 package com.dsvoronin.grindfm.activity;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.*;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.*;
+import android.view.View;
+import android.view.Window;
 import android.widget.*;
 import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.IGrindPlayer;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.view.MenuButton;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public abstract class BaseActivity extends Activity implements MenuButton.Pickable, ServiceConnection {
 
-    protected Map<Integer, MenuButton> menuButtons = new HashMap<Integer, MenuButton>();
+    protected Map<Integer, MenuButton> menuButtons = new LinkedHashMap<Integer, MenuButton>();
 
     private GrindReceiver grindReceiver;
 
@@ -46,14 +46,68 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     protected void onStart() {
         super.onStart();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+            MenuButton radioButton = (MenuButton) findViewById(R.id.menu_radio);
+            radioButton.setOnPickListener(new MenuButton.OnPickListener() {
+                @Override
+                public void onPick() {
+                    if (BaseActivity.this.getClass() != MainActivity.class) {
+                        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }
+                }
+            });
+            menuButtons.put(0, radioButton);
+
             MenuButton newsButton = (MenuButton) findViewById(R.id.menu_news);
             newsButton.setOnPickListener(new MenuButton.OnPickListener() {
                 @Override
                 public void onPick() {
+                    Intent intent = new Intent(getBaseContext(), NewsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
                 }
             });
-            menuButtons.put(0, newsButton);
-            menuButtons.get(0).performClick();
+            menuButtons.put(1, newsButton);
+
+            MenuButton newsGohaButton = (MenuButton) findViewById(R.id.menu_news_goha);
+            newsGohaButton.setOnPickListener(new MenuButton.OnPickListener() {
+                @Override
+                public void onPick() {
+                    Intent intent = new Intent(getBaseContext(), NewsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    intent.putExtra(getString(R.string.intent_news_feed), getString(R.string.rss_goha_main));
+                    startActivity(intent);
+                }
+            });
+            menuButtons.put(2, newsGohaButton);
+
+            MenuButton videoButton = (MenuButton) findViewById(R.id.menu_video);
+            videoButton.setOnPickListener(new MenuButton.OnPickListener() {
+                @Override
+                public void onPick() {
+                    if (BaseActivity.this.getClass() != VideoActivity.class) {
+                        Intent intent = new Intent(getBaseContext(), VideoActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }
+                }
+            });
+            menuButtons.put(3, videoButton);
+
+            MenuButton vkButton = (MenuButton) findViewById(R.id.menu_vk);
+            vkButton.setOnPickListener(new MenuButton.OnPickListener() {
+                @Override
+                public void onPick() {
+                    if (BaseActivity.this.getClass() != VKActivity.class) {
+                        Intent intent = new Intent(getBaseContext(), VKActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }
+                }
+            });
+            menuButtons.put(4, vkButton);
 
             headerRunningString = (TextView) findViewById(R.id.header_running_string);
             headerRunningString.setSelected(true);
@@ -69,14 +123,6 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
         grindReceiver = new GrindReceiver();
         registerReceiver(grindReceiver, new IntentFilter(getString(R.string.service_intent)));
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (!isMyServiceRunning()) {
-                initStream();
-            } else {
-                startStream();
-            }
-        }
-
         Intent i = new Intent(BaseActivity.this, GrindService.class);
         BaseActivity.this.bindService(i, BaseActivity.this, Context.BIND_AUTO_CREATE);
 
@@ -87,26 +133,6 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     protected void onPause() {
         unregisterReceiver(grindReceiver);
         super.onPause();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh:
-                return true;
-            case R.id.settings:
-                startActivity(new Intent(getBaseContext(), GrindPreferencesActivity.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
 
@@ -133,6 +159,18 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
         } catch (RemoteException e) {
             Log.e(TAG, "onServiceConnected", e);
         }
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            try {
+                if (binder.playing()) {
+                    startStream();
+                } else {
+                    initStream();
+                }
+            } catch (RemoteException e) {
+                Log.e("Activity", "play", e);
+            }
+        }
     }
 
     @Override
@@ -150,16 +188,6 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
             headerRunningString.setText(info);
             startStream();
         }
-    }
-
-    private boolean isMyServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (GrindService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void initStream() {

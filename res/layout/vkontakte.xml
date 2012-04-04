@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/background">
+
+    <com.dsvoronin.grindfm.view.Header android:layout_width="fill_parent"
+                                       android:layout_height="45dp"
+                                       android:layout_alignParentTop="true"
+                                       android:id="@+id/header"/>
+
+    <com.dsvoronin.grindfm.view.Footer android:layout_width="fill_parent"
+                                       android:layout_height="50dp"
+                                       android:layout_alignParentBottom="true"
+                                       android:id="@+id/footer"/>
 
     <WebView android:layout_width="fill_parent"
              android:layout_height="wrap_content"
-             android:id="@+id/vkontakteWebView"/>
+             android:layout_below="@id/header"
+             android:layout_above="@id/footer"
+             android:id="@+id/vkontakte_web_view"/>
 
-</LinearLayout>
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_above="@id/footer"
+               android:src="@drawable/shadow_footer"
+               android:contentDescription="@string/content_description_image"/>
+
+    <ImageView android:layout_width="fill_parent"
+               android:layout_height="6dp"
+               android:layout_below="@id/header"
+               android:src="@drawable/shadow_header"
+               android:contentDescription="@string/content_description_image"/>
+
+</RelativeLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/background">
+
+    <ListView android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:cacheColorHint="@android:color/transparent"
+              android:scrollbars="none"
+              android:divider="@drawable/divider"
+              android:id="@+id/video_list"/>
+
+    <ImageView android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_centerInParent="true"
+               android:id="@+id/video_progress"
+               android:contentDescription="@string/content_description_image"/>
+
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/video_try_again"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/video_progress"
+            android:text="@string/error_try_again"
+            android:visibility="gone"/>
+
+</RelativeLayout>
