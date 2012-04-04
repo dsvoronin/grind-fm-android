@@ -28,7 +28,7 @@ public class GrindService extends Service {
 
     private MediaPlayer player;
 
-    private boolean processHasStarted = false;
+    private boolean playing = false;
 
     private NotificationManager notificationManager;
 
@@ -41,7 +41,7 @@ public class GrindService extends Service {
 
         @Override
         public boolean playing() throws RemoteException {
-            return processHasStarted;
+            return playing;
         }
 
         @Override
@@ -67,12 +67,10 @@ public class GrindService extends Service {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         setForeground(true);
-        processHasStarted = true;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        start();
         return START_STICKY;
     }
 
@@ -117,13 +115,17 @@ public class GrindService extends Service {
             });
 
             player.prepareAsync();
+
+            playing = true;
         } catch (IOException e) {
             Log.e(TAG, "Error while loading url", e);
+            playing = false;
             onDestroy();
         }
     }
 
     private void stop() {
+        playing = false;
         player.release();
     }
 
