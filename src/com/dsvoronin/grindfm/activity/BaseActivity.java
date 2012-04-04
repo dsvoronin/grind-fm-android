@@ -184,9 +184,11 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     private class GrindReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String info = intent.getStringExtra(getString(R.string.service_intent_info));
-            headerRunningString.setText(info);
-            startStream();
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                String info = intent.getStringExtra(getString(R.string.service_intent_info));
+                headerRunningString.setText(info);
+                startStream();
+            }
         }
     }
 
