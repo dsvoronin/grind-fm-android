@@ -29,6 +29,15 @@
 
         <service android:name=".GrindService"/>
 
+        <receiver android:name=".widget.GrindWidgetProvider" android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="service-intent"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                       android:resource="@xml/grind_widget_provider"/>
+        </receiver>
+
     </application>
 
 </manifest>

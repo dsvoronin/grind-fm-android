@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true"
+          android:drawable="@android:drawable/ic_media_pause"/>
+    <!-- pressed -->
+    <item android:drawable="@android:drawable/ic_media_play"/>
+    <!-- default/unchecked -->
+</selector>

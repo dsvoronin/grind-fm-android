@@ -54,9 +54,7 @@
         <EditText android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:id="@+id/search_query"
-                  android:textColor="@android:color/white"
                   android:textSize="16dp"
-                  android:background="@android:color/transparent"
                   android:layout_marginTop="10dp"
                   android:layout_marginBottom="10dp"
                   android:hint="@string/request_hint"/>

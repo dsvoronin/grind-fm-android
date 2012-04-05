@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.*;
 import com.dsvoronin.grindfm.GrindService;
-import com.dsvoronin.grindfm.IGrindPlayer;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.view.MenuButton;
 
@@ -25,11 +24,13 @@ import java.util.Map;
  */
 public abstract class BaseActivity extends Activity implements MenuButton.Pickable, ServiceConnection {
 
+    private final String TAG = "GRIND-ACTIVITY";
+
     protected Map<Integer, MenuButton> menuButtons = new LinkedHashMap<Integer, MenuButton>();
 
     private GrindReceiver grindReceiver;
 
-    private IGrindPlayer.Stub binder = null;
+    private GrindService.GrindServiceImpl binder = null;
 
     private TextView headerRunningString;
     private ImageView playPause;
@@ -124,7 +125,7 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
         registerReceiver(grindReceiver, new IntentFilter(getString(R.string.service_intent)));
 
         Intent i = new Intent(BaseActivity.this, GrindService.class);
-        BaseActivity.this.bindService(i, BaseActivity.this, Context.BIND_AUTO_CREATE);
+        bindService(i, BaseActivity.this, Context.BIND_AUTO_CREATE);
 
         super.onResume();
     }
@@ -132,6 +133,8 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     @Override
     protected void onPause() {
         unregisterReceiver(grindReceiver);
+
+        unbindService(this);
         super.onPause();
     }
 
@@ -147,10 +150,9 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder service) {
-        String TAG = "OnServiceConnected";
-        Log.d(TAG, "START");
+        Log.d(TAG, "Service Connected");
 
-        binder = (IGrindPlayer.Stub) service;
+        binder = (GrindService.GrindServiceImpl) service;
 
         try {
             Log.d(TAG, "Is service playing audio? " + binder.playing());
@@ -168,16 +170,14 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
                     initStream();
                 }
             } catch (RemoteException e) {
-                Log.e("Activity", "play", e);
+                Log.e(TAG, "Can't start playing", e);
             }
         }
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
-        String TAG = "OnServiceDisconnected";
-        Log.d(TAG, "START");
-        Log.d(TAG, "Binder = null");
+        Log.d(TAG, "Service Disconnected");
         binder = null;
     }
 

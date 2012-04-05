@@ -1,6 +1,6 @@
 package com.dsvoronin.grindfm;
 
-interface IGrindPlayer {
+interface IGrindService {
 
     String getInfo();
 

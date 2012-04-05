@@ -1,6 +1,10 @@
 <resources>
     <string name="service_intent">service-intent</string>
+    <string name="service_intent_message">message</string>
+    <integer name="service_intent_message_progress">1</integer>
+
     <string name="service_intent_info">service-intent-info</string>
+    <string name="widget_intent">widget-intent</string>
 
     <string name="youtube_channel">GrindNetwork</string>
     <string name="radio_stream_url_ogg">http://radio.goha.ru:8000/grindfm.ogg</string>
