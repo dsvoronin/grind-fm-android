@@ -14,12 +14,14 @@
         <ImageView android:layout_width="40dp"
                    android:layout_height="40dp"
                    android:visibility="visible"
+                   android:background="@drawable/widget_gradient"
                    android:src="@android:drawable/ic_media_play"
                    android:id="@+id/play_pause"
                    android:contentDescription="@string/content_description_image"/>
 
-        <ProgressBar android:layout_width="30dp"
-                     android:layout_height="30dp"
+        <ProgressBar android:layout_width="40dp"
+                     android:layout_height="50dp"
+                     android:background="@drawable/widget_gradient"
                      android:visibility="gone"
                      android:id="@+id/progress_bar"
                      style="@android:style/Widget.ProgressBar.Large"/>

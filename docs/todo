@@ -1,5 +1,9 @@
 -Widget
-----(дизайн)Поменять background
+--done--(дизайн)Поменять background
 ----(дизайн)Поменять play/pause. Нарисовать для 2х состояний. Рамка
-----Смена play/pause
+--done--Смена play/pause
 ----Toast(/textview) об ошибках
+
+-Activity
+----Base
+--------Старт всех активити с флагом

@@ -5,16 +5,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import com.dsvoronin.grindfm.activity.NewsActivity;
+import com.dsvoronin.grindfm.util.StringUtil;
 import com.dsvoronin.grindfm.widget.GrindWidgetProvider;
 import net.moraleboost.streamscraper.ScrapeException;
 import net.moraleboost.streamscraper.Scraper;
@@ -34,62 +36,29 @@ public class GrindService extends Service {
 
     private MediaPlayer player;
 
-    private GrindReceiver grindReceiver;
-
     private boolean playing = false;
 
     private NotificationManager notificationManager;
-
-    public class GrindServiceImpl extends IGrindService.Stub {
-
-        @Override
-        public String getInfo() throws RemoteException {
-            return GrindService.this.getInfo();
-        }
-
-        @Override
-        public boolean playing() throws RemoteException {
-            return playing;
-        }
-
-        @Override
-        public void startAudio() throws RemoteException {
-            start();
-        }
-
-        @Override
-        public void stopAudio() throws RemoteException {
-            stop();
-        }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "Binded");
-        return new GrindServiceImpl();
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        setForeground(true);
 
         Log.d(TAG, "Created");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (playing) {
-            sendMessage(getInfo());
+        if (!playing) {
+            sendMessage(getResources().getInteger(R.integer.service_intent_message_progress));
+            start();
+            Log.d(TAG, "Started");
+        } else {
+            Log.d(TAG, "Already playing");
         }
 
-        Log.d(TAG, "Started");
-        grindReceiver = new GrindReceiver();
-        registerReceiver(grindReceiver, new IntentFilter(getString(R.string.widget_intent)));
-
-
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -97,8 +66,11 @@ public class GrindService extends Service {
         super.onDestroy();
         notificationManager.cancel(NOTIFICATION_ID);
         player.release();
+    }
 
-        unregisterReceiver(grindReceiver);
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     private void start() {
@@ -153,15 +125,6 @@ public class GrindService extends Service {
         player.release();
     }
 
-    private class GrindReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Recieved message: " + intent.getAction());
-            sendMessage(getResources().getInteger(R.integer.service_intent_message_progress));
-            start();
-        }
-    }
-
     final PhoneStateListener phoneListener = new PhoneStateListener() {
         public void onCallStateChanged(int state, String incomingNumber) {
 
@@ -197,8 +160,16 @@ public class GrindService extends Service {
 
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(getApplicationContext());
         RemoteViews views = new RemoteViews(this.getPackageName(), R.layout.grind_widget);
-        views.setTextViewText(R.id.widget_text, info);
+        views.setTextViewText(R.id.widget_text, StringUtil.widgetString(info));
         views.setImageViewResource(R.id.widget_play, android.R.drawable.ic_media_pause);
+
+        Intent intent = new Intent(getString(R.string.service_intent));
+        intent.putExtra(getString(R.string.service_intent_message), getResources().getInteger(R.integer.service_intent_stop));
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.widget_play, pendingIntent);
+        views.setViewVisibility(R.id.widget_play, View.VISIBLE);
+        views.setViewVisibility(R.id.widget_progress_bar, View.GONE);
+
         ComponentName widgetProvider = new ComponentName(getApplicationContext(), GrindWidgetProvider.class);
         widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }

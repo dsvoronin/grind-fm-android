@@ -6,12 +6,12 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.ServiceHandler;
 import com.dsvoronin.grindfm.activity.MainActivity;
 
 /**
@@ -25,19 +25,15 @@ public class GrindWidgetProvider extends AppWidgetProvider {
 
     private Context mContext;
 
-    private RemoteViews mRemoteViews;
-
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate");
 
         mContext = context;
-        mRemoteViews = new RemoteViews(context.getPackageName(), R.layout.grind_widget);
 
         setClickToLogo();
         setClickToPlay();
-
-        appWidgetManager.updateAppWidget(appWidgetIds, mRemoteViews);
+        setTextToDefault();
     }
 
     @Override
@@ -47,42 +43,63 @@ public class GrindWidgetProvider extends AppWidgetProvider {
         if (intent.getAction().equals(context.getString(R.string.service_intent))) {
             int message = intent.getIntExtra(context.getString(R.string.service_intent_message), -1);
             if (message != -1) {
-                Log.d(TAG, "Send status update");
+                Log.d(TAG, "Correct message. Go handle it!");
                 handler.sendEmptyMessage(message);
             } else {
-                Log.d(TAG, "No update to send: -1");
+                Log.d(TAG, "Incorrect message: -1");
             }
         }
         super.onReceive(context, intent);
     }
 
-    private Handler handler = new Handler() {
+    private ServiceHandler handler = new ServiceHandler(mContext) {
+
         @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == mContext.getResources().getInteger(R.integer.service_intent_message_progress)) {
-                Log.d(TAG, "Got Progress message");
-                setProgress();
-            }
+        protected void handleProgress() {
+            setProgress();
+        }
+
+        @Override
+        protected void handleStop() {
+            setClickToPlay();
+            setTextToDefault();
         }
     };
 
     private void setClickToLogo() {
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
+        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
         Intent intent = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.widget_to_activity, pendingIntent);
+        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
+        views.setOnClickPendingIntent(R.id.widget_to_activity, pendingIntent);
+        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }
 
     private void setClickToPlay() {
-        Intent intent = new Intent(mContext.getString(R.string.widget_intent));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.widget_play, pendingIntent);
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
+        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
+        Intent intent = new Intent(mContext, GrindService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(mContext, 0, intent, 0);
+        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
+        views.setOnClickPendingIntent(R.id.widget_play, pendingIntent);
+        views.setImageViewResource(R.id.widget_play, android.R.drawable.ic_media_play);
+        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
+    }
+
+    private void setTextToDefault() {
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
+        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
+        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
+        views.setTextViewText(R.id.widget_text, mContext.getString(R.string.radio_loading));
+        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }
 
     private void setProgress() {
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
         RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
         views.setViewVisibility(R.id.widget_play, View.GONE);
-        views.setViewVisibility(R.id.progress_bar, View.VISIBLE);
+        views.setViewVisibility(R.id.widget_progress_bar, View.VISIBLE);
         ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
         widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }

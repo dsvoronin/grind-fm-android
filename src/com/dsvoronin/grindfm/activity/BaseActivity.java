@@ -1,15 +1,19 @@
 package com.dsvoronin.grindfm.activity;
 
 import android.app.Activity;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.view.MenuButton;
@@ -22,15 +26,13 @@ import java.util.Map;
  * Date: 03.04.12
  * Time: 0:18
  */
-public abstract class BaseActivity extends Activity implements MenuButton.Pickable, ServiceConnection {
+public abstract class BaseActivity extends Activity implements MenuButton.Pickable {
 
     private final String TAG = "GRIND-ACTIVITY";
 
     protected Map<Integer, MenuButton> menuButtons = new LinkedHashMap<Integer, MenuButton>();
 
     private GrindReceiver grindReceiver;
-
-    private GrindService.GrindServiceImpl binder = null;
 
     private TextView headerRunningString;
     private ImageView playPause;
@@ -124,9 +126,9 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
         grindReceiver = new GrindReceiver();
         registerReceiver(grindReceiver, new IntentFilter(getString(R.string.service_intent)));
 
-        Intent i = new Intent(BaseActivity.this, GrindService.class);
-        bindService(i, BaseActivity.this, Context.BIND_AUTO_CREATE);
-
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            initStream();
+        }
         super.onResume();
     }
 
@@ -134,7 +136,6 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     protected void onPause() {
         unregisterReceiver(grindReceiver);
 
-        unbindService(this);
         super.onPause();
     }
 
@@ -146,39 +147,6 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
                 button.setUnpicked();
             }
         }
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder service) {
-        Log.d(TAG, "Service Connected");
-
-        binder = (GrindService.GrindServiceImpl) service;
-
-        try {
-            Log.d(TAG, "Is service playing audio? " + binder.playing());
-
-            startService(new Intent(this, GrindService.class));
-        } catch (RemoteException e) {
-            Log.e(TAG, "onServiceConnected", e);
-        }
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            try {
-                if (binder.playing()) {
-                    startStream();
-                } else {
-                    initStream();
-                }
-            } catch (RemoteException e) {
-                Log.e(TAG, "Can't start playing", e);
-            }
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-        Log.d(TAG, "Service Disconnected");
-        binder = null;
     }
 
     private class GrindReceiver extends BroadcastReceiver {
@@ -219,24 +187,8 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     private View.OnClickListener playClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            String TAG = "PlayClick";
-
-            try {
-                if (binder != null && binder.playing()) {
-                    binder.stopAudio();
-                }
-            } catch (RemoteException e) {
-                Log.e(TAG, "Cant stop");
-            }
-            Log.d(TAG, "Bind to our Streamer service");
-            try {
-                if (binder != null) {
-                    binder.startAudio();
-                }
-            } catch (RemoteException e) {
-                Toast.makeText(BaseActivity.this, "Ошибка", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Cant play");
-            }
+            Log.d(TAG, "Start Click");
+            startService(new Intent(getBaseContext(), GrindService.class));
             prepareStream();
         }
     };
@@ -247,12 +199,8 @@ public abstract class BaseActivity extends Activity implements MenuButton.Pickab
     private View.OnClickListener stopClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            String TAG = "StopClick";
-            try {
-                binder.stopAudio();
-            } catch (RemoteException e) {
-                Log.e(TAG, "Cant stop");
-            }
+            Log.d(TAG, "Stop Click");
+            stopService(new Intent(getBaseContext(), GrindService.class));
             initStream();
         }
     };

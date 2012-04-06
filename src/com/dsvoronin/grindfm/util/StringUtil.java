@@ -56,4 +56,11 @@ public class StringUtil {
     public static String getThumbnail(String youtubeId) {
         return "http://i.ytimg.com/vi/" + youtubeId + "/hqdefault.jpg";
     }
+
+    public static String widgetString(String s) {
+        String[] splitted = s.split("-", 2);
+        splitted[0] = "artist: " + splitted[0];
+        splitted[1] = "song:" + splitted[1];
+        return splitted[0] + "\n" + splitted[1];
+    }
 }

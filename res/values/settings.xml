@@ -2,6 +2,7 @@
     <string name="service_intent">service-intent</string>
     <string name="service_intent_message">message</string>
     <integer name="service_intent_message_progress">1</integer>
+    <integer name="service_intent_stop">2</integer>
 
     <string name="service_intent_info">service-intent-info</string>
     <string name="widget_intent">widget-intent</string>
