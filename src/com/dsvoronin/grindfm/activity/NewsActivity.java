@@ -48,6 +48,7 @@ public class NewsActivity extends BaseActivity {
             Intent intent = new Intent(NewsActivity.this, NewsDetailsActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             intent.putExtra(getString(R.string.intent_news_detail), ((NewsAdapter) adapterView.getAdapter()).getItem(i));
+            intent.putExtra("button-id", getIntent().getIntExtra("button-id", -1));
             startActivity(intent);
         }
     };

@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:grind="http://schemas.android.com/apk/res/com.dsvoronin.grindfm"
-              android:layout_width="fill_parent"
-              android:layout_height="50dp"
-              android:id="@+id/footer"
-              android:background="@drawable/footer_gradient"
-              android:layout_alignParentBottom="true"
-              android:orientation="horizontal">
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:id="@+id/footer_radio_group"
+            android:background="@drawable/footer_gradient"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
 
-    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
-                                           android:layout_weight="1"
-                                           android:layout_height="fill_parent"
-                                           android:id="@+id/menu_radio"
-                                           grind:image="@drawable/menu_radio_selector"/>
+    <RadioButton android:layout_width="0dp"
+                 android:layout_weight="1"
+                 android:layout_height="fill_parent"
+                 android:id="@+id/menu_radio"
+                 android:onClick="radioClick"
+                 android:button="@null"
+                 android:background="@drawable/menu_radio_selector"/>
 
-    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
-                                           android:layout_weight="1"
-                                           android:layout_height="fill_parent"
-                                           android:id="@+id/menu_news"
-                                           grind:image="@drawable/menu_news_selector"/>
+    <RadioButton android:layout_width="0dp"
+                 android:layout_weight="1"
+                 android:layout_height="fill_parent"
+                 android:id="@+id/menu_news"
+                 android:onClick="newsClick"
+                 android:button="@null"
+                 android:background="@drawable/menu_news_selector"/>
 
-    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
-                                           android:layout_weight="1"
-                                           android:layout_height="fill_parent"
-                                           android:id="@+id/menu_news_goha"
-                                           grind:image="@drawable/menu_goha_selector"/>
+    <RadioButton android:layout_width="0dp"
+                 android:layout_weight="1"
+                 android:layout_height="fill_parent"
+                 android:id="@+id/menu_news_goha"
+                 android:onClick="gohaClick"
+                 android:button="@null"
+                 android:background="@drawable/menu_goha_selector"/>
 
-    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
-                                           android:layout_weight="1"
-                                           android:layout_height="fill_parent"
-                                           android:id="@+id/menu_video"
-                                           grind:image="@drawable/menu_youtube_selector"/>
+    <RadioButton android:layout_width="0dp"
+                 android:layout_weight="1"
+                 android:layout_height="fill_parent"
+                 android:id="@+id/menu_video"
+                 android:onClick="youtubeClick"
+                 android:button="@null"
+                 android:background="@drawable/menu_youtube_selector"/>
 
-    <com.dsvoronin.grindfm.view.MenuButton android:layout_width="0dp"
-                                           android:layout_weight="1"
-                                           android:layout_height="fill_parent"
-                                           android:id="@+id/menu_vk"
-                                           grind:image="@drawable/menu_vk_selector"/>
+    <RadioButton android:layout_width="0dp"
+                 android:layout_weight="1"
+                 android:layout_height="fill_parent"
+                 android:id="@+id/menu_vk"
+                 android:onClick="vkClick"
+                 android:button="@null"
+                 android:background="@drawable/menu_vk_selector"/>
 
-</LinearLayout>
+</RadioGroup>
