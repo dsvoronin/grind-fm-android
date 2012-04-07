@@ -80,6 +80,10 @@ public abstract class BaseActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (this instanceof MainActivity) {
+                return super.onKeyDown(keyCode, event);
+            }
+
             if (!(this instanceof NewsDetailsActivity)) {
                 Intent a = new Intent(this, MainActivity.class);
                 a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
