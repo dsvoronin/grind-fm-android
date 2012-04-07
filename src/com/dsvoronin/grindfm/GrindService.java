@@ -4,8 +4,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -13,11 +11,7 @@ import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.RemoteViews;
-import com.dsvoronin.grindfm.activity.NewsActivity;
-import com.dsvoronin.grindfm.util.StringUtil;
-import com.dsvoronin.grindfm.widget.GrindWidgetProvider;
+import com.dsvoronin.grindfm.activity.MainActivity;
 import net.moraleboost.streamscraper.ScrapeException;
 import net.moraleboost.streamscraper.Scraper;
 import net.moraleboost.streamscraper.Stream;
@@ -44,28 +38,27 @@ public class GrindService extends Service {
     public void onCreate() {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         Log.d(TAG, "Created");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (!playing) {
-            sendMessage(getResources().getInteger(R.integer.service_intent_message_progress));
+            sendCommand(ServiceHandler.COMMAND_PROGRESS);
             start();
             Log.d(TAG, "Started");
         } else {
             Log.d(TAG, "Already playing");
         }
-
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        Log.d(TAG, "Destroyed");
         notificationManager.cancel(NOTIFICATION_ID);
         player.release();
+        super.onDestroy();
     }
 
     @Override
@@ -83,23 +76,24 @@ public class GrindService extends Service {
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
+                    Log.d(TAG, "Media prepared");
 
                     TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
                     tm.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
 
                     player.start();
+                    sendCommand(ServiceHandler.COMMAND_START);
 
                     String info = getInfo();
 
                     sendMessage(info);
                     showNotification(info);
-                    updateWidget(info);
                 }
             });
             player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    Log.e(TAG, "ERROR!");
+                    Log.e(TAG, "ERROR! code:" + i + "," + i1);
                     stop();
                     start();
                     return false;
@@ -112,13 +106,14 @@ public class GrindService extends Service {
         } catch (IOException e) {
             Log.e(TAG, "Error while loading url", e);
             playing = false;
-            onDestroy();
+            stopSelf();
         }
     }
 
     private void stop() {
 
         Log.d(TAG, "Player Stopped");
+        sendCommand(ServiceHandler.COMMAND_STOP);
 
         notificationManager.cancel(NOTIFICATION_ID);
         playing = false;
@@ -150,36 +145,9 @@ public class GrindService extends Service {
 
         String appName = getString(R.string.app_name);
         Notification notification = new Notification(R.drawable.cat, appName, System.currentTimeMillis());
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, NewsActivity.class), 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
         notification.setLatestEventInfo(this, appName, info, pendingIntent);
         notificationManager.notify(NOTIFICATION_ID, notification);
-    }
-
-    private void updateWidget(String info) {
-        Log.d(TAG, "Widget update");
-
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        RemoteViews views = new RemoteViews(this.getPackageName(), R.layout.grind_widget);
-        views.setTextViewText(R.id.widget_text, StringUtil.widgetString(info));
-        views.setImageViewResource(R.id.widget_play, android.R.drawable.ic_media_pause);
-
-        Intent intent = new Intent(getString(R.string.service_intent));
-        intent.putExtra(getString(R.string.service_intent_message), getResources().getInteger(R.integer.service_intent_stop));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.widget_play, pendingIntent);
-        views.setViewVisibility(R.id.widget_play, View.VISIBLE);
-        views.setViewVisibility(R.id.widget_progress_bar, View.GONE);
-
-        ComponentName widgetProvider = new ComponentName(getApplicationContext(), GrindWidgetProvider.class);
-        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
-    }
-
-    private void sendMessage(String info) {
-        Log.d(TAG, "Running string update");
-
-        Intent intent = new Intent(getString(R.string.service_intent));
-        intent.putExtra(getString(R.string.service_intent_info), info);
-        sendBroadcast(intent);
     }
 
     private String getInfo() {
@@ -205,10 +173,17 @@ public class GrindService extends Service {
         return "";
     }
 
-    private synchronized void sendMessage(int m) {
-        Intent i = new Intent(getString(R.string.service_intent));
-        i.putExtra(getString(R.string.service_intent_message), m);
-        Log.d(TAG, "Send Broadcast Message: " + i.getAction() + ":" + m);
-        this.sendBroadcast(i);
+    private synchronized void sendCommand(int m) {
+        Log.d(TAG, "Sending command N: " + m);
+        Intent intent = new Intent("service-intent");
+        intent.putExtra("service-command", m);
+        this.sendBroadcast(intent);
+    }
+
+    private synchronized void sendMessage(String info) {
+        Log.d(TAG, "Sending message N: " + info);
+        Intent intent = new Intent("service-intent");
+        intent.putExtra("service-message", info);
+        sendBroadcast(intent);
     }
 }

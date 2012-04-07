@@ -35,7 +35,7 @@
                android:clickable="true"
                android:src="@drawable/widget_button"
                android:background="@drawable/widget_gradient"
-               android:id="@+id/widget_play"
+               android:id="@+id/widget_button"
                android:contentDescription="@string/content_description_image"/>
 
     <ProgressBar android:layout_width="75dp"

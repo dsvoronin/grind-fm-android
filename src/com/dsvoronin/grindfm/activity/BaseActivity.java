@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.*;
 import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.ServiceHandler;
 
 /**
  * User: dsvoronin
@@ -26,10 +27,14 @@ public abstract class BaseActivity extends Activity {
 
     private GrindReceiver grindReceiver;
 
+    private ServiceHandler handler;
+
     private TextView headerRunningString;
     private ImageView playPause;
     private ProgressBar progressBar;
     private RelativeLayout radioControl;
+
+    private static boolean firstStart = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +57,18 @@ public abstract class BaseActivity extends Activity {
 
     @Override
     protected void onResume() {
-        grindReceiver = new GrindReceiver();
-        registerReceiver(grindReceiver, new IntentFilter(getString(R.string.service_intent)));
+        if (grindReceiver == null) {
+            grindReceiver = new GrindReceiver();
+            registerReceiver(grindReceiver, new IntentFilter("service-intent"));
+        }
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            initStream();
+
+            if (firstStart) {
+                Log.d(TAG, "FirstStart. Init control");
+                initStream();
+                firstStart = false;
+            }
 
             int buttonId = getIntent().getIntExtra("button-id", -1);
 
@@ -72,9 +84,14 @@ public abstract class BaseActivity extends Activity {
 
     @Override
     protected void onPause() {
-        unregisterReceiver(grindReceiver);
         super.onPause();
         overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(grindReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -133,10 +150,48 @@ public abstract class BaseActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                String info = intent.getStringExtra(getString(R.string.service_intent_info));
-                headerRunningString.setText(info);
-                startStream();
+
+                if (handler == null) {
+                    handler = new ServiceHandlerWidgetImpl();
+                }
+
+                int command = intent.getIntExtra("service-command", -1);
+                if (command != -1) {
+                    handler.sendEmptyMessage(command);
+                } else {
+                    Log.d(TAG, "Incorrect command: -1");
+                }
+
+                String info = intent.getStringExtra("service-message");
+                if (info != null) {
+                    Log.d(TAG, "Got service message");
+                    headerRunningString.setText(info);
+                }
             }
+        }
+    }
+
+    private class ServiceHandlerWidgetImpl extends ServiceHandler {
+
+        @Override
+        protected void handleProgress() {
+            Log.d(TAG, "Got process command");
+
+            prepareStream();
+        }
+
+        @Override
+        protected void handleStop() {
+            Log.d(TAG, "Got stop command");
+
+            initStream();
+        }
+
+        @Override
+        protected void handleStart() {
+            Log.d(TAG, "Got start command");
+
+            startStream();
         }
     }
 
@@ -169,7 +224,6 @@ public abstract class BaseActivity extends Activity {
         public void onClick(View view) {
             Log.d(TAG, "Start Click");
             startService(new Intent(getBaseContext(), GrindService.class));
-            prepareStream();
         }
     };
 
@@ -181,7 +235,6 @@ public abstract class BaseActivity extends Activity {
         public void onClick(View view) {
             Log.d(TAG, "Stop Click");
             stopService(new Intent(getBaseContext(), GrindService.class));
-            initStream();
         }
     };
 }

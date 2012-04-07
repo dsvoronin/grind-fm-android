@@ -13,6 +13,7 @@ import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.ServiceHandler;
 import com.dsvoronin.grindfm.activity.MainActivity;
+import com.dsvoronin.grindfm.util.StringUtil;
 
 /**
  * User: dsvoronin
@@ -25,82 +26,134 @@ public class GrindWidgetProvider extends AppWidgetProvider {
 
     private Context mContext;
 
+    private AppWidgetManager widgetManager;
+
+    private ComponentName widgetProvider;
+
+    private RemoteViews views;
+
+    private ServiceHandler handler;
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate");
 
         mContext = context;
 
+        widgetManager = AppWidgetManager.getInstance(mContext);
+        views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
+        widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
+
         setClickToLogo();
         setClickToPlay();
         setTextToDefault();
+        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Got broadcast: " + intent.getAction());
         mContext = context;
-        if (intent.getAction().equals(context.getString(R.string.service_intent))) {
-            int message = intent.getIntExtra(context.getString(R.string.service_intent_message), -1);
-            if (message != -1) {
-                Log.d(TAG, "Correct message. Go handle it!");
-                handler.sendEmptyMessage(message);
-            } else {
-                Log.d(TAG, "Incorrect message: -1");
-            }
+
+        if (handler == null) {
+            handler = new ServiceHandlerWidgetImpl();
         }
-        super.onReceive(context, intent);
+
+        if (widgetManager == null) {
+            widgetManager = AppWidgetManager.getInstance(mContext);
+        }
+
+        if (views == null) {
+            views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
+        }
+
+        if (widgetProvider == null) {
+            widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
+        }
+
+        if (intent.getAction().equals("service-intent")) {
+            int command = intent.getIntExtra("service-command", -1);
+            if (command != -1) {
+                handler.sendEmptyMessage(command);
+            } else {
+                Log.d(TAG, "Incorrect command: -1");
+            }
+
+            String message = intent.getStringExtra("service-message");
+            if (message != null) {
+                Log.d(TAG, "Got service message");
+                updateText(StringUtil.widgetString(message));
+                widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
+            }
+        } else {
+            super.onReceive(context, intent);
+        }
     }
 
-    private ServiceHandler handler = new ServiceHandler(mContext) {
+    private class ServiceHandlerWidgetImpl extends ServiceHandler {
 
         @Override
         protected void handleProgress() {
+            Log.d(TAG, "Got process command");
+
             setProgress();
+            widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
         }
 
         @Override
         protected void handleStop() {
+            Log.d(TAG, "Got stop command");
+
+            mContext.stopService(new Intent(mContext, GrindService.class));
             setClickToPlay();
             setTextToDefault();
+            widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
         }
-    };
+
+        @Override
+        protected void handleStart() {
+            Log.d(TAG, "Got start command");
+
+            setButtonPause();
+            widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
+        }
+    }
 
     private void setClickToLogo() {
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
-        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
         Intent intent = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
-        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
         views.setOnClickPendingIntent(R.id.widget_to_activity, pendingIntent);
-        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }
 
     private void setClickToPlay() {
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
-        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
         Intent intent = new Intent(mContext, GrindService.class);
         PendingIntent pendingIntent = PendingIntent.getService(mContext, 0, intent, 0);
-        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
-        views.setOnClickPendingIntent(R.id.widget_play, pendingIntent);
-        views.setImageViewResource(R.id.widget_play, android.R.drawable.ic_media_play);
-        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
+        views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
+        views.setImageViewResource(R.id.widget_button, android.R.drawable.ic_media_play);
+    }
+
+    private void setButtonPause() {
+        Log.d(TAG, "GOTCHA");
+
+//        Intent intent = new Intent("service-intent");
+//        intent.putExtra("service-command", ServiceHandler.COMMAND_STOP);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+//        views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
+        views.setImageViewResource(R.id.widget_button, android.R.drawable.ic_media_pause);
+//        views.setViewVisibility(R.id.widget_button, View.VISIBLE);
+//        views.setViewVisibility(R.id.widget_progress_bar, View.GONE);
     }
 
     private void setTextToDefault() {
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
-        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
-        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
         views.setTextViewText(R.id.widget_text, mContext.getString(R.string.radio_loading));
-        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
+    }
+
+    protected void updateText(String info) {
+        views.setTextViewText(R.id.widget_text, info);
     }
 
     private void setProgress() {
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
-        RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.grind_widget);
-        views.setViewVisibility(R.id.widget_play, View.GONE);
+        views.setViewVisibility(R.id.widget_button, View.GONE);
         views.setViewVisibility(R.id.widget_progress_bar, View.VISIBLE);
-        ComponentName widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
-        widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(widgetProvider), views);
     }
 }
