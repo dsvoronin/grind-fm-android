@@ -25,7 +25,7 @@ import java.util.List;
 
 public class GrindService extends Service {
 
-    private final String TAG = "GRIND-SERVICE";
+    private final String TAG = "Grind.Service";
 
     private static final int NOTIFICATION_ID = 6;
 
@@ -35,11 +35,35 @@ public class GrindService extends Service {
 
     private NotificationManager notificationManager;
 
+    private PhoneStateListener phoneStateListener = new PhoneStateListener() {
+        public void onCallStateChanged(int state, String incomingNumber) {
+            switch (state) {
+                case TelephonyManager.CALL_STATE_RINGING:
+                    if (playing) {
+                        Log.d(TAG, "Someone's calling. Stop playback");
+                        player.stop();
+                    }
+                    break;
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE:
+                    if (!playing) {
+                        Log.d(TAG, "Call state - idle. Restart playback");
+                        player.start();
+                    }
+                    break;
+                default:
+                    Log.d(TAG, "Unknown phone state = " + state);
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Log.d(TAG, "Created");
+
     }
 
     @Override
@@ -80,9 +104,10 @@ public class GrindService extends Service {
                     Log.d(TAG, "Media prepared");
 
                     TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-                    tm.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
+                    tm.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
                     player.start();
+                    playing = true;
                     sendCommand(ServiceHandler.COMMAND_START);
 
                     String info = getInfo();
@@ -97,13 +122,23 @@ public class GrindService extends Service {
                     Log.e(TAG, "ERROR! code:" + i + "," + i1);
                     stop();
                     start();
+                    playing = false;
+                    return false;
+                }
+            });
+            player.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mediaPlayer, int what, int extras) {
+                    Log.d(TAG, what + " " + extras);
+                    if (what == MediaPlayer.MEDIA_INFO_METADATA_UPDATE) {
+                        Log.d(TAG, "Metadata updated " + extras);
+                    }
                     return false;
                 }
             });
 
             player.prepareAsync();
 
-            playing = true;
         } catch (IOException e) {
             Log.e(TAG, "Error while loading url", e);
             playing = false;
@@ -121,25 +156,6 @@ public class GrindService extends Service {
         player.release();
     }
 
-    final PhoneStateListener phoneListener = new PhoneStateListener() {
-        public void onCallStateChanged(int state, String incomingNumber) {
-
-            switch (state) {
-                case TelephonyManager.CALL_STATE_RINGING:
-                    Log.d(TAG, "Someone's calling. Stop playback");
-                    player.stop();
-                    break;
-                case TelephonyManager.CALL_STATE_OFFHOOK:
-                    break;
-                case TelephonyManager.CALL_STATE_IDLE:
-                    Log.d(TAG, "Call ended. Restart playback");
-                    player.start();
-                    break;
-                default:
-                    Log.d(TAG, "Unknown phone state = " + state);
-            }
-        }
-    };
 
     /**
      * show user an ongoing_event notification
