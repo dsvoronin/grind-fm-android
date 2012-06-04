@@ -133,15 +133,13 @@ public class GrindWidgetProvider extends AppWidgetProvider {
     }
 
     private void setButtonPause() {
-        Log.d(TAG, "GOTCHA");
-
-//        Intent intent = new Intent("service-intent");
-//        intent.putExtra("service-command", ServiceHandler.COMMAND_STOP);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
-//        views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
+        Intent intent = new Intent("service-intent");
+        intent.putExtra("service-command", ServiceHandler.COMMAND_STOP);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.widget_button, pendingIntent);
         views.setImageViewResource(R.id.widget_button, android.R.drawable.ic_media_pause);
-//        views.setViewVisibility(R.id.widget_button, View.VISIBLE);
-//        views.setViewVisibility(R.id.widget_progress_bar, View.GONE);
+        views.setViewVisibility(R.id.widget_button, View.VISIBLE);
+        views.setViewVisibility(R.id.widget_progress_bar, View.GONE);
     }
 
     private void setTextToDefault() {

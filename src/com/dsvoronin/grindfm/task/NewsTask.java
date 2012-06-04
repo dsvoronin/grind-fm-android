@@ -3,6 +3,7 @@ package com.dsvoronin.grindfm.task;
 import android.content.Context;
 import com.dsvoronin.grindfm.adapter.BaseListAdapter;
 import com.dsvoronin.grindfm.model.NewsItem;
+import com.dsvoronin.grindfm.rss.FeedParser;
 import com.dsvoronin.grindfm.rss.SaxFeedParser;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class NewsTask extends BaseTask {
         ArrayList<NewsItem> result = new ArrayList<NewsItem>();
 
         for (String url : urls) {
-            SaxFeedParser parser = new SaxFeedParser(url);
+            FeedParser parser = new SaxFeedParser(url);
             result.addAll(parser.parse());
         }
 

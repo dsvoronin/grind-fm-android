@@ -1,13 +1,14 @@
 package com.dsvoronin.grindfm;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -140,14 +141,29 @@ public class GrindService extends Service {
         }
     };
 
+    /**
+     * show user an ongoing_event notification
+     *
+     * @param info artist/song pair
+     */
     private void showNotification(String info) {
-        Log.d(TAG, "Notification show");
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        String appName = getString(R.string.app_name);
-        Notification notification = new Notification(R.drawable.cat, appName, System.currentTimeMillis());
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-        notification.setLatestEventInfo(this, appName, info, pendingIntent);
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(contentIntent);
+        builder.setSmallIcon(R.drawable.cat_status_bar);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.cat_status_bar_large));
+        builder.setTicker(getString(R.string.app_name));
+        builder.setWhen(System.currentTimeMillis());
+        builder.setAutoCancel(false);
+        builder.setContentTitle(getString(R.string.app_name));
+        builder.setContentText(info);
+        builder.setOngoing(true);
+
+        notificationManager.notify(NOTIFICATION_ID, builder.getNotification());
+
+        Log.d(TAG, "Notification shown");
     }
 
     private String getInfo() {
