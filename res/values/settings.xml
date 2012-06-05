@@ -1,17 +1,34 @@
 <resources>
-    <string name="youtube_channel">GrindNetwork</string>
+
+    <!-- RADIO -->
     <string name="radio_stream_url_ogg">http://radio.goha.ru:8000/grindfm.ogg</string>
     <string name="radio_stream_url_mp3">http://radio.goha.ru:8000/grind.fm</string>
     <string name="radio_stream_url_aac">http://radio.goha.ru:8000/grindfm.aac</string>
-    <string name="news_url">http://www.grind.fm/rss.xml</string>
-    <string name="vkontakte_url">http://m.vk.com/club10770176</string>
-    <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
-    <string name="calendar_id">i043gfpofvu1v8bc31qsbqtvu0@group.calendar.google.com</string>
+    <string name="radio_playlist">http://media.goha.ru/radio/meta2.php</string>
+    <string name="radio_counter">http://media.goha.ru/radio/counter.php</string>
+
+    <!-- NEWS -->
     <string name="rss_goha_grindfm">http://www.goha.ru/feed/54/rss</string>
     <string name="rss_goha_main">http://www.goha.ru/feed/0/rss</string>
-    <string name="grindfm_counter">http://media.goha.ru/radio/counter.php</string>
 
-    <string name="intent_news_feed">news-feed</string>
-    <string name="intent_news_detail">news-detail</string>
-    <string name="intent_request_string">request-string</string>
+    <!-- YOUTUBE -->
+    <string name="youtube_url" formatted="false">http://gdata.youtube.com/feeds/api/users/%USER%/uploads?v=2&amp;alt=jsonc&amp;orderby=published</string>
+    <string name="youtube_user">GrindNetwork</string>
+    <string name="youtube_playlist_postrelushka">CE7DBB07594C04EF</string>
+    <string name="youtube_watch">http://www.youtube.com/watch?v=</string>
+
+    <!-- HTTP CLIENT -->
+    <integer name="connection_timeout">5000</integer>
+    <integer name="socket_timeout">5000</integer>
+
+    <!-- VKONTAKTE -->
+    <string name="vkontakte_url">http://m.vk.com/club10770176</string>
+
+    <!-- SONG REQUEST -->
+    <string name="request_search_url">http://media.goha.ru/radio/req2.php?anything=</string>
+    <string name="request_url">http://media.goha.ru/radio/req2.php?int_id=</string>
+
+    <!-- CALENDAR -->
+    <string name="calendar_id">i043gfpofvu1v8bc31qsbqtvu0@group.calendar.google.com</string>
+
 </resources>

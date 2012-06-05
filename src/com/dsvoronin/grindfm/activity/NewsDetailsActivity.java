@@ -19,12 +19,14 @@ import com.dsvoronin.grindfm.util.StringUtil;
  */
 public class NewsDetailsActivity extends BaseActivity {
 
+    public static final String INTENT_EXTRA = "news-detail";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_details);
 
-        NewsItem newsItem = (NewsItem) getIntent().getSerializableExtra(getString(R.string.intent_news_detail));
+        NewsItem newsItem = (NewsItem) getIntent().getSerializableExtra(INTENT_EXTRA);
 
         TextView newsTitle = (TextView) findViewById(R.id.news_details_title);
         newsTitle.setText(newsItem.getTitle());

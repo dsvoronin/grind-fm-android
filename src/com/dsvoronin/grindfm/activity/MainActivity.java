@@ -31,7 +31,7 @@ public class MainActivity extends BaseActivity {
                 if (searchTextString != null && !searchTextString.isEmpty()) {
                     Intent intent = new Intent(MainActivity.this, RequestActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    intent.putExtra(getString(R.string.intent_request_string), searchTextString);
+                    intent.putExtra(RequestActivity.INTENT_EXTRA, searchTextString);
                     startActivity(intent);
                 }
             }

@@ -4,11 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.adapter.BaseListAdapter;
 import com.dsvoronin.grindfm.adapter.NewsAdapter;
+import com.dsvoronin.grindfm.model.NewsItem;
+import com.dsvoronin.grindfm.task.BackgroundHttpTask;
 import com.dsvoronin.grindfm.task.NewsTask;
 
 /**
@@ -16,40 +17,56 @@ import com.dsvoronin.grindfm.task.NewsTask;
  * Date: 03.04.12
  * Time: 0:17
  */
-public class NewsActivity extends BaseActivity {
+public class NewsActivity extends HttpListActivity<NewsItem> {
+
+    public static final String INTENT_EXTRA = "news-feed";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.news);
+    }
 
-        String feed = getIntent().getStringExtra(getString(R.string.intent_news_feed));
+    @Override
+    protected int getLayoutId() {
+        return R.layout.news;
+    }
 
-        NewsAdapter adapter = new NewsAdapter(this);
+    @Override
+    protected BaseListAdapter<NewsItem> createAdapter() {
+        return new NewsAdapter(this, R.layout.news_item);
+    }
 
-        ListView newsList = (ListView) findViewById(R.id.news_list);
-        newsList.setAdapter(adapter);
-        newsList.setOnItemClickListener(onNewsClickListener);
+    @Override
+    protected ListView findListView() {
+        return (ListView) findViewById(R.id.news_list);
+    }
 
-        NewsTask task = new NewsTask(this, adapter);
-        task.setProgress((ImageView) findViewById(R.id.news_progress));
-        task.setTryAgain((Button) findViewById(R.id.news_try_again));
+    @Override
+    protected BackgroundHttpTask<NewsItem> createTask() {
+        return new NewsTask(this);
+    }
 
+    @Override
+    protected String getTaskParam() {
+        String feed = getIntent().getStringExtra(INTENT_EXTRA);
         if (feed == null) {
-            task.execute(getString(R.string.rss_goha_grindfm));
+            return getString(R.string.rss_goha_grindfm);
         } else {
-            task.execute(feed);
+            return feed;
         }
     }
 
-    private AdapterView.OnItemClickListener onNewsClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            Intent intent = new Intent(NewsActivity.this, NewsDetailsActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            intent.putExtra(getString(R.string.intent_news_detail), ((NewsAdapter) adapterView.getAdapter()).getItem(i));
-            intent.putExtra("button-id", getIntent().getIntExtra("button-id", -1));
-            startActivity(intent);
-        }
-    };
+    @Override
+    protected AdapterView.OnItemClickListener defineItemClickListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(NewsActivity.this, NewsDetailsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.putExtra(NewsDetailsActivity.INTENT_EXTRA, ((NewsAdapter) adapterView.getAdapter()).getItem(i));
+                intent.putExtra("button-id", getIntent().getIntExtra("button-id", -1));
+                startActivity(intent);
+            }
+        };
+    }
 }

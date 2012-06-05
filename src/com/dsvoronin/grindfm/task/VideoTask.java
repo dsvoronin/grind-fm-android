@@ -1,73 +1,46 @@
 package com.dsvoronin.grindfm.task;
 
-import android.content.Context;
 import android.util.Log;
 import com.dsvoronin.grindfm.R;
-import com.dsvoronin.grindfm.adapter.BaseListAdapter;
+import com.dsvoronin.grindfm.activity.HttpListActivity;
 import com.dsvoronin.grindfm.model.Video;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import com.dsvoronin.grindfm.util.GrindHttpClientException;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-public class VideoTask extends BaseTask {
+public class VideoTask extends BackgroundHttpTask<Video> {
 
-    private static final String TAG = VideoTask.class.getSimpleName();
+    private static final String TAG = "Grind.VideoTask";
 
-    private static final String YOUTUBE_API_LINK_ALL_VIDEOS =
-            "http://gdata.youtube.com/feeds/api/users/%CHANNEL%/uploads?" +
-                    "v=2&" +
-                    "alt=jsonc&" +
-                    "orderby=published";
-
-    private String query;
-
-    public VideoTask(Context mContext, BaseListAdapter mAdapter) {
-        super(mContext, mAdapter);
-        String youtubeChannel = mContext.getString(R.string.youtube_channel);
-        query = YOUTUBE_API_LINK_ALL_VIDEOS.replace("%CHANNEL%", youtubeChannel);
+    public VideoTask(HttpListActivity<Video> videoHttpListActivity) {
+        super(videoHttpListActivity);
     }
 
     @Override
-    protected ArrayList processAsync(String... url) throws Exception {
-        HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(query);
-        HttpResponse r = client.execute(get);
-        int status = r.getStatusLine().getStatusCode();
+    protected ArrayList<Video> processAsync(String... url) throws GrindHttpClientException {
+        String requestURL = activity.getString(R.string.youtube_url).replace("%USER%", activity.getString(R.string.youtube_user));
+        Log.d(TAG, "requestURL = " + requestURL);
 
-        Log.d(TAG, String.valueOf(status));
+        String response = grindHttpClient.request(new HttpGet(requestURL));
+        Log.d(TAG, "response = " + response);
 
-        HttpEntity e = r.getEntity();
-        String data = EntityUtils.toString(e);
-
-        JSONObject json = new JSONObject(data);
-        JSONObject dataObject = json.getJSONObject("data");
-        JSONArray items = dataObject.getJSONArray("items");
-
-        ArrayList<Video> result = new ArrayList<Video>();
-
-        for (int i = 0; i < items.length(); i++) {
-            JSONObject videoObject = items.getJSONObject(i);
-
-            Video video = new Video();
-            video.setTitle(videoObject.getString("title"));
-            video.setDate(videoObject.getString("uploaded"));
-            video.setThumb(videoObject.getJSONObject("thumbnail").getString("hqDefault"));
-            video.setUrl(videoObject.getString("id"));
-
-            result.add(video);
-        }
-
-        return result;
-    }
-
-    @Override
-    protected void afterTaskActions() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Date.class, new Video.DateDeserializer());
+        JsonParser parser = new JsonParser();
+        JsonObject object = parser.parse(response).getAsJsonObject();
+        JsonObject data = object.get("data").getAsJsonObject();
+        JsonArray array = data.get("items").getAsJsonArray();
+        Type collectionType = new TypeToken<List<Video>>() {
+        }.getType();
+        return builder.create().fromJson(array, collectionType);
     }
 }

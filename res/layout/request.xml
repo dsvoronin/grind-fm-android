@@ -27,14 +27,14 @@
     <ImageView android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:layout_centerInParent="true"
-               android:id="@+id/request_progress"
+               android:id="@+id/progress"
                android:contentDescription="@string/content_description_image"/>
 
     <Button android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/request_try_again"
+            android:id="@+id/try_again"
             android:layout_centerInParent="true"
-            android:layout_below="@id/news_progress"
+            android:layout_below="@id/progress"
             android:text="@string/error_try_again"
             android:visibility="gone"/>
 

@@ -1,92 +1,146 @@
 package com.dsvoronin.grindfm.adapter;
 
-import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import com.dsvoronin.grindfm.activity.HttpListActivity;
 
 import java.util.ArrayList;
 
 /**
- * Базовый адаптер, работающий с array list'ом объектов
- *
- * @param <T>
+ * User: dsvoronin
+ * Date: 02.06.12
+ * Time: 22:46
+ * Базовый адаптер, работающий с arraylist
  */
 public abstract class BaseListAdapter<T> extends BaseAdapter {
 
-    private ArrayList<T> mContent;
+    /**
+     * активите, где будет отображаться список
+     */
+    private HttpListActivity<T> context;
 
-    private Activity mActivity;
+    /**
+     * layout для отображения элемента списка
+     */
+    private int layoutId;
 
-    private LayoutInflater inflater;
+    /**
+     * список, который будет отображаться в активити
+     */
+    private ArrayList<T> content;
 
-    public BaseListAdapter(Activity activity) {
-        mActivity = activity;
-        mContent = new ArrayList<T>();
-
-        init();
+    public BaseListAdapter(HttpListActivity<T> context, int layoutId) {
+        this.context = context;
+        this.layoutId = layoutId;
+        this.content = new ArrayList<T>();
     }
 
-    public BaseListAdapter(Activity activity, ArrayList<T> content) {
-        mActivity = activity;
-        mContent = content;
-
-        init();
+    public BaseListAdapter(HttpListActivity<T> context, int layoutId, ArrayList<T> content) {
+        this.context = context;
+        this.layoutId = layoutId;
+        this.content = content;
     }
 
-    private void init() {
-        inflater = mActivity.getLayoutInflater();
-    }
-
+    /**
+     * добавить список к уже существующему контенту
+     *
+     * @param list +контент
+     */
     public void addListToExistingContent(ArrayList<T> list) {
-        mContent.addAll(list);
+        content.addAll(list);
+        notifyDataSetChanged();
     }
 
+    /**
+     * заменить текущий контент новым
+     *
+     * @param list новый контент
+     */
     public void replaceContent(ArrayList<T> list) {
-        mContent.clear();
-        mContent.addAll(list);
+        content.clear();
+        content.addAll(list);
+        notifyDataSetChanged();
     }
 
+    /**
+     * @return имеется ли контент?
+     */
     public boolean hasContent() {
-        return mContent != null && mContent.size() > 0;
+        return content != null && content.size() > 0;
     }
 
+    /**
+     * удалить текущий контент
+     */
     public void clear() {
-        mContent.clear();
+        content.clear();
     }
 
+    /**
+     * добавить один элемент
+     * !!! Использовать только для добавлении отдельного элемента, не в цикле. для списка есть методы
+     * addListToExistingContent
+     * replaceContent
+     *
+     * @param object элемент
+     */
     public void add(T object) {
-        mContent.add(object);
+        content.add(object);
+        notifyDataSetChanged();
     }
 
+    /**
+     * @return текущий контент
+     */
     public ArrayList<T> getContent() {
-        return mContent;
+        return content;
     }
 
+    /**
+     * @return базовая активность
+     */
+    public HttpListActivity<T> getContext() {
+        return context;
+    }
+
+    /**
+     * @return размер текущего контента (кол-во элементов)
+     */
     @Override
     public int getCount() {
-        return mContent.size();
+        return content.size();
     }
 
+    /**
+     * получить элемент по индексу
+     *
+     * @param index индекс
+     * @return элемент
+     */
     @Override
     public T getItem(int index) {
-        return mContent.get(index);
+        return content.get(index);
     }
 
+    /**
+     * получить айди элемента (используем hashcode)
+     *
+     * @param index индекс элемента
+     * @return айди (.hashCode())
+     */
     @Override
     public long getItemId(int index) {
         return getItem(index).hashCode();
     }
 
-    protected Activity getActivity() {
-        return mActivity;
-    }
-
-    protected LayoutInflater getInflater() {
-        return inflater;
-    }
-
     @Override
-    public abstract View getView(int index, View view, ViewGroup viewGroup);
+    public View getView(int index, View view, ViewGroup viewGroup) {
+        if (view == null) {
+            view = context.getLayoutInflater().inflate(layoutId, null);
+        }
+        return setupView(view, getItem(index), index);
+    }
+
+    protected abstract View setupView(View view, T currentItem, int index);
 }

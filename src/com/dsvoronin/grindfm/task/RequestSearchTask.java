@@ -1,63 +1,51 @@
 package com.dsvoronin.grindfm.task;
 
-import android.content.Context;
 import android.util.Log;
-import com.dsvoronin.grindfm.adapter.BaseListAdapter;
+import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.activity.HttpListActivity;
 import com.dsvoronin.grindfm.model.RequestSong;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import com.dsvoronin.grindfm.util.GrindHttpClientException;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
-public class RequestSearchTask extends BaseTask {
+/**
+ * @author dsvoronin
+ */
+public class RequestSearchTask extends BackgroundHttpTask<RequestSong> {
 
-    private static final String TAG = RequestSearchTask.class.getSimpleName();
+    private static final String TAG = "Grind.RequestSearchTask";
 
-    private static final String REQUEST_SEARCH_URL = "http://media.goha.ru/radio/req2.php?anything=";
-
-    public RequestSearchTask(Context mContext, BaseListAdapter mAdapter) {
-        super(mContext, mAdapter);
+    public RequestSearchTask(HttpListActivity<RequestSong> requestSongHttpListActivity) {
+        super(requestSongHttpListActivity);
     }
 
     @Override
-    protected ArrayList processAsync(String... url) throws Exception {
-        HttpClient client = new DefaultHttpClient();
-        HttpGet get = new HttpGet(REQUEST_SEARCH_URL + url[0].trim());
-        HttpResponse r = client.execute(get);
+    protected ArrayList<RequestSong> processAsync(String... url) throws GrindHttpClientException {
+        String requestURL = activity.getString(R.string.request_search_url) + url[0].trim();
 
-        int status = r.getStatusLine().getStatusCode();
-        Log.d(TAG, String.valueOf(status));
+        Log.d(TAG, "requestURL = " + requestURL);
 
-        HttpEntity e = r.getEntity();
-        String data = EntityUtils.toString(e);
-        String reqShow = data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'));
-        JSONObject json = new JSONObject(reqShow);
-        JSONArray items = json.getJSONArray("result");
+        String response = grindHttpClient.request(new HttpGet(requestURL));
 
-        ArrayList<RequestSong> songList = new ArrayList<RequestSong>();
+        Log.d(TAG, "response = " + response);
 
-        for (int i = 0; i < items.length(); i++) {
-            JSONObject videoObject = items.getJSONObject(i);
+        String reqShow = response.substring(response.indexOf('(') + 1, response.lastIndexOf(')'));
 
-            RequestSong song = new RequestSong();
-            song.setId(videoObject.getInt("int_id"));
-            song.setAlbum(videoObject.getString("album"));
-            song.setArtist(videoObject.getString("artist"));
-            song.setAvailable(videoObject.get("lastp").toString().equals("null"));
-            song.setTitle(videoObject.getString("title"));
-            songList.add(song);
-        }
+        GsonBuilder builder = new GsonBuilder();
+        JsonParser parser = new JsonParser();
+        JsonObject object = parser.parse(reqShow).getAsJsonObject();
+        JsonArray result = object.get("result").getAsJsonArray();
 
-        return songList;
-    }
-
-    @Override
-    protected void afterTaskActions() {
+        Type collectionType = new TypeToken<List<RequestSong>>() {
+        }.getType();
+        return builder.create().fromJson(result, collectionType);
     }
 }

@@ -121,7 +121,7 @@ public abstract class BaseActivity extends Activity {
     private void menuClick(Class<?> destinationActivityClass, int buttonId, String extraNewsFeed) {
         Intent intent = new Intent(this, destinationActivityClass);
         intent.putExtra("button-id", buttonId);
-        intent.putExtra(getString(R.string.intent_news_feed), extraNewsFeed);
+        intent.putExtra(NewsActivity.INTENT_EXTRA, extraNewsFeed);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
