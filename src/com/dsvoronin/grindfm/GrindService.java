@@ -1,27 +1,21 @@
 package com.dsvoronin.grindfm;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import com.dsvoronin.grindfm.activity.MainActivity;
-import com.dsvoronin.grindfm.util.GrindHttpClient;
-import com.dsvoronin.grindfm.util.GrindHttpClientException;
-import org.apache.http.client.methods.HttpGet;
+import com.dsvoronin.grindfm.task.OggMetaTask;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -32,7 +26,7 @@ public class GrindService extends Service {
 
     private final String TAG = "Grind.Service";
 
-    private static final int NOTIFICATION_ID = 6;
+    public static final int NOTIFICATION_ID = 6;
 
     public static final int COMMAND_GET_STATUS = 4;
 
@@ -46,6 +40,8 @@ public class GrindService extends Service {
 
     private PlayerReceiver receiver;
 
+    private String oldMeta;
+
     private class PlayerHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -53,7 +49,7 @@ public class GrindService extends Service {
                 case COMMAND_GET_STATUS:
                     if (playing) {
                         sendCommand(ServiceHandler.COMMAND_START);
-                        GrindService.this.sendMessage(getInfo());
+                        new OggMetaTask(GrindService.this).execute(getString(R.string.radio_stream_meta));
                     } else {
                         sendCommand(ServiceHandler.COMMAND_STOP);
                     }
@@ -115,20 +111,9 @@ public class GrindService extends Service {
 
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleWithFixedDelay(new Runnable() {
-            private String info;
-
             @Override
             public void run() {
-                String newInfo = getInfo();
-                if (info == null) {
-                    info = newInfo;
-                } else {
-                    if (!info.equals(newInfo)) {
-                        sendMessage(newInfo);
-                        showNotification(newInfo);
-                        info = newInfo;
-                    }
-                }
+                new OggMetaTask(GrindService.this).execute(getString(R.string.radio_stream_meta));
             }
         }, 20, 20, TimeUnit.SECONDS);
     }
@@ -179,10 +164,7 @@ public class GrindService extends Service {
                     playing = true;
                     sendCommand(ServiceHandler.COMMAND_START);
 
-                    String info = getInfo();
-
-                    sendMessage(info);
-                    showNotification(info);
+                    new OggMetaTask(GrindService.this).execute(getString(R.string.radio_stream_meta));
                 }
             });
             player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -190,7 +172,6 @@ public class GrindService extends Service {
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
                     Log.e(TAG, "ERROR! code:" + i + "," + i1);
                     stop();
-                    start();
                     playing = false;
                     return false;
                 }
@@ -221,6 +202,14 @@ public class GrindService extends Service {
         }
     }
 
+    public String getOldMeta() {
+        return oldMeta;
+    }
+
+    public void setOldMeta(String oldMeta) {
+        this.oldMeta = oldMeta;
+    }
+
     private void stop() {
 
         Log.d(TAG, "Player Stopped");
@@ -231,55 +220,10 @@ public class GrindService extends Service {
         player.release();
     }
 
-
-    /**
-     * show user an ongoing_event notification
-     *
-     * @param info artist/song pair
-     */
-    private void showNotification(String info) {
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setContentIntent(contentIntent);
-        builder.setSmallIcon(R.drawable.cat_status_bar);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.cat_status_bar_large));
-        builder.setTicker(getString(R.string.app_name));
-        builder.setWhen(System.currentTimeMillis());
-        builder.setAutoCancel(false);
-        builder.setContentTitle(getString(R.string.app_name));
-        builder.setContentText(info);
-        builder.setOngoing(true);
-
-        notificationManager.notify(NOTIFICATION_ID, builder.getNotification());
-
-        Log.d(TAG, "Notification shown");
-    }
-
-
-    private String getInfo() {
-        GrindHttpClient httpClient = new GrindHttpClient(getResources().getInteger(R.integer.connection_timeout), getResources().getInteger(R.integer.socket_timeout));
-        try {
-            String response = httpClient.request(new HttpGet(getString(R.string.radio_stream_meta)));
-            return response.substring(response.indexOf(",,") + 2);
-        } catch (GrindHttpClientException e) {
-            Log.e(TAG, "Error while parsing icecast", e);
-            return "Нет данных";
-        }
-    }
-
     private synchronized void sendCommand(int m) {
         Log.d(TAG, "Sending command N: " + m);
         Intent intent = new Intent("service-intent");
         intent.putExtra("service-command", m);
         this.sendBroadcast(intent);
-    }
-
-    private synchronized void sendMessage(String info) {
-        Log.d(TAG, "Sending message N: " + info);
-        Intent intent = new Intent("service-intent");
-        intent.putExtra("service-message", info);
-        sendBroadcast(intent);
     }
 }

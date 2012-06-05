@@ -58,7 +58,7 @@ public class StringUtil {
     }
 
     public static String widgetString(String s) {
-        if (s.contains(" - ")) {
+        if (s != null && s.contains(" - ")) {
             String[] splitted = s.split(" - ", 2);
             splitted[0] = "artist: " + splitted[0];
             splitted[1] = "song:" + splitted[1];
