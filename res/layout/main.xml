@@ -43,30 +43,30 @@
                   android:textSize="13dp"
                   android:layout_marginTop="5dp"/>
 
-        <TextView android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:textColor="@android:color/white"
-                  android:textSize="16dp"
-                  android:textStyle="bold"
-                  android:text="@string/grind_request"
-                  android:layout_marginTop="15dp"/>
+        <!--<TextView android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:textSize="16dp"-->
+        <!--android:textStyle="bold"-->
+        <!--android:text="@string/grind_request"-->
+        <!--android:layout_marginTop="15dp"/>-->
 
-        <EditText android:layout_width="fill_parent"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/search_query"
-                  android:textSize="16dp"
-                  android:layout_marginTop="10dp"
-                  android:layout_marginBottom="10dp"
-                  android:hint="@string/request_hint"/>
+        <!--<EditText android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/search_query"-->
+        <!--android:textSize="16dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:hint="@string/request_hint"/>-->
 
-        <Button android:layout_width="fill_parent"
-                android:id="@+id/search_button"
-                android:padding="10dp"
-                android:layout_marginTop="10dp"
-                android:textColor="@android:color/white"
-                android:background="@drawable/button_gradient_selector"
-                android:layout_height="wrap_content"
-                android:text="@string/request_button"/>
+        <!--<Button android:layout_width="fill_parent"-->
+        <!--android:id="@+id/search_button"-->
+        <!--android:padding="10dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:textColor="@android:color/white"-->
+        <!--android:background="@drawable/button_gradient_selector"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/request_button"/>-->
 
     </LinearLayout>
 

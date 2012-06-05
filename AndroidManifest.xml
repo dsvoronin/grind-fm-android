@@ -27,7 +27,7 @@
         <activity android:name=".activity.VKActivity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.RequestActivity" android:screenOrientation="portrait"/>
 
-        <service android:name=".GrindService" android:process=":grind_player"/>
+        <service android:name=".GrindService"/>
 
         <receiver android:name=".widget.GrindWidgetProvider" android:label="@string/app_name">
             <intent-filter>

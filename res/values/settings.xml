@@ -19,8 +19,8 @@
     <string name="youtube_watch">http://www.youtube.com/watch?v=</string>
 
     <!-- HTTP CLIENT -->
-    <integer name="connection_timeout">5000</integer>
-    <integer name="socket_timeout">5000</integer>
+    <integer name="connection_timeout">8000</integer>
+    <integer name="socket_timeout">8000</integer>
 
     <!-- VKONTAKTE -->
     <string name="vkontakte_url">http://m.vk.com/club10770176</string>

@@ -1,9 +1,6 @@
 package com.dsvoronin.grindfm.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import com.dsvoronin.grindfm.R;
 
@@ -21,20 +18,20 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        searchText = (EditText) findViewById(R.id.search_query);
-
-        Button searchButton = (Button) findViewById(R.id.search_button);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String searchTextString = searchText.getText().toString();
-                if (searchTextString != null && !searchTextString.isEmpty()) {
-                    Intent intent = new Intent(MainActivity.this, RequestActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    intent.putExtra(RequestActivity.INTENT_EXTRA, searchTextString);
-                    startActivity(intent);
-                }
-            }
-        });
+//        searchText = (EditText) findViewById(R.id.search_query);
+//
+//        Button searchButton = (Button) findViewById(R.id.search_button);
+//        searchButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String searchTextString = searchText.getText().toString();
+//                if (searchTextString != null && !searchTextString.isEmpty()) {
+//                    Intent intent = new Intent(MainActivity.this, RequestActivity.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                    intent.putExtra(RequestActivity.INTENT_EXTRA, searchTextString);
+//                    startActivity(intent);
+//                }
+//            }
+//        });
     }
 }
