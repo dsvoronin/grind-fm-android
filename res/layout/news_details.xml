@@ -6,12 +6,12 @@
                 android:background="@drawable/background">
 
     <com.dsvoronin.grindfm.view.Header android:layout_width="fill_parent"
-                                       android:layout_height="45dp"
+                                       android:layout_height="wrap_content"
                                        android:layout_alignParentTop="true"
                                        android:id="@+id/header"/>
 
     <com.dsvoronin.grindfm.view.Footer android:layout_width="fill_parent"
-                                       android:layout_height="50dp"
+                                       android:layout_height="wrap_content"
                                        android:layout_alignParentBottom="true"
                                        android:id="@+id/footer"/>
 

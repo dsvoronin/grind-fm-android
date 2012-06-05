@@ -2,7 +2,7 @@
 
 <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/footer_height"
             android:id="@+id/footer_radio_group"
             android:background="@drawable/footer_gradient"
             android:layout_alignParentBottom="true"

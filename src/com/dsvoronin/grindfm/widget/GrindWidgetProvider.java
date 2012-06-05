@@ -22,7 +22,7 @@ import com.dsvoronin.grindfm.util.StringUtil;
  */
 public class GrindWidgetProvider extends AppWidgetProvider {
 
-    private final String TAG = "GRIND-WIDGET";
+    private final String TAG = "Grind.Widget";
 
     private Context mContext;
 
@@ -52,6 +52,8 @@ public class GrindWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+
         Log.d(TAG, "Got broadcast: " + intent.getAction());
         mContext = context;
 
@@ -70,6 +72,8 @@ public class GrindWidgetProvider extends AppWidgetProvider {
         if (widgetProvider == null) {
             widgetProvider = new ComponentName(mContext, GrindWidgetProvider.class);
         }
+
+        setClickToLogo();
 
         if (intent.getAction().equals("service-intent")) {
             int command = intent.getIntExtra("service-command", -1);

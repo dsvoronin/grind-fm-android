@@ -2,29 +2,28 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
+              android:layout_height="@dimen/header_height"
               android:orientation="horizontal">
 
     <RelativeLayout android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="@drawable/playpause_gradient"
                     android:layout_margin="7dp"
                     android:id="@+id/radio_contol">
 
         <ImageView android:layout_width="40dp"
                    android:layout_height="40dp"
                    android:visibility="visible"
-                   android:background="@drawable/widget_gradient"
-                   android:src="@android:drawable/ic_media_play"
                    android:id="@+id/play_pause"
                    android:contentDescription="@string/content_description_image"/>
 
         <ProgressBar android:layout_width="40dp"
                      android:layout_height="40dp"
-                     android:background="@drawable/widget_gradient"
+                     android:layout_centerInParent="true"
                      android:visibility="gone"
                      android:id="@+id/progress_bar"
-                     style="@android:style/Widget.ProgressBar.Large"/>
+                     style="@android:style/Widget.ProgressBar.Small"/>
 
     </RelativeLayout>
 
@@ -32,6 +31,7 @@
               android:layout_height="wrap_content"
               android:id="@+id/header_running_string"
               android:textSize="16dp"
+              android:layout_marginTop="2dp"
               android:textColor="@android:color/white"
               android:ellipsize="marquee"
               android:text="@string/radio_loading"

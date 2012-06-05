@@ -3,25 +3,27 @@ package com.dsvoronin.grindfm;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import com.dsvoronin.grindfm.activity.MainActivity;
-import net.moraleboost.streamscraper.ScrapeException;
-import net.moraleboost.streamscraper.Scraper;
-import net.moraleboost.streamscraper.Stream;
-import net.moraleboost.streamscraper.scraper.IceCastScraper;
+import com.dsvoronin.grindfm.util.GrindHttpClient;
+import com.dsvoronin.grindfm.util.GrindHttpClientException;
+import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 
 public class GrindService extends Service {
 
@@ -29,11 +31,52 @@ public class GrindService extends Service {
 
     private static final int NOTIFICATION_ID = 6;
 
+    public static final int COMMAND_GET_STATUS = 4;
+
     private MediaPlayer player;
 
     private boolean playing = false;
 
     private NotificationManager notificationManager;
+
+    private PlayerHandler handler;
+
+    private PlayerReceiver receiver;
+
+    private class PlayerHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case COMMAND_GET_STATUS:
+                    if (playing) {
+                        sendCommand(ServiceHandler.COMMAND_START);
+                        GrindService.this.sendMessage(getInfo());
+                    } else {
+                        sendCommand(ServiceHandler.COMMAND_STOP);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private class PlayerReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (handler == null) {
+                handler = new PlayerHandler();
+            }
+
+            int command = intent.getIntExtra("player-command", -1);
+            if (command != -1) {
+                handler.sendEmptyMessage(command);
+            } else {
+                Log.d(TAG, "Incorrect command: -1");
+            }
+        }
+    }
 
     private PhoneStateListener phoneStateListener = new PhoneStateListener() {
         public void onCallStateChanged(int state, String incomingNumber) {
@@ -64,6 +107,8 @@ public class GrindService extends Service {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         Log.d(TAG, "Created");
 
+        receiver = new PlayerReceiver();
+        registerReceiver(receiver, new IntentFilter("player-intent"));
     }
 
     @Override
@@ -82,7 +127,8 @@ public class GrindService extends Service {
     public void onDestroy() {
         Log.d(TAG, "Destroyed");
         notificationManager.cancel(NOTIFICATION_ID);
-        player.release();
+        stop();
+        unregisterReceiver(receiver);
         super.onDestroy();
     }
 
@@ -97,6 +143,7 @@ public class GrindService extends Service {
 
         try {
             player = new MediaPlayer();
+            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             player.setDataSource(this, Uri.parse(getString(R.string.radio_stream_url_ogg)));
             player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -134,6 +181,12 @@ public class GrindService extends Service {
                         Log.d(TAG, "Metadata updated " + extras);
                     }
                     return false;
+                }
+            });
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    Log.d(TAG, "Complete!");
                 }
             });
 
@@ -183,26 +236,14 @@ public class GrindService extends Service {
     }
 
     private String getInfo() {
-        Scraper scraper = new IceCastScraper();
-        List<Stream> streams;
+        GrindHttpClient httpClient = new GrindHttpClient(getResources().getInteger(R.integer.connection_timeout), getResources().getInteger(R.integer.socket_timeout));
         try {
-            URI streamURI = new URI(getString(R.string.radio_stream_url_ogg));
-            streams = scraper.scrape(streamURI);
-            if (streams != null) {
-                for (Stream stream : streams) {
-                    if (stream.getUri().equals(streamURI)) {
-                        if (!stream.getCurrentSong().equals("")) {
-                            return stream.getCurrentSong();
-                        }
-                    }
-                }
-            }
-        } catch (ScrapeException e) {
+            String response = httpClient.request(new HttpGet(getString(R.string.radio_stream_meta)));
+            return response.substring(response.indexOf(",,") + 2);
+        } catch (GrindHttpClientException e) {
             Log.e(TAG, "Error while parsing icecast", e);
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "Error while parsing icecast", e);
+            return "Нет данных";
         }
-        return "";
     }
 
     private synchronized void sendCommand(int m) {

@@ -15,6 +15,7 @@ import android.widget.*;
 import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.ServiceHandler;
+import com.dsvoronin.grindfm.util.StringUtil;
 
 /**
  * User: dsvoronin
@@ -68,6 +69,11 @@ public abstract class BaseActivity extends Activity {
                 Log.d(TAG, "FirstStart. Init control");
                 initStream();
                 firstStart = false;
+            } else {
+                Log.d(TAG, "Sending player command");
+                Intent intent = new Intent("player-intent");
+                intent.putExtra("player-command", GrindService.COMMAND_GET_STATUS);
+                this.sendBroadcast(intent);
             }
 
             int buttonId = getIntent().getIntExtra("button-id", -1);
@@ -165,7 +171,7 @@ public abstract class BaseActivity extends Activity {
                 String info = intent.getStringExtra("service-message");
                 if (info != null) {
                     Log.d(TAG, "Got service message");
-                    headerRunningString.setText(info);
+                    headerRunningString.setText(StringUtil.widgetString(info));
                 }
             }
         }
@@ -197,7 +203,7 @@ public abstract class BaseActivity extends Activity {
 
     private void initStream() {
         headerRunningString.setText(R.string.radio_loading);
-        playPause.setImageResource(android.R.drawable.ic_media_play);
+        playPause.setImageResource(R.drawable.play);
         radioControl.setOnClickListener(playClickListener);
         playPause.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
@@ -211,7 +217,7 @@ public abstract class BaseActivity extends Activity {
 
     private void startStream() {
         radioControl.setOnClickListener(stopClickListener);
-        playPause.setImageResource(android.R.drawable.ic_media_pause);
+        playPause.setImageResource((R.drawable.pause));
         playPause.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
     }

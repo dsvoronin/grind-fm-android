@@ -6,6 +6,7 @@
     <string name="radio_stream_url_aac">http://radio.goha.ru:8000/grindfm.aac</string>
     <string name="radio_playlist">http://media.goha.ru/radio/meta2.php</string>
     <string name="radio_counter">http://media.goha.ru/radio/counter.php</string>
+    <string name="radio_stream_meta">http://radio.goha.ru:8000/7.html</string>
 
     <!-- NEWS -->
     <string name="rss_goha_grindfm">http://www.goha.ru/feed/54/rss</string>

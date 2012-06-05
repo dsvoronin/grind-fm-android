@@ -5,4 +5,7 @@
     <color name="list_selected">#ff0e6374</color>
 
     <color name="disabled">#999999</color>
+
+    <color name="playpause_stroke">#ff0c0303</color>
+    <color name="playpause_bg">#ffb6dbdc</color>
 </resources>
