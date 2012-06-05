@@ -24,6 +24,9 @@ import com.dsvoronin.grindfm.util.GrindHttpClientException;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class GrindService extends Service {
 
@@ -109,6 +112,25 @@ public class GrindService extends Service {
 
         receiver = new PlayerReceiver();
         registerReceiver(receiver, new IntentFilter("player-intent"));
+
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleWithFixedDelay(new Runnable() {
+            private String info;
+
+            @Override
+            public void run() {
+                String newInfo = getInfo();
+                if (info == null) {
+                    info = newInfo;
+                } else {
+                    if (!info.equals(newInfo)) {
+                        sendMessage(newInfo);
+                        showNotification(newInfo);
+                        info = newInfo;
+                    }
+                }
+            }
+        }, 20, 20, TimeUnit.SECONDS);
     }
 
     @Override
@@ -234,6 +256,7 @@ public class GrindService extends Service {
 
         Log.d(TAG, "Notification shown");
     }
+
 
     private String getInfo() {
         GrindHttpClient httpClient = new GrindHttpClient(getResources().getInteger(R.integer.connection_timeout), getResources().getInteger(R.integer.socket_timeout));

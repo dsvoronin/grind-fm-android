@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.dsvoronin.grindfm.GrindService;
 import com.dsvoronin.grindfm.R;
@@ -35,7 +37,9 @@ public abstract class BaseActivity extends Activity {
     private ProgressBar progressBar;
     private RelativeLayout radioControl;
 
-    private static boolean firstStart = true;
+    private static boolean messageFlag = false;
+    private Handler playerHandler;
+    private Runnable handleMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +69,23 @@ public abstract class BaseActivity extends Activity {
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-            if (firstStart) {
-                Log.d(TAG, "FirstStart. Init control");
-                initStream();
-                firstStart = false;
-            } else {
-                Log.d(TAG, "Sending player command");
-                Intent intent = new Intent("player-intent");
-                intent.putExtra("player-command", GrindService.COMMAND_GET_STATUS);
-                this.sendBroadcast(intent);
-            }
+            Log.d(TAG, "Sending player command");
+            Intent intent = new Intent("player-intent");
+            intent.putExtra("player-command", GrindService.COMMAND_GET_STATUS);
+            this.sendBroadcast(intent);
+
+            messageFlag = false;
+
+            playerHandler = new Handler();
+            handleMessage = new Runnable() {
+                @Override
+                public void run() {
+                    if (!messageFlag) {
+                        initStream();
+                    }
+                }
+            };
+            playerHandler.postDelayed(handleMessage, 1500);
 
             int buttonId = getIntent().getIntExtra("button-id", -1);
 
@@ -92,6 +103,10 @@ public abstract class BaseActivity extends Activity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
+        if (playerHandler != null) {
+            messageFlag = false;
+            playerHandler.removeCallbacks(handleMessage);
+        }
     }
 
     @Override
@@ -164,6 +179,7 @@ public abstract class BaseActivity extends Activity {
                 int command = intent.getIntExtra("service-command", -1);
                 if (command != -1) {
                     handler.sendEmptyMessage(command);
+                    messageFlag = true;
                 } else {
                     Log.d(TAG, "Incorrect command: -1");
                 }
@@ -207,12 +223,16 @@ public abstract class BaseActivity extends Activity {
         radioControl.setOnClickListener(playClickListener);
         playPause.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+
+        playPause.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
     }
 
     private void prepareStream() {
         radioControl.setOnClickListener(null);
         playPause.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
+
+        progressBar.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
     }
 
     private void startStream() {
@@ -220,6 +240,8 @@ public abstract class BaseActivity extends Activity {
         playPause.setImageResource((R.drawable.pause));
         playPause.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+
+        playPause.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
     }
 
     /**
