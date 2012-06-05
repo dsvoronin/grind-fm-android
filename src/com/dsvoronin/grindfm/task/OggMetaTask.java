@@ -59,7 +59,7 @@ public class OggMetaTask extends AsyncTask<String, Void, String> {
                 intent.putExtra("service-message", s);
                 service.sendBroadcast(intent);
                 NotificationManager notificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify(GrindService.NOTIFICATION_ID, new GrindNotification(s).buildNotification());
+                notificationManager.notify(GrindService.NOTIFICATION_ID, new GrindNotification(service, s).buildNotification());
                 service.setOldMeta(s);
             }
         }

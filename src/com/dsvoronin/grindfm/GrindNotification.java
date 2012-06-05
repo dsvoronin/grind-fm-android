@@ -15,7 +15,8 @@ public class GrindNotification extends Notification {
     private Context context;
     private String meta;
 
-    public GrindNotification(String meta) {
+    public GrindNotification(Context context, String meta) {
+        this.context = context;
         this.meta = meta;
     }
 
