@@ -21,7 +21,7 @@ import java.io.IOException;
  * <p/>
  * todo list:
  * - wifilock? 3glock?(существует ли?)
- * - audio become noisy (headphones disconnect)
+ * - release player only if necessary
  */
 public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -35,7 +35,6 @@ public class PlayerService extends Service implements
     private MediaPlayer player;
 
     private AudioManager audioManager;
-
 
     @Override
     public void onCreate() {
@@ -62,6 +61,8 @@ public class PlayerService extends Service implements
                 sendDisplayAction(getResources().getInteger(R.integer.display_paused));
             }
             return START_STICKY;
+        } else if (intent.getAction().equals(getString(R.string.action_stop))) {
+            stopPlayer(true);
         }
         return START_NOT_STICKY;
     }
@@ -138,11 +139,7 @@ public class PlayerService extends Service implements
 
     @Override
     public void onDestroy() {
-        if (player != null) {
-            player.release();
-            audioManager.abandonAudioFocus(this);
-            sendDisplayAction(getResources().getInteger(R.integer.display_paused));
-        }
+        stopPlayer(true);
     }
 
     private MediaPlayer initMediaPlayer() {

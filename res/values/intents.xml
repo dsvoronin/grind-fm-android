@@ -1,5 +1,6 @@
 <resources>
     <string name="action_play">com.dsvoronin.grindfm.action.play</string>
+    <string name="action_stop">com.dsvoronin.grindfm.action.stop</string>
     <string name="action_request">com.dsvoronin.grindfm.action.request</string>
 
     <string name="action_display">com.dsvoronin.grindfm.action.display</string>
