@@ -8,16 +8,15 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
-import com.dsvoronin.grindfm.GrindService;
+import com.dsvoronin.grindfm.PlayerService;
 import com.dsvoronin.grindfm.R;
-import com.dsvoronin.grindfm.ServiceHandler;
-import com.dsvoronin.grindfm.util.StringUtil;
 
 /**
  * User: dsvoronin
@@ -26,20 +25,16 @@ import com.dsvoronin.grindfm.util.StringUtil;
  */
 public abstract class BaseActivity extends Activity {
 
-    private final String TAG = "GRIND-ACTIVITY";
+    private final String TAG = "Grind.Activity";
 
     private GrindReceiver grindReceiver;
-
-    private ServiceHandler handler;
 
     private TextView headerRunningString;
     private ImageView playPause;
     private ProgressBar progressBar;
     private RelativeLayout radioControl;
 
-    private static boolean messageFlag = false;
-    private Handler playerHandler;
-    private Runnable handleMessage;
+    private PlayerHandler playerHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,31 +59,16 @@ public abstract class BaseActivity extends Activity {
     protected void onResume() {
         if (grindReceiver == null) {
             grindReceiver = new GrindReceiver();
-            registerReceiver(grindReceiver, new IntentFilter("service-intent"));
         }
+        registerReceiver(grindReceiver, new IntentFilter(getString(R.string.action_display)));
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
-            Log.d(TAG, "Sending player command");
-            Intent intent = new Intent("player-intent");
-            intent.putExtra("player-command", GrindService.COMMAND_GET_STATUS);
-            this.sendBroadcast(intent);
-
-            messageFlag = false;
-
-            playerHandler = new Handler();
-            handleMessage = new Runnable() {
-                @Override
-                public void run() {
-                    if (!messageFlag) {
-                        initStream();
-                    }
-                }
-            };
-            playerHandler.postDelayed(handleMessage, 1500);
+            Intent intent = new Intent(getBaseContext(), PlayerService.class);
+            intent.setAction(getString(R.string.action_request));
+            startService(intent);
 
             int buttonId = getIntent().getIntExtra("button-id", -1);
-
             RadioGroup footerGroup = (RadioGroup) findViewById(R.id.footer_radio_group);
             if (buttonId == -1) {
                 footerGroup.check(R.id.menu_radio);
@@ -103,10 +83,6 @@ public abstract class BaseActivity extends Activity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
-        if (playerHandler != null) {
-            messageFlag = false;
-            playerHandler.removeCallbacks(handleMessage);
-        }
     }
 
     @Override
@@ -170,50 +146,41 @@ public abstract class BaseActivity extends Activity {
     private class GrindReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Got broadcast " + intent.getAction());
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-
-                if (handler == null) {
-                    handler = new ServiceHandlerWidgetImpl();
+                if (playerHandler == null) {
+                    playerHandler = new PlayerHandler();
                 }
-
-                int command = intent.getIntExtra("service-command", -1);
-                if (command != -1) {
-                    handler.sendEmptyMessage(command);
-                    messageFlag = true;
-                } else {
-                    Log.d(TAG, "Incorrect command: -1");
-                }
-
-                String info = intent.getStringExtra("service-message");
-                if (info != null) {
-                    Log.d(TAG, "Got service message");
-                    headerRunningString.setText(StringUtil.widgetString(info));
+                if (intent.getAction().equals(getString(R.string.action_display))) {
+                    int what = intent.getIntExtra(getString(R.string.action_display), -1);
+                    if (what != -1) {
+                        playerHandler.sendEmptyMessage(what);
+                    } else {
+                        Log.d(TAG, "Incorrect command");
+                    }
                 }
             }
         }
     }
 
-    private class ServiceHandlerWidgetImpl extends ServiceHandler {
+
+    private class PlayerHandler extends Handler {
 
         @Override
-        protected void handleProgress() {
-            Log.d(TAG, "Got process command");
-
-            prepareStream();
-        }
-
-        @Override
-        protected void handleStop() {
-            Log.d(TAG, "Got stop command");
-
-            initStream();
-        }
-
-        @Override
-        protected void handleStart() {
-            Log.d(TAG, "Got start command");
-
-            startStream();
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 3:
+                    prepareStream();
+                    break;
+                case 2:
+                    initStream();
+                    break;
+                case 1:
+                    startStream();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -236,7 +203,7 @@ public abstract class BaseActivity extends Activity {
     }
 
     private void startStream() {
-        radioControl.setOnClickListener(stopClickListener);
+        radioControl.setOnClickListener(playClickListener);
         playPause.setImageResource((R.drawable.pause));
         playPause.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
@@ -244,25 +211,13 @@ public abstract class BaseActivity extends Activity {
         playPause.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
     }
 
-    /**
-     * Запускаем стрим по клику на плей
-     */
     private View.OnClickListener playClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             Log.d(TAG, "Start Click");
-            startService(new Intent(getBaseContext(), GrindService.class));
-        }
-    };
-
-    /**
-     * Останавливаем стрим по клику на паузу
-     */
-    private View.OnClickListener stopClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Log.d(TAG, "Stop Click");
-            stopService(new Intent(getBaseContext(), GrindService.class));
+            Intent intent = new Intent(getBaseContext(), PlayerService.class);
+            intent.setAction(getString(R.string.action_play));
+            startService(intent);
         }
     };
 }

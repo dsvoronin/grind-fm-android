@@ -1,0 +1,9 @@
+<resources>
+    <string name="action_play">com.dsvoronin.grindfm.action.play</string>
+    <string name="action_request">com.dsvoronin.grindfm.action.request</string>
+
+    <string name="action_display">com.dsvoronin.grindfm.action.display</string>
+    <integer name="display_playing">1</integer>
+    <integer name="display_paused">2</integer>
+    <integer name="display_progress">3</integer>
+</resources>
