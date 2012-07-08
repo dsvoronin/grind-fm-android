@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * User: dsvoronin
@@ -22,6 +24,7 @@ import java.io.IOException;
  * todo list:
  * - wifilock? 3glock?(существует ли?)
  * - release player only if necessary
+ * - stop after long pause
  */
 public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -31,6 +34,15 @@ public class PlayerService extends Service implements
 
     private static final String TAG = "Grind.PlayerService";
     private static final int NOTIFICATION_ID = 1;
+
+    public static final String ACTION_PLAY_PAUSE = "com.dsvoronin.grindfm.action.play";
+    public static final String ACTION_STOP = "com.dsvoronin.grindfm.action.stop";
+    public static final String ACTION_REQUEST = "com.dsvoronin.grindfm.action.request";
+    public static final String ACTION_DISPLAY = "com.dsvoronin.grindfm.action.display";
+
+    public static final int DISPLAY_PLAYING = 1;
+    public static final int DISPLAY_PAUSED = 2;
+    public static final int DISPLAY_PROGRESS = 3;
 
     private MediaPlayer player;
 
@@ -44,7 +56,7 @@ public class PlayerService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(getString(R.string.action_play))) {
+        if (intent.getAction().equals(ACTION_PLAY_PAUSE)) {
             if (player != null) {
                 if (player.isPlaying()) {
                     pausePlayer(true);
@@ -54,14 +66,14 @@ public class PlayerService extends Service implements
             } else {
                 startPlayer();
             }
-        } else if (intent.getAction().equals(getString(R.string.action_request))) {
+        } else if (intent.getAction().equals(ACTION_REQUEST)) {
             if (player != null && player.isPlaying()) {
-                sendDisplayAction(getResources().getInteger(R.integer.display_playing));
+                sendDisplayAction(DISPLAY_PLAYING);
             } else {
-                sendDisplayAction(getResources().getInteger(R.integer.display_paused));
+                sendDisplayAction(DISPLAY_PAUSED);
             }
             return START_STICKY;
-        } else if (intent.getAction().equals(getString(R.string.action_stop))) {
+        } else if (intent.getAction().equals(ACTION_STOP)) {
             stopPlayer(true);
         }
         return START_NOT_STICKY;
@@ -167,10 +179,10 @@ public class PlayerService extends Service implements
         if (player == null) {
             player = initMediaPlayer();
             player.prepareAsync();
-            sendDisplayAction(getResources().getInteger(R.integer.display_progress));
+            sendDisplayAction(DISPLAY_PROGRESS);
         } else if (!player.isPlaying()) {
             player.start();
-            sendDisplayAction(getResources().getInteger(R.integer.display_playing));
+            sendDisplayAction(DISPLAY_PLAYING);
         }
         startForeground(NOTIFICATION_ID, new PlayerNotification(this, "Grind.FM Song").buildNotification());
 
@@ -181,12 +193,21 @@ public class PlayerService extends Service implements
         if (player != null) {
             player.pause();
         }
-        sendDisplayAction(getResources().getInteger(R.integer.display_paused));
+        sendDisplayAction(DISPLAY_PAUSED);
         stopForeground(true);
 
         if (abandonFocus) {
             audioManager.abandonAudioFocus(this);
         }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (player != null && !player.isPlaying()) {
+                    stopPlayer(true);
+                }
+            }
+        }, TimeUnit.SECONDS.toMillis(5));
 
         Log.d(TAG, "Player paused");
     }
@@ -199,7 +220,7 @@ public class PlayerService extends Service implements
             player.release();
             player = null;
         }
-        sendDisplayAction(getResources().getInteger(R.integer.display_paused));
+        sendDisplayAction(DISPLAY_PAUSED);
         stopForeground(true);
 
         if (abandonFocus) {
@@ -211,8 +232,8 @@ public class PlayerService extends Service implements
 
     private void sendDisplayAction(int what) {
         Log.d(TAG, "sending display action " + what);
-        Intent intent = new Intent(getString(R.string.action_display));
-        intent.putExtra(getString(R.string.action_display), what);
+        Intent intent = new Intent(ACTION_DISPLAY);
+        intent.putExtra(ACTION_DISPLAY, what);
         sendBroadcast(intent);
     }
 }
