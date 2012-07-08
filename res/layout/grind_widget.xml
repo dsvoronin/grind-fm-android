@@ -5,44 +5,36 @@
               android:orientation="horizontal"
               android:layout_margin="5dp"
               android:padding="5dp"
-              android:background="@drawable/widget_gradient"
-              android:layout_gravity="center">
+              android:background="@drawable/widget_gradient">
 
-    <LinearLayout android:layout_width="0dp"
-                  android:layout_weight="1"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/widget_to_activity"
-                  android:orientation="vertical">
-
-        <ImageView android:layout_height="wrap_content"
-                   android:layout_width="wrap_content"
-                   android:layout_gravity="center_horizontal|center"
-                   android:src="@drawable/grind_logo"
-                   android:contentDescription="@string/content_description_image"/>
-
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:layout_marginTop="1dp"
-                  android:layout_marginRight="5dp"
-                  android:text="@string/radio_loading"
-                  android:id="@+id/widget_text"/>
-
-    </LinearLayout>
-
-    <ImageView android:layout_width="75dp"
-               android:layout_height="75dp"
+    <ImageView android:layout_height="wrap_content"
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:src="@drawable/grind_logo"
+               android:id="@+id/widget_logo"
                android:layout_gravity="center"
-               android:clickable="true"
-               android:src="@drawable/widget_button"
-               android:background="@drawable/widget_gradient"
-               android:id="@+id/widget_button"
                android:contentDescription="@string/content_description_image"/>
 
-    <ProgressBar android:layout_width="75dp"
-                 android:layout_height="75dp"
-                 android:visibility="gone"
-                 android:background="@drawable/widget_gradient"
-                 android:id="@+id/widget_progress_bar"
-                 style="@android:style/Widget.ProgressBar.Large"/>
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="7dp"
+                    android:background="@drawable/widget_gradient">
+
+        <ImageView android:layout_width="50dp"
+                   android:layout_height="50dp"
+                   android:layout_gravity="center"
+                   android:clickable="true"
+                   android:src="@drawable/widget_button"
+                   android:id="@+id/widget_button"
+                   android:contentDescription="@string/content_description_image"/>
+
+        <ProgressBar android:layout_width="50dp"
+                     android:layout_height="50dp"
+                     android:visibility="gone"
+                     android:layout_centerInParent="true"
+                     android:id="@+id/widget_progress_bar"
+                     style="@android:style/Widget.ProgressBar.Large"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

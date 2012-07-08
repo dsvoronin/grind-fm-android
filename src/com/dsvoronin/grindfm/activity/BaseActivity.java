@@ -168,13 +168,13 @@ public abstract class BaseActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 3:
+                case PlayerService.DISPLAY_PROGRESS:
                     prepareStream();
                     break;
-                case 2:
+                case PlayerService.DISPLAY_PAUSED:
                     initStream();
                     break;
-                case 1:
+                case PlayerService.DISPLAY_PLAYING:
                     startStream();
                     break;
                 default:

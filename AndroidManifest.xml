@@ -13,6 +13,7 @@
 
     <application android:name=".GrindApplication"
                  android:icon="@drawable/cat"
+                 android:theme="@android:style/Theme.NoTitleBar"
                  android:label="@string/app_name">
 
         <activity android:name=".activity.MainActivity" android:screenOrientation="portrait">
@@ -33,7 +34,7 @@
         <receiver android:name=".widget.GrindWidgetProvider" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="service-intent"/>
+                <action android:name="com.dsvoronin.grindfm.action.display"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/grind_widget_provider"/>
