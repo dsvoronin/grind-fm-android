@@ -24,7 +24,6 @@ public class Video {
     @SerializedName("title")
     private String title;
 
-
     public Video() {
     }
 

@@ -14,7 +14,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import com.dsvoronin.grindfm.PlayerService;
 import com.dsvoronin.grindfm.R;
 
@@ -29,7 +32,6 @@ public abstract class BaseActivity extends Activity {
 
     private GrindReceiver grindReceiver;
 
-    private TextView headerRunningString;
     private ImageView playPause;
     private ProgressBar progressBar;
     private RelativeLayout radioControl;
@@ -46,9 +48,6 @@ public abstract class BaseActivity extends Activity {
     protected void onStart() {
         super.onStart();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            headerRunningString = (TextView) findViewById(R.id.header_running_string);
-            headerRunningString.setSelected(true);
-
             progressBar = (ProgressBar) findViewById(R.id.progress_bar);
             playPause = (ImageView) findViewById(R.id.play_pause);
             radioControl = (RelativeLayout) findViewById(R.id.radio_contol);
@@ -60,12 +59,12 @@ public abstract class BaseActivity extends Activity {
         if (grindReceiver == null) {
             grindReceiver = new GrindReceiver();
         }
-        registerReceiver(grindReceiver, new IntentFilter(getString(R.string.action_display)));
+        registerReceiver(grindReceiver, new IntentFilter(PlayerService.ACTION_DISPLAY));
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
             Intent intent = new Intent(getBaseContext(), PlayerService.class);
-            intent.setAction(getString(R.string.action_request));
+            intent.setAction(PlayerService.ACTION_REQUEST);
             startService(intent);
 
             int buttonId = getIntent().getIntExtra("button-id", -1);
@@ -151,8 +150,8 @@ public abstract class BaseActivity extends Activity {
                 if (playerHandler == null) {
                     playerHandler = new PlayerHandler();
                 }
-                if (intent.getAction().equals(getString(R.string.action_display))) {
-                    int what = intent.getIntExtra(getString(R.string.action_display), -1);
+                if (intent.getAction().equals(PlayerService.ACTION_DISPLAY)) {
+                    int what = intent.getIntExtra(PlayerService.ACTION_DISPLAY, -1);
                     if (what != -1) {
                         playerHandler.sendEmptyMessage(what);
                     } else {
@@ -185,7 +184,6 @@ public abstract class BaseActivity extends Activity {
     }
 
     private void initStream() {
-        headerRunningString.setText(R.string.radio_loading);
         playPause.setImageResource(R.drawable.play);
         radioControl.setOnClickListener(playClickListener);
         playPause.setVisibility(View.VISIBLE);
@@ -216,7 +214,7 @@ public abstract class BaseActivity extends Activity {
         public void onClick(View view) {
             Log.d(TAG, "Start Click");
             Intent intent = new Intent(getBaseContext(), PlayerService.class);
-            intent.setAction(getString(R.string.action_play));
+            intent.setAction(PlayerService.ACTION_PLAY_PAUSE);
             startService(intent);
         }
     };

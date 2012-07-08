@@ -3,7 +3,7 @@ package com.dsvoronin.grindfm.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import com.dsvoronin.grindfm.R;
 
 /**
@@ -11,12 +11,11 @@ import com.dsvoronin.grindfm.R;
  * Date: 04.04.12
  * Time: 10:57
  */
-public class Header extends LinearLayout {
+public class Header extends RelativeLayout {
 
     public Header(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.header, this, true);
-        setBackgroundResource(R.drawable.header_gradient);
     }
 }
