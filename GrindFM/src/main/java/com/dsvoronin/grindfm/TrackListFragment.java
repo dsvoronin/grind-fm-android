@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.android.volley.Response;
@@ -64,8 +65,12 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void changeNowPlaying(String currentSong) {
-        getActivity().getActionBar().setTitle("Сейчас играет: " + currentSong);
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.d(TAG, "Item clicked: " + position);
+//        activity.addFragment(new TrackInfoFragment());
+        //todo
+        super.onListItemClick(l, v, position, id);
     }
 
     @Override

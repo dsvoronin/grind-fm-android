@@ -23,7 +23,7 @@
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
             android:name=".App"
-            android:theme="@style/Theme.Grindfm">
+            android:theme="@style/Theme.GrindFM">
         <activity
                 android:name="com.dsvoronin.grindfm.MainActivity"
                 android:label="@string/app_name">
