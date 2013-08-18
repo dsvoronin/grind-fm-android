@@ -9,7 +9,6 @@
     <string-array name="navigation_array">
         <item>Треклист</item>
         <item>Новости</item>
-        <item>Видео</item>
     </string-array>
 
     <string name="cant_get_audiofocus">Не удается запустить плеер. Устройство занято.</string>

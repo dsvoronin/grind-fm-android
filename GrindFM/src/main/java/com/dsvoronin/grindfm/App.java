@@ -1,14 +1,12 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-import com.dsvoronin.grindfm.network.OkHttpStack;
+import com.dsvoronin.grindfm.cache.ImageCacheManager;
+import com.dsvoronin.grindfm.network.RequestManager;
 
 public class App extends Application {
-
-    private RequestQueue queue;
 
     private static App instance;
 
@@ -16,7 +14,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        queue = Volley.newRequestQueue(this, new OkHttpStack());
+        RequestManager.init(getApplicationContext());
+        ImageCacheManager.getInstance().init(getApplicationContext(), "img", (int) (Runtime.getRuntime().freeMemory() / 8), Bitmap.CompressFormat.JPEG, 70, ImageCacheManager.CacheType.MEMORY);
     }
 
     @Override
@@ -25,12 +24,7 @@ public class App extends Application {
         super.onTerminate();
     }
 
-    public RequestQueue getQueue() {
-        return queue;
-    }
-
     public static App getApp() {
         return instance;
     }
 }
-

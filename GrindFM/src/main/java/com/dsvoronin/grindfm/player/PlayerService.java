@@ -23,10 +23,9 @@ import com.dsvoronin.grindfm.MainActivity;
 import com.dsvoronin.grindfm.R;
 import com.dsvoronin.grindfm.model.TrackListItem;
 import com.dsvoronin.grindfm.network.GrindRequest;
+import com.dsvoronin.grindfm.network.RequestManager;
 
 import java.io.IOException;
-
-import static com.dsvoronin.grindfm.App.getApp;
 
 public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
@@ -53,7 +52,7 @@ public class PlayerService extends Service implements
 
         @Override
         public void run() {
-            getApp().getQueue().add(new GrindRequest(getString(R.string.icecast_url), new Response.Listener<String>() {
+            RequestManager.getRequestQueue().add(new GrindRequest(getString(R.string.icecast_url), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {
                     String artistTitle = s.substring(s.indexOf(",,") + 2);

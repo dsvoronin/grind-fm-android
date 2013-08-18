@@ -180,8 +180,19 @@ public class MainActivity extends Activity {
     }
 
     private void selectItem(int position) {
+        Fragment fragment;
+
+        switch (position) {
+            case 0:
+                fragment = new TrackListFragment();
+                break;
+            case 1:
+                fragment = new NewsFragment();
+                break;
+            default:
+                throw new IndexOutOfBoundsException("No such position: " + position);
+        }
         // update the main content by replacing fragments
-        Fragment fragment = new TrackListFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 

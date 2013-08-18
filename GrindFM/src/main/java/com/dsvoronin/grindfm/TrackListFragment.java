@@ -5,7 +5,6 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -14,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.dsvoronin.grindfm.model.TrackListItem;
 import com.dsvoronin.grindfm.network.GrindRequest;
+import com.dsvoronin.grindfm.network.RequestManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.text.SimpleDateFormat;
@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-
-import static com.dsvoronin.grindfm.App.getApp;
 
 public class TrackListFragment extends ListFragment implements PullToRefreshAttacher.OnRefreshListener {
 
@@ -49,7 +47,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         handler = new Handler();
     }
 
@@ -58,11 +55,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
         super.onViewCreated(view, savedInstanceState);
         mPullToRefreshAttacher = activity.getPullToRefreshAttacher();
         mPullToRefreshAttacher.addRefreshableView(getListView(), this);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -83,14 +75,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
     public void onDetach() {
         this.activity = null;
         super.onDetach();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -141,7 +125,7 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
             }
         }
         );
-        getApp().getQueue().add(request);
+        RequestManager.getRequestQueue().add(request);
     }
 
     private void scheduleUpdate(TrackListItem newestItem) {
