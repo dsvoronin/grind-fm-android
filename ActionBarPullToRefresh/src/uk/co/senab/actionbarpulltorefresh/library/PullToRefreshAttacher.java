@@ -44,7 +44,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     private static final int DEFAULT_HEADER_LAYOUT = R.layout.default_header;
     private static final int DEFAULT_ANIM_HEADER_IN = R.anim.fade_in;
     private static final int DEFAULT_ANIM_HEADER_OUT = R.anim.fade_out;
-    private static final float DEFAULT_REFRESH_SCROLL_DISTANCE = 0.2f;
+    private static final float DEFAULT_REFRESH_SCROLL_DISTANCE = 0.4f;
     private static final boolean DEFAULT_REFRESH_ON_UP = false;
     private static final int DEFAULT_REFRESH_MINIMIZED_DELAY = 3 * 1000;
 
@@ -91,7 +91,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
      * attached to the Activity, the existing one is returned, otherwise a new instance is created.
      *
      * @param activity Activity to attach to.
-     * @param options Options used when creating the PullToRefreshAttacher.
+     * @param options  Options used when creating the PullToRefreshAttacher.
      * @return PullToRefresh attached to the Activity.
      */
     public static PullToRefreshAttacher get(Activity activity, Options options) {
@@ -166,7 +166,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
      * when a refresh is started. This version of the method will try to find a handler for the
      * view from the built-in view delegates.
      *
-     * @param view View which will be used to initiate refresh requests.
+     * @param view            View which will be used to initiate refresh requests.
      * @param refreshListener Listener to be invoked when a refresh is started.
      */
     public void addRefreshableView(View view, OnRefreshListener refreshListener) {
@@ -177,12 +177,12 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
      * Add a view which will be used to initiate refresh requests, along with a delegate which
      * knows how to handle the given view, and a listener to be invoked when a refresh is started.
      *
-     * @param view View which will be used to initiate refresh requests.
-     * @param viewDelegate delegate which knows how to handle <code>view</code>.
+     * @param view            View which will be used to initiate refresh requests.
+     * @param viewDelegate    delegate which knows how to handle <code>view</code>.
      * @param refreshListener Listener to be invoked when a refresh is started.
      */
     public void addRefreshableView(View view, ViewDelegate viewDelegate,
-            OnRefreshListener refreshListener) {
+                                   OnRefreshListener refreshListener) {
         addRefreshableView(view, viewDelegate, refreshListener, true);
     }
 
@@ -190,13 +190,13 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
      * Add a view which will be used to initiate refresh requests, along with a delegate which
      * knows how to handle the given view, and a listener to be invoked when a refresh is started.
      *
-     * @param view View which will be used to initiate refresh requests.
-     * @param viewDelegate delegate which knows how to handle <code>view</code>.
-     * @param refreshListener Listener to be invoked when a refresh is started.
+     * @param view             View which will be used to initiate refresh requests.
+     * @param viewDelegate     delegate which knows how to handle <code>view</code>.
+     * @param refreshListener  Listener to be invoked when a refresh is started.
      * @param setTouchListener Whether to set this as the {@link android.view.View.OnTouchListener}.
      */
     void addRefreshableView(View view, ViewDelegate viewDelegate,
-            OnRefreshListener refreshListener, final boolean setTouchListener) {
+                            OnRefreshListener refreshListener, final boolean setTouchListener) {
         // Check to see if view is null
         if (view == null) {
             Log.i(LOG_TAG, "Refreshable View is null.");
@@ -247,6 +247,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
 
     /**
      * This method should be called by your Activity's or Fragment's onConfigurationChanged method.
+     *
      * @param newConfig - The new configuration
      */
     public void onConfigurationChanged(Configuration newConfig) {
@@ -256,6 +257,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     /**
      * Manually set this Attacher's refreshing state. The header will be displayed or hidden as
      * requested.
+     *
      * @param refreshing - Whether the attacher should be in a refreshing state,
      */
     public final void setRefreshing(boolean refreshing) {
@@ -299,7 +301,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     /**
      * Call this when your refresh is complete and this view should reset itself (header view
      * will be hidden).
-     *
+     * <p/>
      * This is the equivalent of calling <code>setRefreshing(false)</code>.
      */
     public final void setRefreshComplete() {
@@ -629,6 +631,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     public interface OnRefreshListener {
         /**
          * Called when the user has initiated a refresh by pulling.
+         *
          * @param view - View which the user has started the refresh from.
          */
         public void onRefreshStarted(View view);
@@ -679,7 +682,8 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
 
         /**
          * Called the user has pulled on the scrollable view.
-         * @param  percentagePulled - value between 0.0f and 1.0f depending on how far the user has pulled.
+         *
+         * @param percentagePulled - value between 0.0f and 1.0f depending on how far the user has pulled.
          */
         public abstract void onPulled(float percentagePulled);
 
@@ -822,7 +826,7 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
             super(context);
 
             // Move all children from decor view to here
-            for (int i = 0, z = systemDecorView.getChildCount() ; i < z ; i++) {
+            for (int i = 0, z = systemDecorView.getChildCount(); i < z; i++) {
                 View child = systemDecorView.getChildAt(i);
                 systemDecorView.removeView(child);
                 addView(child);
