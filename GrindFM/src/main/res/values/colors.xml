@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="bg_start">#114c5c</color>
+    <color name="bg_end">#061c22</color>
+
+    <color name="action_bar_line">#882439</color>
+
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.dsvoronin.grindfm"
+          tools:ignore="MissingVersion">
+
+    <!-- Will be overriden by values from build.gradle -->
+    <uses-sdk
+            android:minSdkVersion="16"
+            android:targetSdkVersion="18"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <permission
+            android:name="android.permission.STATUS_BAR_SERVICE"
+            android:protectionLevel="signature"/>
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:name=".App"
+            android:theme="@style/Theme.Grindfm">
+        <activity
+                android:name="com.dsvoronin.grindfm.MainActivity"
+                android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <service
+                android:name=".player.PlayerService"/>
+
+        <receiver android:name=".player.MusicIntentReceiver">
+            <intent-filter>
+                <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
