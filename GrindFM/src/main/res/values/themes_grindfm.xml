@@ -10,6 +10,7 @@
         <item name="android:popupMenuStyle">@style/PopupMenu.Grindfm</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Grindfm</item>
         <item name="android:listViewStyle">@style/ListView.GrindFM</item>
+        <item name="android:gridViewStyle">@style/ListView.GrindFM</item>
         <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Grindfm</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.Grindfm</item>
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.Grindfm</item>

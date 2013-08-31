@@ -184,10 +184,10 @@ public class MainActivity extends Activity {
 
         switch (position) {
             case 0:
-                fragment = new TrackListFragment();
+                fragment = new NewsFragment();
                 break;
             case 1:
-                fragment = new NewsFragment();
+                fragment = new TrackListFragment();
                 break;
             default:
                 throw new IndexOutOfBoundsException("No such position: " + position);

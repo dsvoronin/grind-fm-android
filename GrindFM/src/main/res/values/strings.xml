@@ -7,8 +7,8 @@
     <string name="action_player_pause">Pause</string>
 
     <string-array name="navigation_array">
-        <item>Треклист</item>
         <item>Новости</item>
+        <item>Треклист</item>
     </string-array>
 
     <string name="cant_get_audiofocus">Не удается запустить плеер. Устройство занято.</string>
