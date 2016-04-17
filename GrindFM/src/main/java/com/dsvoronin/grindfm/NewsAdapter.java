@@ -1,6 +1,8 @@
 package com.dsvoronin.grindfm;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,20 +12,23 @@ import android.widget.TextView;
 import com.dsvoronin.grindfm.rss.RssItem;
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsAdapter extends BaseAdapter {
 
+    private static final String TAG = "NewsAdapter";
+
     private List<RssItem> content = new ArrayList<RssItem>();
 
     private Context context;
 
+    private Picasso picasso;
+
     public NewsAdapter(Context context) {
         this.context = context;
+        picasso = App.fromContext(context).getPicasso();
     }
 
     private static String getImageUrl(String description) {
@@ -32,10 +37,16 @@ public class NewsAdapter extends BaseAdapter {
         return substring.substring(0, substring.indexOf("\""));
     }
 
-    private static String formatImageUrl(String badImageUrl) throws RuntimeException {
-        String escaped = badImageUrl.replace(" ", "%20");
-        URI uri = URI.create(escaped);
-        return uri.toASCIIString();
+    @Nullable
+    private static String formatImageUrl(String badImageUrl) {
+        try {
+            String escaped = badImageUrl.replace(" ", "%20");
+            URI uri = URI.create(escaped);
+            return uri.toASCIIString();
+        } catch (Exception e) {
+            Log.e(TAG, "Can't format image url", e);
+            return null;
+        }
     }
 
     @Override
@@ -76,11 +87,8 @@ public class NewsAdapter extends BaseAdapter {
         RssItem item = getItem(position);
         holder.title.setText(item.getTitle());
 
-        try {
-            Picasso.with(context).load(formatImageUrl(getImageUrl(item.getDescription()))).into(holder.image);
-        } catch (RuntimeException e) {
-            //todo remove
-        }
+        picasso.load(formatImageUrl(getImageUrl(item.getDescription())))
+                .into(holder.image);
 
         return convertView;
     }

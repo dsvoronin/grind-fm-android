@@ -1,6 +1,8 @@
 package com.dsvoronin.grindfm;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +16,7 @@ import com.dsvoronin.grindfm.network.GrindRequest;
 import com.dsvoronin.grindfm.network.RequestManager;
 import com.dsvoronin.grindfm.rss.RssFeed;
 import com.dsvoronin.grindfm.rss.RssReader;
-
-import org.jetbrains.annotations.Nullable;
+import com.squareup.picasso.Picasso;
 
 public class NewsFragment extends Fragment {
 

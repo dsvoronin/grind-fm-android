@@ -42,13 +42,12 @@ dependencies {
     compile "com.android.support:support-annotations:$verSupport"
 
     compile 'com.squareup.okhttp:okhttp:1.2.0'
-    compile 'com.jakewharton:disklrucache:2.0.2'
-    compile 'com.squareup.picasso:picasso:1.1.1'
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.2'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.2.2'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.2.2'
     compile project(':volley')
-
-    compile 'com.intellij:annotations:12.0'
 }

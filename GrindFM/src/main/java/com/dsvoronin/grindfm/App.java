@@ -1,30 +1,41 @@
 package com.dsvoronin.grindfm;
 
 import android.app.Application;
-import android.graphics.Bitmap;
+import android.content.Context;
 
-import com.dsvoronin.grindfm.cache.ImageCacheManager;
 import com.dsvoronin.grindfm.network.RequestManager;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
+
+import okhttp3.OkHttpClient;
 
 public class App extends Application {
 
-    private static App instance;
+    private OkHttpClient okHttpClient;
+    private Picasso picasso;
 
-    public static App getApp() {
-        return instance;
+    public static App fromContext(Context context) {
+        return (App) context.getApplicationContext();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         RequestManager.init(getApplicationContext());
-        ImageCacheManager.getInstance().init(getApplicationContext(), "img", (int) (Runtime.getRuntime().freeMemory() / 8), Bitmap.CompressFormat.JPEG, 70, ImageCacheManager.CacheType.MEMORY);
+
+        okHttpClient = new OkHttpClient.Builder()
+                .build();
+
+        picasso = new Picasso.Builder(this)
+                .downloader(new OkHttp3Downloader(okHttpClient))
+                .build();
     }
 
-    @Override
-    public void onTerminate() {
-        instance = null;
-        super.onTerminate();
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
+    }
+
+    public Picasso getPicasso() {
+        return picasso;
     }
 }
