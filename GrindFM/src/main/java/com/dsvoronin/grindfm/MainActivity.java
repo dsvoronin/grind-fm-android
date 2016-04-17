@@ -1,7 +1,5 @@
 package com.dsvoronin.grindfm;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -15,6 +13,8 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,7 +26,7 @@ import android.widget.ListView;
 
 import com.dsvoronin.grindfm.player.PlayerService;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "GrindFM.MainActivity";
     private DrawerLayout mDrawerLayout;
@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
                 R.layout.drawer_list_item, mPlanetTitles));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                ActionBar actionBar = getActionBar();
+                ActionBar actionBar = getSupportActionBar();
                 if (actionBar != null) {
                     actionBar.setTitle(mTitle);
                     invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
             }
 
             public void onDrawerOpened(View drawerView) {
-                ActionBar actionBar = getActionBar();
+                ActionBar actionBar = getSupportActionBar();
                 if (actionBar != null) {
                     actionBar.setTitle(mDrawerTitle);
                     invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -190,7 +190,10 @@ public class MainActivity extends Activity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(mTitle);
+        }
     }
 
     /**
