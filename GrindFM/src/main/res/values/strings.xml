@@ -6,15 +6,7 @@
     <string name="action_player_play">Play</string>
     <string name="action_player_pause">Pause</string>
 
-    <string-array name="navigation_array">
-        <item>Новости</item>
-        <item>Треклист</item>
-    </string-array>
-
     <string name="cant_get_audiofocus">Не удается запустить плеер. Устройство занято.</string>
-
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
 
     <string name="default_server_error">Сервер не отвечает :(</string>
 

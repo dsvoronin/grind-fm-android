@@ -15,12 +15,12 @@
 
         <TextView
             android:id="@+id/news_title"
-            style="@style/NewsNormal"
             android:layout_width="match_parent"
             android:layout_height="22dp"
             android:layout_margin="6dp"
             android:fontFamily="sanf-serif"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textColor="#000" />
 
         <View
             android:layout_width="match_parent"

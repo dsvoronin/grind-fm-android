@@ -6,4 +6,6 @@
 
     <color name="action_bar_line">#882439</color>
 
+    <color name="pressed_grindfm">#CC882439</color>
+
 </resources>
