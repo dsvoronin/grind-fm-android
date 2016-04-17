@@ -28,7 +28,6 @@
         <item name="android:buttonStyle">@style/ButtonGrindFM</item>
         <item name="android:imageButtonStyle">@style/ImageButtonGrindFM</item>
         <item name="android:dropDownSpinnerStyle">@style/SpinnerGrindFM</item>
-        <item name="android:tabWidgetStyle">@style/TabWidgetGrindFM</item>
         <item name="android:progressBarStyleHorizontal">@style/ProgressBarGrindFM</item>
         <item name="android:seekBarStyle">@style/SeekBarGrindFM</item>
         <item name="android:buttonStyleToggle">@style/ToggleGrindFM</item>

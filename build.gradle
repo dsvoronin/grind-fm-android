@@ -4,6 +4,7 @@ buildscript {
         verBuildTools = '23.0.3'
         verMaxSdk = 23
         verMinSdk = 16
+        verSupport = '23.3.0'
     }
     repositories {
         jcenter()
