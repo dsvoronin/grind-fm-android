@@ -1,9 +1,9 @@
 package com.dsvoronin.grindfm.network;
 
+import android.content.Context;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
-
-import android.content.Context;
 
 /**
  * Manager for the queue

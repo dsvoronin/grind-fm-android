@@ -36,16 +36,6 @@ public class GrindRequest extends Request<String> {
         this.cacheTTL = cacheTTL;
     }
 
-    @Override
-    protected Response<String> parseNetworkResponse(NetworkResponse response) {
-        return Response.success(new String(response.data), parseIgnoreCacheHeaders(response, cacheTTL, cacheSoftTTL));
-    }
-
-    @Override
-    protected void deliverResponse(String response) {
-        mListener.onResponse(response);
-    }
-
     /**
      * Extracts a {@link Cache.Entry} from a {@link NetworkResponse}.
      * Cache-control headers are ignored. SoftTtl == 3 mins, ttl == 24 hours.
@@ -93,5 +83,15 @@ public class GrindRequest extends Request<String> {
             // Date in invalid format, fallback to 0
             return 0;
         }
+    }
+
+    @Override
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+        return Response.success(new String(response.data), parseIgnoreCacheHeaders(response, cacheTTL, cacheSoftTTL));
+    }
+
+    @Override
+    protected void deliverResponse(String response) {
+        mListener.onResponse(response);
     }
 }

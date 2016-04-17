@@ -16,6 +16,9 @@
 
 package com.android.volley.toolbox;
 
+import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.SmallTest;
+
 import com.android.volley.Request.Method;
 import com.android.volley.mock.TestRequest;
 
@@ -24,9 +27,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
 
 @SmallTest
 public class HttpClientStackTest extends AndroidTestCase {

@@ -1,30 +1,28 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "18.0.1"
+    compileSdkVersion verMaxSdk
+    buildToolsVersion verBuildTools
+
+    useLibrary 'org.apache.http.legacy'
 
     sourceSets {
-        defaultConfig {
-            testPackageName 'com.android.volley.tests'
-        }
-
         main {
-            assets.srcDirs       = ['assets']
-            res.srcDirs          = ['res']
-            aidl.srcDirs         = ['src']
-            resources.srcDirs    = ['src']
+            assets.srcDirs = ['assets']
+            res.srcDirs = ['res']
+            aidl.srcDirs = ['src']
+            resources.srcDirs = ['src']
             renderscript.srcDirs = ['src']
-            java.srcDirs         = ['src']
+            java.srcDirs = ['src']
             manifest.srcFile 'AndroidManifest.xml'
 
         }
 
         instrumentTest {
-            assets.srcDirs    = ["tests/assets"]
-            res.srcDirs       = ["tests/res"]
+            assets.srcDirs = ["tests/assets"]
+            res.srcDirs = ["tests/res"]
             resources.srcDirs = ["tests/src"]
-            java.srcDirs      = ["tests/src"]
+            java.srcDirs = ["tests/src"]
         }
     }
 }

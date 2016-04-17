@@ -15,13 +15,13 @@ public class BitmapLruImageCache extends LruCache<String, Bitmap> implements Ima
 
     private final String TAG = this.getClass().getSimpleName();
 
+    public BitmapLruImageCache(int maxSize) {
+        super(maxSize);
+    }
+
     public static int getDefaultLruCacheSize() {
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         return maxMemory / 8;
-    }
-
-    public BitmapLruImageCache(int maxSize) {
-        super(maxSize);
     }
 
     @Override

@@ -28,6 +28,15 @@ import java.util.Locale;
 
 public class RssItem implements Comparable<RssItem>, Parcelable {
 
+    public static final Parcelable.Creator<RssItem> CREATOR = new Parcelable.Creator<RssItem>() {
+        public RssItem createFromParcel(Parcel data) {
+            return new RssItem(data);
+        }
+
+        public RssItem[] newArray(int size) {
+            return new RssItem[size];
+        }
+    };
     private RssFeed feed;
     private String title;
     private String link;
@@ -64,16 +73,6 @@ public class RssItem implements Comparable<RssItem>, Parcelable {
         dest.writeBundle(data);
     }
 
-    public static final Parcelable.Creator<RssItem> CREATOR = new Parcelable.Creator<RssItem>() {
-        public RssItem createFromParcel(Parcel data) {
-            return new RssItem(data);
-        }
-
-        public RssItem[] newArray(int size) {
-            return new RssItem[size];
-        }
-    };
-
     @Override
     public int describeContents() {
         return 0;
@@ -107,10 +106,6 @@ public class RssItem implements Comparable<RssItem>, Parcelable {
         return pubDate;
     }
 
-    public void setPubDate(Date pubDate) {
-        this.pubDate = pubDate;
-    }
-
     public void setPubDate(String pubDate) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
@@ -118,6 +113,10 @@ public class RssItem implements Comparable<RssItem>, Parcelable {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setPubDate(Date pubDate) {
+        this.pubDate = pubDate;
     }
 
     public String getDescription() {

@@ -16,17 +16,17 @@
 
 package com.android.volley;
 
+import android.os.SystemClock;
+import android.test.InstrumentationTestCase;
+import android.test.UiThreadTest;
+import android.test.suitebuilder.annotation.LargeTest;
+
 import com.android.volley.Request.Priority;
 import com.android.volley.mock.MockNetwork;
 import com.android.volley.mock.MockRequest;
 import com.android.volley.toolbox.NoCache;
 import com.android.volley.utils.CacheTestUtils;
 import com.android.volley.utils.ImmediateResponseDelivery;
-
-import android.os.SystemClock;
-import android.test.InstrumentationTestCase;
-import android.test.UiThreadTest;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +48,7 @@ public class RequestQueueTest extends InstrumentationTestCase {
 
     /**
      * Make a list of requests with random priorities.
+     *
      * @param count Number of requests to make
      */
     private List<MockRequest> makeRequests(int count) {

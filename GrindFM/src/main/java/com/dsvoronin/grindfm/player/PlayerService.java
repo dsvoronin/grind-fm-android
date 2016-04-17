@@ -32,22 +32,12 @@ public class PlayerService extends Service implements
         AudioManager.OnAudioFocusChangeListener {
 
 
-    public enum Action {
-        REQUEST_STATUS, FORCE_STOP
-    }
-
     private static final String TAG = "GrindFM.Player";
-
     private static final int NOTIFICATION_ID = 1;
-
     private MediaPlayer player = null;
-
     private AudioManager audioManager;
-
     private WifiManager.WifiLock wifiLock;
-
     private TrackListItem lastItem = null;
-
     private UIUpdater updater = new UIUpdater(new Runnable() {
 
         @Override
@@ -84,6 +74,29 @@ public class PlayerService extends Service implements
             ));
         }
     }, 10 * 1000);
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            try {
+                if (action == null) {
+                    throw new IllegalArgumentException("Null action");
+                }
+
+                switch (Action.valueOf(action)) {
+                    case REQUEST_STATUS:
+                        sendStatusBroadcast(player != null && player.isPlaying());
+                        break;
+                    case FORCE_STOP:
+                        stop();
+                        player.reset();
+                        break;
+                }
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Unknown action: " + action, e);
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -128,30 +141,6 @@ public class PlayerService extends Service implements
 
         return true;
     }
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            try {
-                if (action == null) {
-                    throw new IllegalArgumentException("Null action");
-                }
-
-                switch (Action.valueOf(action)) {
-                    case REQUEST_STATUS:
-                        sendStatusBroadcast(player != null && player.isPlaying());
-                        break;
-                    case FORCE_STOP:
-                        stop();
-                        player.reset();
-                        break;
-                }
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "Unknown action: " + action, e);
-            }
-        }
-    };
 
     @Override
     public void onDestroy() {
@@ -274,5 +263,9 @@ public class PlayerService extends Service implements
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public enum Action {
+        REQUEST_STATUS, FORCE_STOP
     }
 }

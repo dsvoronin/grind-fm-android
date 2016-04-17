@@ -10,6 +10,10 @@ public class App extends Application {
 
     private static App instance;
 
+    public static App getApp() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -22,9 +26,5 @@ public class App extends Application {
     public void onTerminate() {
         instance = null;
         super.onTerminate();
-    }
-
-    public static App getApp() {
-        return instance;
     }
 }

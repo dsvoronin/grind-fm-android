@@ -1,9 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    ext {
+        verBuildTools = '23.0.3'
+        verMaxSdk = 23
+        verMinSdk = 16
+    }
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
+        classpath 'com.android.tools.build:gradle:2.1.0-beta1'
+    }
+}
+
+subprojects {
+    repositories {
+        jcenter()
     }
 }

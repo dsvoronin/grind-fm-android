@@ -17,14 +17,23 @@ package com.dsvoronin.grindfm.rss;
  */
 
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 public class RssFeed implements Parcelable {
 
+    public static final Parcelable.Creator<RssFeed> CREATOR = new Parcelable.Creator<RssFeed>() {
+        public RssFeed createFromParcel(Parcel data) {
+            return new RssFeed(data);
+        }
+
+        public RssFeed[] newArray(int size) {
+            return new RssFeed[size];
+        }
+    };
     private String title;
     private String link;
     private String description;
@@ -57,16 +66,6 @@ public class RssFeed implements Parcelable {
         data.putParcelableArrayList("rssItems", rssItems);
         dest.writeBundle(data);
     }
-
-    public static final Parcelable.Creator<RssFeed> CREATOR = new Parcelable.Creator<RssFeed>() {
-        public RssFeed createFromParcel(Parcel data) {
-            return new RssFeed(data);
-        }
-
-        public RssFeed[] newArray(int size) {
-            return new RssFeed[size];
-        }
-    };
 
     @Override
     public int describeContents() {

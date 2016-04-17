@@ -26,6 +26,18 @@ public class NewsAdapter extends BaseAdapter {
         this.context = context;
     }
 
+    private static String getImageUrl(String description) {
+        String start = "img src=\"";
+        String substring = description.substring(description.indexOf(start) + start.length());
+        return substring.substring(0, substring.indexOf("\""));
+    }
+
+    private static String formatImageUrl(String badImageUrl) throws RuntimeException {
+        String escaped = badImageUrl.replace(" ", "%20");
+        URI uri = URI.create(escaped);
+        return uri.toASCIIString();
+    }
+
     @Override
     public int getCount() {
         return content.size();
@@ -71,18 +83,6 @@ public class NewsAdapter extends BaseAdapter {
         }
 
         return convertView;
-    }
-
-    private static String getImageUrl(String description) {
-        String start = "img src=\"";
-        String substring = description.substring(description.indexOf(start) + start.length());
-        return substring.substring(0, substring.indexOf("\""));
-    }
-
-    private static String formatImageUrl(String badImageUrl) throws RuntimeException {
-        String escaped = badImageUrl.replace(" ", "%20");
-        URI uri = URI.create(escaped);
-        return uri.toASCIIString();
     }
 
     private static class ViewHolder {

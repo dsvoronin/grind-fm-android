@@ -21,13 +21,13 @@ import android.test.suitebuilder.annotation.SmallTest;
 import com.android.volley.Cache;
 import com.android.volley.NetworkResponse;
 
+import junit.framework.TestCase;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 @SmallTest
 public class HttpHeaderParserTest extends TestCase {
@@ -37,6 +37,11 @@ public class HttpHeaderParserTest extends TestCase {
 
     private NetworkResponse response;
     private Map<String, String> headers;
+
+    private static String rfc1123Date(long millis) {
+        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        return df.format(new Date(millis));
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -159,11 +164,6 @@ public class HttpHeaderParserTest extends TestCase {
     private void assertEqualsWithin(long expected, long value, long fudgeFactor) {
         long diff = Math.abs(expected - value);
         assertTrue(diff < fudgeFactor);
-    }
-
-    private static String rfc1123Date(long millis) {
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
-        return df.format(new Date(millis));
     }
 
     // --------------------------
