@@ -8,7 +8,10 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
+import com.dsvoronin.grindfm.player.NewPlayerService;
 import com.dsvoronin.grindfm.player.PlayerService;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Button playButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new NewsFragment()).commit();
         }
+
+        playButton = (Button) findViewById(R.id.play_button);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startService(new Intent(MainActivity.this, NewPlayerService.class));
+            }
+        });
     }
 
     @Override
@@ -54,18 +67,6 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(receiver);
         super.onPause();
     }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action buttons
-//        switch (item.getItemId()) {
-//            case R.id.action_player:
-//                startService(new Intent(this, PlayerService.class));
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
 
     public enum Action {
         PLAYER_STATUS_UPDATE

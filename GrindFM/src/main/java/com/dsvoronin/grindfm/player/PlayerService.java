@@ -31,13 +31,18 @@ public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
         AudioManager.OnAudioFocusChangeListener {
 
-
     private static final String TAG = "GrindFM.Player";
+
     private static final int NOTIFICATION_ID = 1;
+
     private MediaPlayer player = null;
+
     private AudioManager audioManager;
+
     private WifiManager.WifiLock wifiLock;
+
     private TrackListItem lastItem = null;
+
     private UIUpdater updater = new UIUpdater(new Runnable() {
 
         @Override
@@ -74,6 +79,7 @@ public class PlayerService extends Service implements
             ));
         }
     }, 10 * 1000);
+
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
