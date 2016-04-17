@@ -3,15 +3,15 @@
     <declare-styleable name="TabWidget">
 
         <!-- Drawable used to draw the divider between tabs. -->
-        <attr name="divider" format="reference"/>
+        <attr name="divider" format="reference" />
         <!-- Determines whether the strip under the tab indicators is drawn or not. -->
-        <attr name="tabStripEnabled" format="boolean"/>
+        <attr name="tabStripEnabled" format="boolean" />
         <!-- Drawable used to draw the left part of the strip underneath the tabs. -->
-        <attr name="tabStripLeft" format="reference"/>
+        <attr name="tabStripLeft" format="reference" />
         <!-- Drawable used to draw the right part of the strip underneath the tabs. -->
-        <attr name="tabStripRight" format="reference"/>
+        <attr name="tabStripRight" format="reference" />
         <!-- Layout used to organize each tab's content. -->
-        <attr name="tabLayout" format="reference"/>
+        <attr name="tabLayout" format="reference" />
 
     </declare-styleable>
 

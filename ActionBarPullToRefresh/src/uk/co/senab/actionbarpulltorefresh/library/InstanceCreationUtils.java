@@ -37,6 +37,7 @@ class InstanceCreationUtils {
     private static final Class<?>[] TRANSFORMER_CONSTRUCTOR_SIGNATURE = new Class[]{};
 
     private static final HashMap<Class, Class> BUILT_IN_DELEGATES;
+
     static {
         BUILT_IN_DELEGATES = new HashMap<Class, Class>();
         BUILT_IN_DELEGATES.put(AbsListViewDelegate.SUPPORTED_VIEW_CLASS, AbsListViewDelegate.class);
@@ -78,7 +79,7 @@ class InstanceCreationUtils {
     }
 
     private static <T> T newInstance(Context context, Class clazz, Class[] constructorSig,
-            Object[] arguments) {
+                                     Object[] arguments) {
         try {
             Constructor<?> constructor = clazz.getConstructor(constructorSig);
             return (T) constructor.newInstance(arguments);

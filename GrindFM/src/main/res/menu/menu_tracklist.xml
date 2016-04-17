@@ -16,8 +16,8 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-            android:id="@+id/action_player"
-            android:icon="@drawable/av_play"
-            android:title="@string/action_player_play"
-            android:showAsAction="ifRoom|withText"/>
+        android:id="@+id/action_player"
+        android:icon="@drawable/av_play"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_player_play" />
 </menu>

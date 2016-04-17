@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2013 Chris Banes
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +18,9 @@
 
     <item android:id="@android:id/progress">
         <scale
-            android:scaleWidth="100%"
+            android:drawable="@drawable/ptr_progress_primary_holo"
             android:scaleGravity="center"
-            android:drawable="@drawable/ptr_progress_primary_holo" />
+            android:scaleWidth="100%" />
     </item>
 
 </layer-list>

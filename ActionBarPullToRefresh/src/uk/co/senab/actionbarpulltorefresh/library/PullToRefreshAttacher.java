@@ -57,46 +57,27 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     private final HeaderTransformer mHeaderTransformer;
 
     private final View mHeaderView;
-    private HeaderViewListener mHeaderViewListener;
     private final Animation mHeaderInAnimation, mHeaderOutAnimation;
-
     private final int mTouchSlop;
     private final float mRefreshScrollDistance;
+    private final WeakHashMap<View, ViewParams> mRefreshableViews;
+    private final Handler mHandler = new Handler();
+    private HeaderViewListener mHeaderViewListener;
+    private final Runnable mRefreshMinimizeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mHeaderTransformer.onRefreshMinimized();
 
+            if (mHeaderViewListener != null) {
+                mHeaderViewListener.onStateChanged(mHeaderView, HeaderViewListener.STATE_MINIMIZED);
+            }
+        }
+    };
     private int mInitialMotionY, mLastMotionY, mPullBeginY;
     private boolean mIsBeingDragged, mIsRefreshing, mIsHandlingTouchEvent;
-
-    private final WeakHashMap<View, ViewParams> mRefreshableViews;
-
     private boolean mEnabled = true;
     private boolean mRefreshOnUp;
     private int mRefreshMinimizeDelay;
-
-    private final Handler mHandler = new Handler();
-
-    /**
-     * Get a PullToRefreshAttacher for this Activity. If there is already a PullToRefreshAttacher
-     * attached to the Activity, the existing one is returned, otherwise a new instance is created.
-     * This version of the method will use default configuration options for everything.
-     *
-     * @param activity Activity to attach to.
-     * @return PullToRefresh attached to the Activity.
-     */
-    public static PullToRefreshAttacher get(Activity activity) {
-        return get(activity, new Options());
-    }
-
-    /**
-     * Get a PullToRefreshAttacher for this Activity. If there is already a PullToRefreshAttacher
-     * attached to the Activity, the existing one is returned, otherwise a new instance is created.
-     *
-     * @param activity Activity to attach to.
-     * @param options  Options used when creating the PullToRefreshAttacher.
-     * @return PullToRefresh attached to the Activity.
-     */
-    public static PullToRefreshAttacher get(Activity activity, Options options) {
-        return new PullToRefreshAttacher(activity, options);
-    }
 
     protected PullToRefreshAttacher(Activity activity, Options options) {
         if (options == null) {
@@ -159,6 +140,30 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
 
         // Notify transformer
         mHeaderTransformer.onViewCreated(mHeaderView);
+    }
+
+    /**
+     * Get a PullToRefreshAttacher for this Activity. If there is already a PullToRefreshAttacher
+     * attached to the Activity, the existing one is returned, otherwise a new instance is created.
+     * This version of the method will use default configuration options for everything.
+     *
+     * @param activity Activity to attach to.
+     * @return PullToRefresh attached to the Activity.
+     */
+    public static PullToRefreshAttacher get(Activity activity) {
+        return get(activity, new Options());
+    }
+
+    /**
+     * Get a PullToRefreshAttacher for this Activity. If there is already a PullToRefreshAttacher
+     * attached to the Activity, the existing one is returned, otherwise a new instance is created.
+     *
+     * @param activity Activity to attach to.
+     * @param options  Options used when creating the PullToRefreshAttacher.
+     * @return PullToRefresh attached to the Activity.
+     */
+    public static PullToRefreshAttacher get(Activity activity, Options options) {
+        return new PullToRefreshAttacher(activity, options);
     }
 
     /**
@@ -255,6 +260,13 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
     }
 
     /**
+     * @return true if this Attacher is currently in a refreshing state.
+     */
+    public final boolean isRefreshing() {
+        return mIsRefreshing;
+    }
+
+    /**
      * Manually set this Attacher's refreshing state. The header will be displayed or hidden as
      * requested.
      *
@@ -262,13 +274,6 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
      */
     public final void setRefreshing(boolean refreshing) {
         setRefreshingInt(null, refreshing, false);
-    }
-
-    /**
-     * @return true if this Attacher is currently in a refreshing state.
-     */
-    public final boolean isRefreshing() {
-        return mIsRefreshing;
     }
 
     /**
@@ -786,34 +791,6 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
         public int refreshMinimizeDelay = DEFAULT_REFRESH_MINIMIZED_DELAY;
     }
 
-    private class AnimationCallback implements Animation.AnimationListener {
-
-        @Override
-        public void onAnimationStart(Animation animation) {
-        }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            if (animation == mHeaderOutAnimation) {
-                mHeaderView.setVisibility(View.GONE);
-                mHeaderTransformer.onReset();
-                if (mHeaderViewListener != null) {
-                    mHeaderViewListener
-                            .onStateChanged(mHeaderView, HeaderViewListener.STATE_VISIBLE);
-                }
-            } else if (animation == mHeaderOutAnimation) {
-                if (mHeaderViewListener != null) {
-                    mHeaderViewListener
-                            .onStateChanged(mHeaderView, HeaderViewListener.STATE_HIDDEN);
-                }
-            }
-        }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) {
-        }
-    }
-
     /**
      * This class allows us to insert a layer in between the system decor view and the actual decor.
      * (e.g. Action Bar views). This is needed so we can receive a call to fitSystemWindows(Rect)
@@ -866,15 +843,32 @@ public class PullToRefreshAttacher implements View.OnTouchListener {
         }
     }
 
-    private final Runnable mRefreshMinimizeRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mHeaderTransformer.onRefreshMinimized();
+    private class AnimationCallback implements Animation.AnimationListener {
 
-            if (mHeaderViewListener != null) {
-                mHeaderViewListener.onStateChanged(mHeaderView, HeaderViewListener.STATE_MINIMIZED);
+        @Override
+        public void onAnimationStart(Animation animation) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            if (animation == mHeaderOutAnimation) {
+                mHeaderView.setVisibility(View.GONE);
+                mHeaderTransformer.onReset();
+                if (mHeaderViewListener != null) {
+                    mHeaderViewListener
+                            .onStateChanged(mHeaderView, HeaderViewListener.STATE_VISIBLE);
+                }
+            } else if (animation == mHeaderOutAnimation) {
+                if (mHeaderViewListener != null) {
+                    mHeaderViewListener
+                            .onStateChanged(mHeaderView, HeaderViewListener.STATE_HIDDEN);
+                }
             }
         }
-    };
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+        }
+    }
 
 }

@@ -18,22 +18,11 @@ import com.dsvoronin.grindfm.network.RequestManager;
  */
 public class ImageCacheManager {
 
-    /**
-     * Volley recommends in-memory L1 cache but both a disk and memory cache are provided.
-     * Volley includes a L2 disk cache out of the box but you can technically use a disk cache as an L1 cache provided
-     * you can live with potential i/o blocking.
-     */
-    public enum CacheType {
-        DISK, MEMORY
-    }
-
     private static ImageCacheManager mInstance;
-
     /**
      * Volley image loader
      */
     private ImageLoader mImageLoader;
-
     /**
      * Image cache implementation
      */
@@ -89,7 +78,6 @@ public class ImageCacheManager {
         }
     }
 
-
     /**
      * Executes and image load
      *
@@ -115,5 +103,14 @@ public class ImageCacheManager {
      */
     private String createKey(String url) {
         return String.valueOf(url.hashCode());
+    }
+
+    /**
+     * Volley recommends in-memory L1 cache but both a disk and memory cache are provided.
+     * Volley includes a L2 disk cache out of the box but you can technically use a disk cache as an L1 cache provided
+     * you can live with potential i/o blocking.
+     */
+    public enum CacheType {
+        DISK, MEMORY
     }
 }

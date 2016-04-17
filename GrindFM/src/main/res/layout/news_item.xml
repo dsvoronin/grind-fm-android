@@ -7,20 +7,20 @@
     android:padding="6dp">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:background="@drawable/news_item_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/news_item_card"
+        android:orientation="vertical"
         tools:ignore="UselessParent">
 
         <TextView
+            android:id="@+id/news_title"
+            style="@style/NewsNormal"
             android:layout_width="match_parent"
             android:layout_height="22dp"
-            android:singleLine="true"
             android:layout_margin="6dp"
             android:fontFamily="sanf-serif"
-            style="@style/NewsNormal"
-            android:id="@+id/news_title" />
+            android:singleLine="true" />
 
         <View
             android:layout_width="match_parent"
@@ -28,11 +28,11 @@
             android:background="@color/action_bar_line" />
 
         <ImageView
+            android:id="@+id/news_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:id="@+id/news_image"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>

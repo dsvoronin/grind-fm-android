@@ -30,23 +30,30 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 public class MainActivity extends Activity {
 
-    public enum Action {
-        PLAYER_STATUS_UPDATE
-    }
-
     private static final String TAG = "GrindFM.MainActivity";
-
     private PullToRefreshAttacher mPullToRefreshAttacher;
-
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mPlanetTitles;
-
     private Menu menu;
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isPlaying = intent.getBooleanExtra("isPlaying", false);
+            Log.d(TAG, "Got: isplaying=" + isPlaying);
+
+            if (menu != null) {
+                MenuItem item = menu.findItem(R.id.action_player);
+                if (item != null) {
+                    item.setIcon(isPlaying ? R.drawable.av_pause : R.drawable.av_play);
+                    item.setTitle(isPlaying ? R.string.action_player_pause : R.string.action_player_play);
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,22 +121,6 @@ public class MainActivity extends Activity {
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(PlayerService.Action.REQUEST_STATUS.name()));
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isPlaying = intent.getBooleanExtra("isPlaying", false);
-            Log.d(TAG, "Got: isplaying=" + isPlaying);
-
-            if (menu != null) {
-                MenuItem item = menu.findItem(R.id.action_player);
-                if (item != null) {
-                    item.setIcon(isPlaying ? R.drawable.av_pause : R.drawable.av_play);
-                    item.setTitle(isPlaying ? R.string.action_player_pause : R.string.action_player_play);
-                }
-            }
-        }
-    };
-
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(receiver);
@@ -168,14 +159,6 @@ public class MainActivity extends Activity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /* The click listner for ListView in the navigation drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
         }
     }
 
@@ -237,5 +220,17 @@ public class MainActivity extends Activity {
 
     PullToRefreshAttacher getPullToRefreshAttacher() {
         return mPullToRefreshAttacher;
+    }
+
+    public enum Action {
+        PLAYER_STATUS_UPDATE
+    }
+
+    /* The click listner for ListView in the navigation drawer */
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
     }
 }

@@ -47,7 +47,7 @@ public class PullToRefreshLayout extends FrameLayout {
      * to this layout will automatically be added as a refreshable-view in the attacher.
      */
     public void setPullToRefreshAttacher(PullToRefreshAttacher attacher,
-            PullToRefreshAttacher.OnRefreshListener refreshListener) {
+                                         PullToRefreshAttacher.OnRefreshListener refreshListener) {
         View view;
         for (int i = 0, z = getChildCount(); i < z; i++) {
             view = getChildAt(i);

@@ -24,12 +24,12 @@ import java.io.OutputStream;
  */
 public class DiskLruImageCache implements ImageCache {
 
-    private DiskLruCache mDiskCache;
-    private CompressFormat mCompressFormat = CompressFormat.JPEG;
-    private static int IO_BUFFER_SIZE = 8 * 1024;
-    private int mCompressQuality = 70;
     private static final int APP_VERSION = 1;
     private static final int VALUE_COUNT = 1;
+    private static int IO_BUFFER_SIZE = 8 * 1024;
+    private DiskLruCache mDiskCache;
+    private CompressFormat mCompressFormat = CompressFormat.JPEG;
+    private int mCompressQuality = 70;
 
     public DiskLruImageCache(Context context, String uniqueName, int diskCacheSize,
                              CompressFormat compressFormat, int quality) {

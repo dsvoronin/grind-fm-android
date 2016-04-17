@@ -3,7 +3,7 @@
     android:id="@+id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:numColumns="auto_fit"
     android:columnWidth="210dp"
-    android:stretchMode="columnWidth"
-    android:gravity="center" />
+    android:gravity="center"
+    android:numColumns="auto_fit"
+    android:stretchMode="columnWidth" />

@@ -34,13 +34,11 @@ import android.widget.TextView;
  * Default Header Transformer.
  */
 public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransformer {
+    private final Interpolator mInterpolator = new AccelerateInterpolator();
     private ViewGroup mContentLayout;
     private TextView mHeaderTextView;
     private ProgressBar mHeaderProgressBar;
-
     private CharSequence mPullRefreshLabel, mRefreshingLabel, mReleaseLabel;
-
-    private final Interpolator mInterpolator = new AccelerateInterpolator();
 
     protected DefaultHeaderTransformer() {
         final int min = getMinimumApiLevel();
@@ -154,6 +152,7 @@ public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransf
 
     /**
      * Set Text to show to prompt the user is pull (or keep pulling).
+     *
      * @param pullText - Text to display.
      */
     public void setPullText(CharSequence pullText) {
@@ -165,6 +164,7 @@ public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransf
 
     /**
      * Set Text to show to tell the user that a refresh is currently in progress.
+     *
      * @param refreshingText - Text to display.
      */
     public void setRefreshingText(CharSequence refreshingText) {
@@ -173,6 +173,7 @@ public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransf
 
     /**
      * Set Text to show to tell the user has scrolled enough to refresh.
+     *
      * @param releaseText - Text to display.
      */
     public void setReleaseText(CharSequence releaseText) {
@@ -180,7 +181,7 @@ public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransf
     }
 
     protected Drawable getActionBarBackground(Context context) {
-        int[] android_styleable_ActionBar = { android.R.attr.background };
+        int[] android_styleable_ActionBar = {android.R.attr.background};
 
         // Need to get resource id of style pointed to from actionBarStyle
         TypedValue outValue = new TypedValue();
@@ -197,7 +198,7 @@ public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransf
     }
 
     protected int getActionBarSize(Context context) {
-        int[] attrs = { android.R.attr.actionBarSize };
+        int[] attrs = {android.R.attr.actionBarSize};
         TypedArray values = context.getTheme().obtainStyledAttributes(attrs);
         try {
             return values.getDimensionPixelSize(0, 0);
@@ -207,7 +208,7 @@ public class DefaultHeaderTransformer extends PullToRefreshAttacher.HeaderTransf
     }
 
     protected int getActionBarTitleStyle(Context context) {
-        int[] android_styleable_ActionBar = { android.R.attr.titleTextStyle };
+        int[] android_styleable_ActionBar = {android.R.attr.titleTextStyle};
 
         // Need to get resource id of style pointed to from actionBarStyle
         TypedValue outValue = new TypedValue();
