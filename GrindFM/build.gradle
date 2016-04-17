@@ -1,4 +1,4 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 dependencies {
     compile 'com.android.support:support-v13:18.0.0'
@@ -23,7 +23,7 @@ repositories {
 android {
 
     compileSdkVersion 18
-    buildToolsVersion "18.0.1"
+    buildToolsVersion verBuildTools
 
     signingConfigs {
         release {
@@ -35,7 +35,6 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            runProguard true
             proguardFile 'proguard.cfg'
         }
     }
