@@ -38,6 +38,7 @@ android {
 
 dependencies {
     compile "com.android.support:appcompat-v7:$verSupport"
+    compile "com.android.support:design:$verSupport"
     compile "com.android.support:support-annotations:$verSupport"
 
     compile 'com.squareup.okhttp:okhttp:1.2.0'
