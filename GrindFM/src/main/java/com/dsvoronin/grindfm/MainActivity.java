@@ -26,12 +26,9 @@ import android.widget.ListView;
 
 import com.dsvoronin.grindfm.player.PlayerService;
 
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-
 public class MainActivity extends Activity {
 
     private static final String TAG = "GrindFM.MainActivity";
-    private PullToRefreshAttacher mPullToRefreshAttacher;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -59,9 +56,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // The attacher should always be created in the Activity's onCreate
-        mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
 
         mTitle = mDrawerTitle = getTitle();
         mPlanetTitles = getResources().getStringArray(R.array.navigation_array);
@@ -216,10 +210,6 @@ public class MainActivity extends Activity {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    PullToRefreshAttacher getPullToRefreshAttacher() {
-        return mPullToRefreshAttacher;
     }
 
     public enum Action {

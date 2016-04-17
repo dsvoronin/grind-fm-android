@@ -22,17 +22,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-
-public class TrackListFragment extends ListFragment implements PullToRefreshAttacher.OnRefreshListener {
+public class TrackListFragment extends ListFragment {
 
     private static final String TAG = "GrindFM.TrackList";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
     private MainActivity activity;
-
-    private PullToRefreshAttacher mPullToRefreshAttacher;
 
     private Handler handler;
 
@@ -48,13 +44,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         handler = new Handler();
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mPullToRefreshAttacher = activity.getPullToRefreshAttacher();
-        mPullToRefreshAttacher.addRefreshableView(getListView(), this);
     }
 
     @Override
@@ -75,11 +64,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
     public void onDetach() {
         this.activity = null;
         super.onDetach();
-    }
-
-    @Override
-    public void onRefreshStarted(View view) {
-        load();
     }
 
     private void load() {
@@ -108,7 +92,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
                     }
                     setListAdapter(new SimpleAdapter(activity, data, R.layout.tracklist_item, new String[]{"timestamp", "artist", "title"}, new int[]{R.id.track_timestamp, R.id.track_artist, R.id.track_title}));
 
-                    mPullToRefreshAttacher.setRefreshComplete();
                 } catch (Exception e) {
                     Log.e(TAG, "Parse error", e);
                 }
@@ -121,7 +104,6 @@ public class TrackListFragment extends ListFragment implements PullToRefreshAtta
 //                    Toast.makeText(activity, getString(R.string.default_server_error), Toast.LENGTH_SHORT).show();
 //                }
 
-                mPullToRefreshAttacher.setRefreshComplete();
             }
         }
         );
