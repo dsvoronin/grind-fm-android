@@ -1,29 +1,10 @@
 apply plugin: 'com.android.application'
 
-dependencies {
-    compile 'com.android.support:support-v13:18.0.0'
-    compile 'com.squareup.okhttp:okhttp:1.2.0'
-    compile 'com.jakewharton:disklrucache:2.0.2'
-    compile 'com.squareup.picasso:picasso:1.1.1'
-
-    compile 'com.fasterxml.jackson.core:jackson-core:2.2.2'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.2.2'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.2.2'
-    compile project(':volley')
-    compile project(':ActionBarPullToRefresh')
-
-    compile 'com.intellij:annotations:12.0'
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
 android {
-
-    compileSdkVersion 18
+    compileSdkVersion verMaxSdk
     buildToolsVersion verBuildTools
+
+    useLibrary 'org.apache.http.legacy'
 
     signingConfigs {
         release {
@@ -40,8 +21,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 18
+        minSdkVersion verMinSdk
+        targetSdkVersion verMaxSdk
         versionCode 11
         versionName "0.5"
     }
@@ -53,5 +34,19 @@ android {
     } else {
         android.buildTypes.release.signingConfig = null
     }
+}
 
+dependencies {
+    compile 'com.android.support:support-v13:18.0.0'
+    compile 'com.squareup.okhttp:okhttp:1.2.0'
+    compile 'com.jakewharton:disklrucache:2.0.2'
+    compile 'com.squareup.picasso:picasso:1.1.1'
+
+    compile 'com.fasterxml.jackson.core:jackson-core:2.2.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.2.2'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.2.2'
+    compile project(':volley')
+    compile project(':ActionBarPullToRefresh')
+
+    compile 'com.intellij:annotations:12.0'
 }

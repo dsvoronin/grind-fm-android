@@ -1,13 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 18
+    compileSdkVersion verMaxSdk
     buildToolsVersion verBuildTools
 
-    sourceSets {
-        defaultConfig {
-        }
+    useLibrary 'org.apache.http.legacy'
 
+    sourceSets {
         main {
             assets.srcDirs = ['assets']
             res.srcDirs = ['res']

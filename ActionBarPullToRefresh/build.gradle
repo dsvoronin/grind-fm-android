@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 18
+    compileSdkVersion verMaxSdk
     buildToolsVersion verBuildTools
 
     sourceSets {

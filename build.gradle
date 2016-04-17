@@ -2,11 +2,19 @@
 buildscript {
     ext {
         verBuildTools = '23.0.3'
+        verMaxSdk = 23
+        verMinSdk = 16
     }
     repositories {
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0-beta1'
+    }
+}
+
+subprojects {
+    repositories {
+        jcenter()
     }
 }
