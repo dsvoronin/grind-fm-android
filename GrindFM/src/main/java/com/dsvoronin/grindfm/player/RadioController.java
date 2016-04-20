@@ -8,8 +8,6 @@ public interface RadioController {
 
     void startRadio();
 
-    void stopRadio();
-
     void pauseRadio();
 
     void lowerVolume();
