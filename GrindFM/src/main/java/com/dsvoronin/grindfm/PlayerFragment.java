@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.dsvoronin.grindfm.player.PlayerService;
 
@@ -35,7 +35,7 @@ public class PlayerFragment extends Fragment {
 
     private final String TAG = "PlayerFragment";
 
-    private Button button;
+    private ImageButton button;
 
     private MediaBrowserCompat mediaBrowser;
 
@@ -46,8 +46,10 @@ public class PlayerFragment extends Fragment {
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             Log.d(TAG, "Playback state changed: " + state.toString());
             switch (state.getState()) {
+                case STATE_BUFFERING:
+                case STATE_CONNECTING:
                 case STATE_PLAYING:
-                    button.setText("Pause");
+                    button.setImageResource(R.drawable.ic_pause_black_24dp);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -58,17 +60,13 @@ public class PlayerFragment extends Fragment {
                 case STATE_NONE:
                 case STATE_PAUSED:
                 case STATE_STOPPED:
-                    button.setText("Play");
+                    button.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             getActivity().startService(new Intent(getActivity(), PlayerService.class));
                         }
                     });
-                    break;
-                case STATE_BUFFERING:
-                case STATE_CONNECTING:
-                    button.setText("Buffering...");
                     break;
                 case STATE_ERROR:
                 case STATE_FAST_FORWARDING:
@@ -125,7 +123,7 @@ public class PlayerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
-        button = (Button) view.findViewById(R.id.play_pause);
+        button = (ImageButton) view.findViewById(R.id.play_pause);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

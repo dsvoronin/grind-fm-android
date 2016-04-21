@@ -138,7 +138,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
         return new BrowserRoot(
-                getString(R.string.app_name), // Name visible in Android Auto
+                getString(R.string.app_name),
                 null);
     }
 
@@ -232,6 +232,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements
 
             delayedStopHandler.removeCallbacksAndMessages(null);
 
+            startService(new Intent(getApplicationContext(), PlayerService.class));
+
             registerReceiver(noisyReceiver, noisyFilter);
             mediaPlayer.start();
 
@@ -243,8 +245,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements
                             .setStyle(new NotificationCompat.MediaStyle()
                                     .setMediaSession(getSessionToken()))
                             .build());
-
-            startService(new Intent(getApplicationContext(), PlayerService.class));
 
         } else {
             Toast.makeText(this, getString(R.string.cant_get_audiofocus), Toast.LENGTH_SHORT).show();
