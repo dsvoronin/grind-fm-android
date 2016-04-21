@@ -44,7 +44,7 @@ public class NewsAdapter extends BaseAdapter {
             URI uri = URI.create(escaped);
             return uri.toASCIIString();
         } catch (Exception e) {
-            Log.e(TAG, "Can't format image url", e);
+//            Log.e(TAG, "Can't format image url", e);
             return null;
         }
     }

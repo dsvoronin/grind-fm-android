@@ -1,271 +1,277 @@
 package com.dsvoronin.grindfm.player;
 
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.os.IBinder;
-import android.os.PowerManager;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.dsvoronin.grindfm.MainActivity;
 import com.dsvoronin.grindfm.R;
-import com.dsvoronin.grindfm.model.TrackListItem;
-import com.dsvoronin.grindfm.network.GrindRequest;
-import com.dsvoronin.grindfm.network.RequestManager;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.List;
 
-public class PlayerService extends Service implements
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener,
-        AudioManager.OnAudioFocusChangeListener {
+public class PlayerService extends MediaBrowserServiceCompat implements
 
+        AudioManager.OnAudioFocusChangeListener,
+        RadioController,
+        MediaPlayer.OnPreparedListener {
 
-    private static final String TAG = "GrindFM.Player";
-    private static final int NOTIFICATION_ID = 1;
-    private MediaPlayer player = null;
+    private static final String TAG = "PlayerService";
+
+    private static final int NOTIFICATION_ID = 7112;
+
+    // Delay stopSelf by using a handler.
+    private static final int STOP_DELAY = 10000;
+
     private AudioManager audioManager;
-    private WifiManager.WifiLock wifiLock;
-    private TrackListItem lastItem = null;
-    private UIUpdater updater = new UIUpdater(new Runnable() {
 
-        @Override
-        public void run() {
-            RequestManager.getRequestQueue().add(new GrindRequest(getString(R.string.icecast_url), new Response.Listener<String>() {
-                @Override
-                public void onResponse(String s) {
-                    String artistTitle = s.substring(s.indexOf(",,") + 2);
-                    String[] split = artistTitle.split(" - ");
-                    TrackListItem item = new TrackListItem(null, split[0], split[1], null);
-                    if (!item.equals(lastItem)) {
-                        startForeground(NOTIFICATION_ID, new Notification.Builder(getApplicationContext())
-                                .setSmallIcon(R.drawable.cat_status_bar)
-                                .setAutoCancel(false)
-                                .setOngoing(true)
-                                .setTicker(item.getArtist() + " - " + item.getTitle())
-                                .setContentText(item.getArtist())
-                                .setContentTitle(item.getTitle())
-                                .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0,
-                                        new Intent(getApplicationContext(), MainActivity.class),
-                                        PendingIntent.FLAG_UPDATE_CURRENT))
-                                .build());
+    private MediaPlayer mediaPlayer;
 
-                    }
+    private MediaSessionCompat mediaSession;
 
-                    lastItem = item;
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    Log.e(TAG, "Can't update song", volleyError);
-                }
-            }
-            ));
-        }
-    }, 10 * 1000);
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private boolean prepared = false;
+
+    private final DelayedStopHandler delayedStopHandler = new DelayedStopHandler(this);
+
+    private BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            try {
-                if (action == null) {
-                    throw new IllegalArgumentException("Null action");
-                }
-
-                switch (Action.valueOf(action)) {
-                    case REQUEST_STATUS:
-                        sendStatusBroadcast(player != null && player.isPlaying());
-                        break;
-                    case FORCE_STOP:
-                        stop();
-                        player.reset();
-                        break;
-                }
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "Unknown action: " + action, e);
-            }
+            pauseRadio();
         }
     };
+
+    private IntentFilter noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
     @Override
     public void onCreate() {
         super.onCreate();
-        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        wifiLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
-        IntentFilter filter = new IntentFilter();
-        for (Action action : Action.values()) {
-            filter.addAction(action.name());
-        }
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(receiver, filter);
+
+        Log.d(TAG, "onCreate");
+
+        ComponentName receiver = new ComponentName(getPackageName(), RemoteReceiver.class.getName());
+        mediaSession = new MediaSessionCompat(this, TAG, receiver, null);
+
+        setSessionToken(mediaSession.getSessionToken());
+
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
+                .build());
+
+        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Test Artist")
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Test Album")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Test Track Name")
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 10000)
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .build());
+
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public void onPlay() {
+                startRadio();
+            }
+
+            @Override
+            public void onPause() {
+                pauseRadio();
+            }
+        });
+
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnPreparedListener(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (player == null || !player.isPlaying()) {
-            player = new MediaPlayer();
-            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        Log.d(TAG, "onStartCommand: " + intent);
 
-            player.setOnPreparedListener(this);
-            player.setOnErrorListener(this);
-            initPlayer();
-        } else {
-            player.stop();
-            stop();
+        if (!mediaPlayer.isPlaying()) {
+            startRadio();
         }
-        return START_NOT_STICKY;
-    }
 
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        play();
-        player.start();
-    }
+        // Reset the delay handler to enqueue a message to stop the service if
+        // nothing is playing.
+        delayedStopHandler.removeCallbacksAndMessages(null);
+        delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
 
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        mp.reset();
-        initPlayer();
-        stop();
-
-        return true;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(receiver);
+        super.onDestroy();
+        stopForeground(true);
+        Log.d(TAG, "onDestroy");
+        mediaPlayer.release();
+        mediaSession.release();
+        delayedStopHandler.removeCallbacksAndMessages(null);
+        mediaSession.setCallback(null);
+        mediaSession = null;
+    }
 
-        stop();
-
-        if (player != null) {
-            player.release();
-        }
+    @Nullable
+    @Override
+    public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+        return new BrowserRoot(
+                getString(R.string.app_name),
+                null);
     }
 
     @Override
-    public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        if (what == MediaPlayer.MEDIA_INFO_METADATA_UPDATE) {
-            Log.d(TAG, "Metadata update:" + extra);
-        }
-        return false;
+    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+        result.sendResult(null);
     }
 
     @Override
     public void onAudioFocusChange(int focusChange) {
         switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_GAIN:
-                Log.d(TAG, "Focus gained");
-                // resume playback
-                if (player == null) {
-                    initPlayer();
-                } else if (!player.isPlaying()) {
-                    play();
-                    player.start();
-                }
-                player.setVolume(0.7f, 0.7f);
-                break;
-
             case AudioManager.AUDIOFOCUS_LOSS:
-                Log.d(TAG, "Focus lost");
-
-                // Lost focus for an unbounded amount of time: stop playback and release media player
-                stop();
-                if (player.isPlaying()) {
-                    player.stop();
-                }
-                player.release();
-                player = null;
+                pauseRadio();
                 break;
-
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                Log.d(TAG, "Focus lost for a short time");
-                // Lost focus for a short time, but we have to stop
-                // playback. We don't release the media player because playback
-                // is likely to resume
-                if (player.isPlaying()) {
-                    stop();
-                    player.pause();
-                }
+                pauseRadio();
                 break;
-
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                Log.d(TAG, "Focus lost, can playback silently");
-                // Lost focus for a short time, but it's ok to keep playing
-                // at an attenuated level
-                if (player.isPlaying()) {
-                    player.setVolume(0.1f, 0.1f);
-                }
+                lowerVolume();
+                break;
+            case AudioManager.AUDIOFOCUS_GAIN:
+                startRadio();
                 break;
         }
-    }
-
-    private void initPlayer() {
-        try {
-            player.setDataSource(this, Uri.parse(getString(R.string.mp3_stream)));
-            player.prepareAsync();
-        } catch (IOException e) {
-            Log.e(TAG, "Can't prepare data source", e);
-        }
-    }
-
-    private void play() {
-
-        int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-
-        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            Toast.makeText(this, getString(R.string.cant_get_audiofocus), Toast.LENGTH_SHORT).show();
-            stop();
-            return;
-        }
-
-        if (wifiLock != null && !wifiLock.isHeld()) {
-            wifiLock.acquire();
-        } else {
-            throw new IllegalStateException("Wifi lock is null");
-        }
-
-        sendStatusBroadcast(true);
-
-        updater.startUpdates();
-    }
-
-    private void stop() {
-        lastItem = null;
-
-        updater.stopUpdates();
-
-        sendStatusBroadcast(false);
-
-        if (wifiLock != null && wifiLock.isHeld()) {
-            wifiLock.release();
-        }
-
-        stopForeground(true);
-    }
-
-    private void sendStatusBroadcast(boolean isPlaying) {
-        Intent intent = new Intent(MainActivity.Action.PLAYER_STATUS_UPDATE.name());
-        intent.putExtra("isPlaying", isPlaying);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public void startRadio() {
+        if (!prepared) {
+            Uri parse = Uri.parse(getString(R.string.mp3_stream));
+            try {
+                mediaPlayer.setDataSource(this, parse);
+            } catch (IOException e) {
+                Log.e(TAG, "setDataSource error ", e);
+            }
+            mediaPlayer.prepareAsync();
+        } else {
+            actualStartPlayback();
+        }
     }
 
-    public enum Action {
-        REQUEST_STATUS, FORCE_STOP
+    @Override
+    public void pauseRadio() {
+        Log.d(TAG, "pauseRadio");
+
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            try {
+                unregisterReceiver(noisyReceiver);
+            } catch (Exception e) {
+                //we don't care if register was not registered or we trying to unregister it second time
+            }
+            stopForeground(false);
+
+            mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0.0f)
+                    .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE).build());
+
+            delayedStopHandler.removeCallbacksAndMessages(null);
+            delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+        }
+    }
+
+    @Override
+    public void lowerVolume() {
+        mediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        prepared = true;
+        startRadio();
+    }
+
+    private void actualStartPlayback() {
+        Log.d(TAG, "actualStartPlayback");
+
+        mediaPlayer.setVolume(FULL_VOLUME, FULL_VOLUME);
+
+        int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+
+            if (!mediaSession.isActive()) {
+                mediaSession.setActive(true);
+            }
+
+            mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1.0f)
+                    .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE).build());
+
+            delayedStopHandler.removeCallbacksAndMessages(null);
+
+            startService(new Intent(getApplicationContext(), PlayerService.class));
+
+            registerReceiver(noisyReceiver, noisyFilter);
+            mediaPlayer.start();
+
+            startForeground(NOTIFICATION_ID,
+                    new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_stat_ic_launcher)
+                            .setContentTitle("Title")
+                            .setContentText("Text")
+                            .setStyle(new NotificationCompat.MediaStyle()
+                                    .setMediaSession(getSessionToken()))
+                            .build());
+
+        } else {
+            Toast.makeText(this, getString(R.string.cant_get_audiofocus), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * A simple handler that stops the service if playback is not active (playing)
+     */
+    private static class DelayedStopHandler extends Handler {
+        private final WeakReference<PlayerService> mWeakReference;
+
+        private DelayedStopHandler(PlayerService service) {
+            mWeakReference = new WeakReference<>(service);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            PlayerService service = mWeakReference.get();
+            if (service != null && service.mediaPlayer != null) {
+                if (service.mediaPlayer.isPlaying()) {
+                    Log.d(TAG, "Ignoring delayed stop since the media player is in use.");
+                    return;
+                }
+                Log.d(TAG, "Stopping service with delay handler.");
+                service.stopSelf();
+            }
+        }
     }
 }
