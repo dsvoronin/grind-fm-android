@@ -64,7 +64,7 @@
 
         <provider
             android:name=".sync.StubProvider"
-            android:authorities="com.example.android.datasync.provider"
+            android:authorities="fm.grind.feed"
             android:exported="false"
             android:syncable="true" />
 

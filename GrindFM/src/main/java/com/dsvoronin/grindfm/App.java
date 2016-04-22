@@ -3,16 +3,21 @@ package com.dsvoronin.grindfm;
 import android.app.Application;
 import android.content.Context;
 
+import com.dsvoronin.grindfm.network.GrindService;
 import com.dsvoronin.grindfm.network.RequestManager;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class App extends Application {
 
     private OkHttpClient okHttpClient;
     private Picasso picasso;
+
+    private GrindService grindService;
 
     public static App fromContext(Context context) {
         return (App) context.getApplicationContext();
@@ -29,6 +34,13 @@ public class App extends Application {
         picasso = new Picasso.Builder(this)
                 .downloader(new OkHttp3Downloader(okHttpClient))
                 .build();
+
+        grindService = new Retrofit.Builder()
+                .baseUrl("http://grind.fm")
+                .client(okHttpClient)
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .build()
+                .create(GrindService.class);
     }
 
     public OkHttpClient getOkHttpClient() {
@@ -37,5 +49,9 @@ public class App extends Application {
 
     public Picasso getPicasso() {
         return picasso;
+    }
+
+    public GrindService getGrindService() {
+        return grindService;
     }
 }

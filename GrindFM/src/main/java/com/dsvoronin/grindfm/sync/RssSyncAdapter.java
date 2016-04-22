@@ -9,21 +9,33 @@ import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.dsvoronin.grindfm.App;
+import com.dsvoronin.grindfm.network.GrindService;
+import com.dsvoronin.grindfm.network.rss.RSS;
+
 public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private final String TAG = "RssSyncAdapter";
 
     private final AccountManager mAccountManager;
 
+    private final GrindService grindService;
+
     public RssSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
         mAccountManager = AccountManager.get(context);
+        grindService = App.fromContext(context).getGrindService();
     }
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(TAG, "onPerformSync");
         try {
+
+            RSS rss = grindService.getGrindFeed();
+
+            Log.d(TAG, rss.toString());
+
             // Get the auth token for the current account
 //            String authToken = mAccountManager.blockingGetAuthToken(account,
 //                    AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);

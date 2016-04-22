@@ -2,7 +2,7 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:accountType="grind.fm"
     android:allowParallelSyncs="false"
-    android:contentAuthority="com.udinic.tvshows.provider"
+    android:contentAuthority="fm.grind.feed"
     android:isAlwaysSyncable="false"
     android:supportsUploading="false"
     android:userVisible="true" />

@@ -1,6 +1,7 @@
 package com.dsvoronin.grindfm;
 
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.dsvoronin.grindfm.player.PlayerService;
@@ -130,6 +132,18 @@ public class PlayerFragment extends Fragment {
                 getActivity().startService(new Intent(getActivity(), PlayerService.class));
             }
         });
+
+        Button sync = (Button) view.findViewById(R.id.sync);
+        sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true); // Performing a sync no matter if it's off
+                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true); // Performing a sync no matter if it's off
+                ContentResolver.requestSync(null, "fm.grind.feed", bundle);
+            }
+        });
+
         return view;
     }
 
