@@ -50,6 +50,12 @@
                 android:resource="@xml/authenticator" />
         </service>
 
+        <provider
+            android:name="sync.StubProvider"
+            android:authorities="com.example.android.datasync.provider"
+            android:exported="false"
+            android:syncable="true" />
+
     </application>
 
 </manifest>
