@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <permission
         android:name="android.permission.STATUS_BAR_SERVICE"
@@ -50,8 +51,19 @@
                 android:resource="@xml/authenticator" />
         </service>
 
+        <service
+            android:name=".sync.RssSyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/rss_sync_adapter" />
+        </service>
+
         <provider
-            android:name="sync.StubProvider"
+            android:name=".sync.StubProvider"
             android:authorities="com.example.android.datasync.provider"
             android:exported="false"
             android:syncable="true" />
