@@ -20,6 +20,10 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import static android.provider.BaseColumns._ID;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_IMAGE_URL;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_LINK;
@@ -144,6 +148,12 @@ public class NewsFragment extends ListFragment
 
         private LayoutInflater layoutInflater;
 
+        private Locale locale = getResources().getConfiguration().locale;
+
+        private SimpleDateFormat dbDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", locale);
+
+        private SimpleDateFormat uiDateFormat = new SimpleDateFormat("EEE, d MMM HH:mm", locale);
+
         public NewsItemAdapter(Context context, Cursor c, boolean autoRequery) {
             super(context, c, autoRequery);
             layoutInflater = (LayoutInflater) context.getSystemService(
@@ -161,11 +171,19 @@ public class NewsFragment extends ListFragment
             titleView.setText(cursor.getString(COLUMN_TITLE));
 
             TextView pubDateView = (TextView) view.findViewById(R.id.news_pub_date);
-            pubDateView.setText(cursor.getString(COLUMN_PUB_DATE));
+            pubDateView.setText(parseDate(cursor));
 
             ImageView imageView = (ImageView) view.findViewById(R.id.news_image);
             String imageUrl = cursor.getString(COLUMN_IMAGE_URL);
             picasso.load(imageUrl).into(imageView);
+        }
+
+        private String parseDate(Cursor cursor) {
+            try {
+                return uiDateFormat.format(dbDateFormat.parse(cursor.getString(COLUMN_PUB_DATE)));
+            } catch (ParseException e) {
+                return "";
+            }
         }
     }
 }

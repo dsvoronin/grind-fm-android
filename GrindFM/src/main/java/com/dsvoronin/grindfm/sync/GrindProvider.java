@@ -237,7 +237,7 @@ public class GrindProvider extends ContentProvider {
     }
 
     /**
-     * Update an etry in the database by URI.
+     * Update an entry in the database by URI.
      */
     public int update(
             @NonNull Uri uri,
@@ -291,6 +291,7 @@ public class GrindProvider extends ContentProvider {
 
         private static final String TYPE_TEXT = " TEXT";
         private static final String TYPE_INTEGER = " INTEGER";
+        private static final String TYPE_DATETIME = " DATETIME";
         private static final String COMMA_SEP = ",";
 
         /**
@@ -302,7 +303,7 @@ public class GrindProvider extends ContentProvider {
                         Contract.Entry.COLUMN_NAME_ENTRY_ID + TYPE_INTEGER + COMMA_SEP +
                         Contract.Entry.COLUMN_NAME_TITLE + TYPE_TEXT + COMMA_SEP +
                         Contract.Entry.COLUMN_NAME_LINK + TYPE_TEXT + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_PUB_DATE + TYPE_TEXT + COMMA_SEP +
+                        Contract.Entry.COLUMN_NAME_PUB_DATE + TYPE_DATETIME + COMMA_SEP +
                         Contract.Entry.COLUMN_NAME_DESCRIPTION + TYPE_TEXT + COMMA_SEP +
                         Contract.Entry.COLUMN_NAME_IMAGE_URL + TYPE_TEXT + ")";
 

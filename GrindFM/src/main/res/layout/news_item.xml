@@ -24,14 +24,9 @@
             android:textStyle="bold"
             tools:text="Компания GSL.TV рада анонсировать новые онлайн-турниры GSL CUP по трём дисциплинам: DOTA 2, CS:GO и HEARTHSTONE.	" />
 
-        <ImageView
-            android:id="@+id/news_image"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/cat_status_bar_large" />
+            android:layout_height="8dp" />
 
         <TextView
             android:id="@+id/news_pub_date"
@@ -39,6 +34,17 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
             tools:text="15 марта" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <ImageView
+            android:id="@+id/news_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/cat_status_bar_large" />
 
     </LinearLayout>
 </android.support.v7.widget.CardView>
