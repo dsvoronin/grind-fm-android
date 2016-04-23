@@ -5,6 +5,8 @@ import android.content.Context;
 
 import com.dsvoronin.grindfm.network.GrindService;
 import com.dsvoronin.grindfm.network.RequestManager;
+import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -14,7 +16,6 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class App extends Application {
 
-    private OkHttpClient okHttpClient;
     private Picasso picasso;
 
     private GrindService grindService;
@@ -27,8 +28,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         RequestManager.init(getApplicationContext());
+        Stetho.initializeWithDefaults(this);
 
-        okHttpClient = new OkHttpClient.Builder()
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
                 .build();
 
         picasso = new Picasso.Builder(this)
@@ -41,10 +44,6 @@ public class App extends Application {
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build()
                 .create(GrindService.class);
-    }
-
-    public OkHttpClient getOkHttpClient() {
-        return okHttpClient;
     }
 
     public Picasso getPicasso() {
