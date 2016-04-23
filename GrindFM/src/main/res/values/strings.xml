@@ -10,4 +10,6 @@
 
     <string name="default_server_error">Сервер не отвечает :(</string>
 
+    <string name="loading">Обновляем новости</string>
+
 </resources>

@@ -1,12 +1,7 @@
 package com.dsvoronin.grindfm.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@JsonIgnoreProperties({"source"})
 public class TrackListItem {
 
-    @JsonProperty("dt")
     private String date;
 
     private String artist;
