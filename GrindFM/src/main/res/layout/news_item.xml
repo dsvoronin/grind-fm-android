@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="6dp">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/activity_padding"
+    app:cardBackgroundColor="@color/content_card"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="@dimen/activity_padding">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/news_item_card"
-        android:orientation="vertical"
-        tools:ignore="UselessParent">
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/news_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            tools:src="@drawable/cat_status_bar_large" />
 
         <TextView
             android:id="@+id/news_title"
             android:layout_width="match_parent"
-            android:layout_height="22dp"
-            android:layout_margin="6dp"
-            android:fontFamily="sanf-serif"
-            android:singleLine="true"
-            android:textColor="#000" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/action_bar_line" />
-
-        <ImageView
-            android:id="@+id/news_image"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            tools:ignore="ContentDescription" />
+            android:layout_toLeftOf="@id/news_image"
+            tools:text="Компания GSL.TV рада анонсировать новые онлайн-турниры GSL CUP по трём дисциплинам: DOTA 2, CS:GO и HEARTHSTONE.	" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/news_pub_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/news_title"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@id/news_image"
+            tools:text="15 марта" />
 
-</RelativeLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

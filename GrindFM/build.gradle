@@ -41,6 +41,8 @@ dependencies {
     compile "com.android.support:support-v4:$verSupport"
     compile "com.android.support:design:$verSupport"
     compile "com.android.support:support-annotations:$verSupport"
+    compile "com.android.support:cardview-v7:$verSupport"
+    compile "com.android.support:recyclerview-v7:$verSupport"
 
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -54,4 +56,7 @@ dependencies {
 
     compile 'com.facebook.stetho:stetho:1.3.1'
     compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.0"
 }

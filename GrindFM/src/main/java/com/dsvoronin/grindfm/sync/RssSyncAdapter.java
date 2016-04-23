@@ -16,6 +16,8 @@ import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
 import com.dsvoronin.grindfm.entities.Article;
+import com.dsvoronin.grindfm.entities.Description;
+import com.dsvoronin.grindfm.entities.NewsItem;
 import com.dsvoronin.grindfm.entities.RSS;
 
 import java.io.IOException;
@@ -26,6 +28,15 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Response;
+
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_DESCRIPTION;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_IMAGE_URL;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_LINK;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_PUB_DATE;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_TITLE;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.CONTENT_URI;
+import static com.dsvoronin.grindfm.sync.HtmlCleaner.extractId;
 
 public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -38,22 +49,9 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     private final ContentResolver contentResolver;
 
-    /**
-     * Project used when querying content provider. Returns all known fields.
-     */
-    private static final String[] PROJECTION = new String[]{
-            GrindProvider.Contract.Entry._ID,
-            GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID,
-            GrindProvider.Contract.Entry.COLUMN_NAME_TITLE,
-            GrindProvider.Contract.Entry.COLUMN_NAME_LINK,
-            GrindProvider.Contract.Entry.COLUMN_NAME_PUBLISHED};
-
     // Constants representing column positions from PROJECTION.
     public static final int COLUMN_ID = 0;
     public static final int COLUMN_ENTRY_ID = 1;
-    public static final int COLUMN_TITLE = 2;
-    public static final int COLUMN_LINK = 3;
-    public static final int COLUMN_PUBLISHED = 4;
 
     public RssSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -65,18 +63,22 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(TAG, "onPerformSync");
         try {
-
-
             Call<RSS> call = grindService.getGrindFeed();
             Response<RSS> response = call.execute();
             RSS rss = response.body();
-            List<Article> incomingEntries = rss.getChannel().getArticleList();
+            List<Article> incomingRawEntries = rss.getChannel().getArticleList();
 
-            ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
+            List<NewsItem> incomingEntries = new ArrayList<>(incomingRawEntries.size());
+
+            for (Article article : incomingRawEntries) {
+                incomingEntries.add(fromArticle(article));
+            }
+
+            ArrayList<ContentProviderOperation> batch = new ArrayList<>();
 
             Log.i(TAG, "Parsing complete. Found " + incomingEntries.size() + " entries");
 
-            Map<Integer, Article> incomingEntriesMap = toMap(incomingEntries);
+            Map<Integer, NewsItem> incomingEntriesMap = toMap(incomingEntries);
 
             Log.i(TAG, "Fetching local entries for merge");
 
@@ -91,7 +93,7 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.i(TAG, "Merge solution ready. Applying batch update");
             contentResolver.applyBatch(GrindProvider.Contract.CONTENT_AUTHORITY, batch);
             contentResolver.notifyChange(
-                    GrindProvider.Contract.Entry.CONTENT_URI, // URI where data was modified
+                    CONTENT_URI, // URI where data was modified
                     null,                           // No local observer
                     false);                         // IMPORTANT: Do not sync to network
             // This sample doesn't support uploads, but if *your* code does, make sure you set
@@ -115,31 +117,21 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     /**
-     * guid is a weird string like: "1653 at http://www.grind.fm"
-     *
-     * @return we need 1653 here
-     */
-    private int extractId(Article article) throws NumberFormatException {
-        String guid = article.getGuid();
-        return Integer.parseInt(guid.substring(0, guid.indexOf(' ')));
-    }
-
-    /**
      * For easy comparison operations we need id to article map
      */
-    private Map<Integer, Article> toMap(List<Article> articles) {
-        Map<Integer, Article> result = new HashMap<>();
+    private Map<Integer, NewsItem> toMap(List<NewsItem> articles) {
+        Map<Integer, NewsItem> result = new HashMap<>();
 
-        for (Article article : articles) {
-            result.put(extractId(article), article);
+        for (NewsItem newsItem : articles) {
+            result.put(newsItem.getItemId(), newsItem);
         }
 
         return result;
     }
 
     private Cursor getLocalEntries() {
-        Uri uri = GrindProvider.Contract.Entry.CONTENT_URI;
-        Cursor c = contentResolver.query(uri, PROJECTION, null, null, null);
+        Uri uri = CONTENT_URI;
+        Cursor c = contentResolver.query(uri, null, null, null, null);
         assert c != null;
         return c;
     }
@@ -151,42 +143,42 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param batch      batch for optimization
      * @param syncResult syncResult to update affected meta info
      */
-    private void removeLocalEntry(int dbId, ArrayList<ContentProviderOperation> batch, SyncResult syncResult) {
-        Uri deleteUri = GrindProvider.Contract.Entry.CONTENT_URI.buildUpon()
-                .appendPath(Integer.toString(dbId)).build();
+    private void removeLocalEntry(int dbId,
+                                  ArrayList<ContentProviderOperation> batch,
+                                  SyncResult syncResult) {
+
+        Uri deleteUri = CONTENT_URI.buildUpon().appendPath(Integer.toString(dbId)).build();
         Log.i(TAG, "Scheduling delete: " + deleteUri);
         batch.add(ContentProviderOperation.newDelete(deleteUri).build());
         syncResult.stats.numDeletes++;
     }
 
-    private void updateLocalEntryIfNeeded(Cursor localEntriesCursor, Map<Integer, Article> incomingMap, ArrayList<ContentProviderOperation> batch, SyncResult syncResult) {
+    private void updateLocalEntryIfNeeded(Cursor localEntriesCursor,
+                                          Map<Integer, NewsItem> incomingMap,
+                                          ArrayList<ContentProviderOperation> batch,
+                                          SyncResult syncResult) {
 
         int id;
         int entryId;
-        String title;
-        String link;
 
         while (localEntriesCursor.moveToNext()) {
             syncResult.stats.numEntries++;
             id = localEntriesCursor.getInt(COLUMN_ID);
             entryId = localEntriesCursor.getInt(COLUMN_ENTRY_ID);
-            title = localEntriesCursor.getString(COLUMN_TITLE);
-            link = localEntriesCursor.getString(COLUMN_LINK);
-            Article match = incomingMap.get(entryId);
+
+            NewsItem match = incomingMap.get(entryId);
             if (match != null) {
                 // Entry exists. Remove from entry map to prevent insert later.
                 incomingMap.remove(entryId);
                 // Check to see if the entry needs to be updated
-                Uri existingUri = GrindProvider.Contract.Entry.CONTENT_URI.buildUpon()
-                        .appendPath(Integer.toString(id)).build();
-                if ((match.getTitle() != null && !match.getTitle().equals(title)) ||
-                        (match.getLink() != null && !match.getLink().equals(link))) {
+                Uri existingUri = CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
+
+                NewsItem localNewsItem = fromCursor(localEntriesCursor);
+
+                if (!match.equals(localNewsItem)) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
-                    batch.add(ContentProviderOperation.newUpdate(existingUri)
-                            .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_TITLE, match.getTitle())
-                            .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_LINK, match.getLink())
-                            .build());
+                    batch.add(fillOperation(ContentProviderOperation.newUpdate(existingUri), match).build());
                     syncResult.stats.numUpdates++;
                 } else {
                     Log.i(TAG, "No action: " + existingUri);
@@ -199,16 +191,43 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
         localEntriesCursor.close();
     }
 
-    private void addNewItems(Map<Integer, Article> incomingArticleMap, ArrayList<ContentProviderOperation> batch, SyncResult syncResult) {
-        for (Article article : incomingArticleMap.values()) {
-            int articleId = extractId(article);
-            Log.i(TAG, "Scheduling insert: entry_id=" + articleId);
-            batch.add(ContentProviderOperation.newInsert(GrindProvider.Contract.Entry.CONTENT_URI)
-                    .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID, articleId)
-                    .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_TITLE, article.getTitle())
-                    .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_LINK, article.getLink())
-                    .build());
+    private void addNewItems(Map<Integer, NewsItem> incomingArticleMap,
+                             ArrayList<ContentProviderOperation> batch,
+                             SyncResult syncResult) {
+
+        for (NewsItem newsItem : incomingArticleMap.values()) {
+            Log.i(TAG, "Scheduling insert: entry_id=" + newsItem.getItemId());
+            batch.add(fillOperation(ContentProviderOperation.newInsert(CONTENT_URI), newsItem).build());
             syncResult.stats.numInserts++;
         }
+    }
+
+    private static NewsItem fromCursor(Cursor c) {
+        return new NewsItem(
+                c.getInt(c.getColumnIndex(COLUMN_NAME_ENTRY_ID)),
+                c.getString(c.getColumnIndex(COLUMN_NAME_TITLE)),
+                c.getString(c.getColumnIndex(COLUMN_NAME_DESCRIPTION)),
+                c.getString(c.getColumnIndex(COLUMN_NAME_PUB_DATE)),
+                c.getString(c.getColumnIndex(COLUMN_NAME_IMAGE_URL)),
+                c.getString(c.getColumnIndex(COLUMN_NAME_LINK)));
+    }
+
+    private static NewsItem fromArticle(Article article) {
+        Description description = new Description(article);
+        return new NewsItem(extractId(article),
+                article.getTitle(),
+                description.getPureText(),
+                article.getPubDate(),
+                description.getImageUrl(),
+                article.getLink());
+    }
+
+    private ContentProviderOperation.Builder fillOperation(ContentProviderOperation.Builder operation, NewsItem newsItem) {
+        return operation.withValue(COLUMN_NAME_ENTRY_ID, newsItem.getItemId())
+                .withValue(COLUMN_NAME_TITLE, newsItem.getTitle())
+                .withValue(COLUMN_NAME_LINK, newsItem.getLink())
+                .withValue(COLUMN_NAME_PUB_DATE, newsItem.getPubDate())
+                .withValue(COLUMN_NAME_DESCRIPTION, newsItem.getDescription())
+                .withValue(COLUMN_NAME_IMAGE_URL, newsItem.getImageUrl());
     }
 }
