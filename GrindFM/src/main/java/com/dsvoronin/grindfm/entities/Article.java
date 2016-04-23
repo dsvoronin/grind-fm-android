@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm.network.rss;
+package com.dsvoronin.grindfm.entities;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;

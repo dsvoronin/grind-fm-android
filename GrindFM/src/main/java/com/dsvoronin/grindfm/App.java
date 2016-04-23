@@ -3,7 +3,7 @@ package com.dsvoronin.grindfm;
 import android.app.Application;
 import android.content.Context;
 
-import com.dsvoronin.grindfm.network.GrindService;
+import com.dsvoronin.grindfm.sync.GrindService;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jakewharton.picasso.OkHttp3Downloader;

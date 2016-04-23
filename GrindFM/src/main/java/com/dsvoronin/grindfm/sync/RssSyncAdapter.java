@@ -15,9 +15,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
-import com.dsvoronin.grindfm.network.GrindService;
-import com.dsvoronin.grindfm.network.rss.Article;
-import com.dsvoronin.grindfm.network.rss.RSS;
+import com.dsvoronin.grindfm.entities.Article;
+import com.dsvoronin.grindfm.entities.RSS;
 
 import java.io.IOException;
 import java.util.ArrayList;

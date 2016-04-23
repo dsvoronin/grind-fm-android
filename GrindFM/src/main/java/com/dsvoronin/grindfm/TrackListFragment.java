@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import com.dsvoronin.grindfm.model.TrackListItem;
+import com.dsvoronin.grindfm.entities.TrackListItem;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

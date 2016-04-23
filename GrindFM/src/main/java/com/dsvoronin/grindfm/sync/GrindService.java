@@ -1,6 +1,6 @@
-package com.dsvoronin.grindfm.network;
+package com.dsvoronin.grindfm.sync;
 
-import com.dsvoronin.grindfm.network.rss.RSS;
+import com.dsvoronin.grindfm.entities.RSS;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

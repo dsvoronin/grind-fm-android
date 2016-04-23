@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm.model;
+package com.dsvoronin.grindfm.entities;
 
 public class TrackListItem {
 

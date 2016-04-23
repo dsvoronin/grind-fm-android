@@ -30,9 +30,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class PlayerService extends MediaBrowserServiceCompat implements
-
         AudioManager.OnAudioFocusChangeListener,
-        RadioController,
         MediaPlayer.OnPreparedListener {
 
     private static final String TAG = "PlayerService";
@@ -41,6 +39,10 @@ public class PlayerService extends MediaBrowserServiceCompat implements
 
     // Delay stopSelf by using a handler.
     private static final int STOP_DELAY = 10000;
+
+    private static final float DUCK_VOLUME = 0.5f;
+
+    private static final float FULL_VOLUME = 1.0f;
 
     private AudioManager audioManager;
 
@@ -110,6 +112,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: " + intent);
 
+        //todo remove receiver will crash here
         if (!mediaPlayer.isPlaying()) {
             startRadio();
         }
@@ -165,8 +168,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
         }
     }
 
-    @Override
-    public void startRadio() {
+    private void startRadio() {
         if (!prepared) {
             Uri parse = Uri.parse(getString(R.string.mp3_stream));
             try {
@@ -180,8 +182,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
         }
     }
 
-    @Override
-    public void pauseRadio() {
+    private void pauseRadio() {
         Log.d(TAG, "pauseRadio");
 
         if (mediaPlayer.isPlaying()) {
@@ -202,8 +203,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
         }
     }
 
-    @Override
-    public void lowerVolume() {
+    private void lowerVolume() {
         mediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
     }
 
