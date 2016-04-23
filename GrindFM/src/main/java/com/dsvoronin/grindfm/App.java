@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 
 import com.dsvoronin.grindfm.network.GrindService;
-import com.dsvoronin.grindfm.network.RequestManager;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jakewharton.picasso.OkHttp3Downloader;
@@ -27,7 +26,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        RequestManager.init(getApplicationContext());
         Stetho.initializeWithDefaults(this);
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()

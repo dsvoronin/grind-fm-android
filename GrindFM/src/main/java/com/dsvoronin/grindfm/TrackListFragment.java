@@ -7,20 +7,11 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.dsvoronin.grindfm.model.TrackListItem;
-import com.dsvoronin.grindfm.network.GrindRequest;
-import com.dsvoronin.grindfm.network.RequestManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TrackListFragment extends ListFragment {
 
@@ -31,8 +22,6 @@ public class TrackListFragment extends ListFragment {
     private MainActivity activity;
 
     private Handler handler;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void onAttach(Activity activity) {
@@ -57,7 +46,7 @@ public class TrackListFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
-        load();
+//        load();
     }
 
     @Override
@@ -66,49 +55,48 @@ public class TrackListFragment extends ListFragment {
         super.onDetach();
     }
 
-    private void load() {
-        Log.d(TAG, "Loading...");
-        GrindRequest request = new GrindRequest(getString(R.string.tracklist_url), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String string) {
-                Log.d(TAG, "Load complete... " + string);
-                try {
-                    String hacked = string.substring(string.indexOf('['), string.indexOf(']') + 1);
-                    TrackListItem[] trackList = mapper.readValue(hacked, TrackListItem[].class);
-
-                    if (trackList == null || trackList.length == 0) {
-                        return;
-                    }
-
-                    scheduleUpdate(trackList[0]);
-
-                    ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
-                    for (TrackListItem item : trackList) {
-                        Map<String, String> map = new HashMap<String, String>();
-                        map.put("timestamp", parseDate(item.getDate()));
-                        map.put("artist", item.getArtist());
-                        map.put("title", item.getTitle());
-                        data.add(map);
-                    }
-                    setListAdapter(new SimpleAdapter(activity, data, R.layout.tracklist_item, new String[]{"timestamp", "artist", "title"}, new int[]{R.id.track_timestamp, R.id.track_artist, R.id.track_title}));
-
-                } catch (Exception e) {
-                    Log.e(TAG, "Parse error", e);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.e(TAG, "Volley error", volleyError);
-//                if (activity != null) {
-//                    Toast.makeText(activity, getString(R.string.default_server_error), Toast.LENGTH_SHORT).show();
+//    private void load() {
+//        Log.d(TAG, "Loading...");
+//        GrindRequest request = new GrindRequest(getString(R.string.tracklist_url), new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String string) {
+//                Log.d(TAG, "Load complete... " + string);
+//                try {
+//                    String hacked = string.substring(string.indexOf('['), string.indexOf(']') + 1);
+//                    TrackListItem[] trackList = mapper.readValue(hacked, TrackListItem[].class);
+//
+//                    if (trackList == null || trackList.length == 0) {
+//                        return;
+//                    }
+//
+//                    scheduleUpdate(trackList[0]);
+//
+//                    ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
+//                    for (TrackListItem item : trackList) {
+//                        Map<String, String> map = new HashMap<String, String>();
+//                        map.put("timestamp", parseDate(item.getDate()));
+//                        map.put("artist", item.getArtist());
+//                        map.put("title", item.getTitle());
+//                        data.add(map);
+//                    }
+//                    setListAdapter(new SimpleAdapter(activity, data, R.layout.tracklist_item, new String[]{"timestamp", "artist", "title"}, new int[]{R.id.track_timestamp, R.id.track_artist, R.id.track_title}));
+//
+//                } catch (Exception e) {
+//                    Log.e(TAG, "Parse error", e);
 //                }
-
-            }
-        }
-        );
-        RequestManager.getRequestQueue().add(request);
-    }
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//                Log.e(TAG, "Volley error", volleyError);
+////                if (activity != null) {
+////                    Toast.makeText(activity, getString(R.string.default_server_error), Toast.LENGTH_SHORT).show();
+////                }
+//
+//            }
+//        }
+//        );
+//    }
 
     private void scheduleUpdate(TrackListItem newestItem) {
         String date = newestItem.getDate();
@@ -132,7 +120,7 @@ public class TrackListFragment extends ListFragment {
             @Override
             public void run() {
                 if (activity != null) {
-                    load();
+//                    load();
                 }
             }
         }, time);
