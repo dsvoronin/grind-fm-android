@@ -2,7 +2,6 @@ package com.dsvoronin.grindfm.sync;
 
 import com.dsvoronin.grindfm.BuildConfig;
 import com.dsvoronin.grindfm.entities.Article;
-import com.dsvoronin.grindfm.entities.Description;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class HtmlCleanerImageTest {
+public class MapperImageTest {
 
     String testHtml = "<p> Четвертый выпуск нашего шоу \"О стримерах с любовью\" пройдет сегодня в 21:00. В гости к Grind.FM внезапно заглянет популярный стример Денис \"WELOVEGAMES\"!\n" +
             "</p>\n" +
@@ -39,13 +38,13 @@ public class HtmlCleanerImageTest {
             "Twitter: WELOVEGAMESTV\n" +
             "Vkontakte: http://vk.com/welovegames\n\n";
 
-    Description description;
+    Mapper mapper;
 
     @Before
     public void setup() {
         Article article = new Article();
         article.description = testHtml;
-        description = new Description(article);
+        mapper = new Mapper(article);
     }
 
     /**
@@ -53,11 +52,11 @@ public class HtmlCleanerImageTest {
      */
     @Test
     public void cleanText() {
-        assertEquals(expected, description.getPureText());
+        assertEquals(expected, mapper.getPureText());
     }
 
     @Test
     public void imageExtracted() {
-        assertEquals("http://www.grind.fm/files/grind.fm/wlgaswl_0.png", description.getImageUrl());
+        assertEquals("http://www.grind.fm/files/grind.fm/wlgaswl_0.png", mapper.getImageUrl());
     }
 }

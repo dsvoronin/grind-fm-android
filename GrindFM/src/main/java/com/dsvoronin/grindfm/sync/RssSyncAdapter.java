@@ -16,7 +16,6 @@ import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
 import com.dsvoronin.grindfm.entities.Article;
-import com.dsvoronin.grindfm.entities.Description;
 import com.dsvoronin.grindfm.entities.NewsItem;
 import com.dsvoronin.grindfm.entities.RSS;
 
@@ -36,7 +35,6 @@ import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAM
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_PUB_DATE;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_TITLE;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.CONTENT_URI;
-import static com.dsvoronin.grindfm.sync.HtmlCleaner.extractId;
 
 public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -213,12 +211,12 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private static NewsItem fromArticle(Article article) {
-        Description description = new Description(article);
-        return new NewsItem(extractId(article),
+        Mapper mapper = new Mapper(article);
+        return new NewsItem(mapper.getId(),
                 article.getTitle(),
-                description.getPureText(),
+                mapper.getPureText(),
                 article.getPubDate(),
-                description.getImageUrl(),
+                mapper.getImageUrl(),
                 article.getLink());
     }
 

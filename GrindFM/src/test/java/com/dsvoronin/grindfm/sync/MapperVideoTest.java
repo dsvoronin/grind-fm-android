@@ -2,7 +2,6 @@ package com.dsvoronin.grindfm.sync;
 
 import com.dsvoronin.grindfm.BuildConfig;
 import com.dsvoronin.grindfm.entities.Article;
-import com.dsvoronin.grindfm.entities.Description;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class HtmlCleanerVideoTest {
+public class MapperVideoTest {
 
     String testHtml = "<p> Стартовала регистрация команд на киберспортивный турнир серии Warface Open Cup с призовым фондом в 1,5 миллиона рублей. Наряду с профессиональными командами из Warface Masters League побороться за чемпионский титул в весеннем турнире сможет любая команда, прошедшая отборочные этапы.\n" +
             "</p>\n" +
@@ -40,13 +39,13 @@ public class HtmlCleanerVideoTest {
             "Warface Open Cup — крупнейший официальный кибеспортивный турнир по онлайн-шутеру Warface. Каждый год проходят 4 сезона соревнований, состоящих из турнира профессиональной лиги Warface Masters League, открытого этапа Challenge Cup, стыковых матчей и LAN-финала, который проходит в Москве. Зарегистрироваться на открытый этап Challenge Cup могут все желающие: в каждом сезоне заявки на участие подают свыше 1 200 команд. LAN-финалы проходят в московском офисе Mail.Ru Group, транслируются на популярных стриминговых площадках и собирают свыше 1 800 000 просмотров.\n" +
             "\n";
 
-    Description description;
+    Mapper mapper;
 
     @Before
     public void setup() {
         Article article = new Article();
         article.description = testHtml;
-        description = new Description(article);
+        mapper = new Mapper(article);
     }
 
     /**
@@ -54,11 +53,11 @@ public class HtmlCleanerVideoTest {
      */
     @Test
     public void cleanText() {
-        assertEquals(expected, description.getPureText());
+        assertEquals(expected, mapper.getPureText());
     }
 
     @Test
     public void imageExtracted() {
-        assertEquals("http://i1.ytimg.com/vi/yi0q8WOu3f0/maxresdefault.jpg", description.getImageUrl());
+        assertEquals("http://i1.ytimg.com/vi/yi0q8WOu3f0/maxresdefault.jpg", mapper.getImageUrl());
     }
 }
