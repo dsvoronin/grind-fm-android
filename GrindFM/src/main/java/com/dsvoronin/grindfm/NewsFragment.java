@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.dsvoronin.grindfm.sync.GrindFMProvider;
+import com.dsvoronin.grindfm.sync.GrindProvider;
 
 public class NewsFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -31,10 +31,10 @@ public class NewsFragment extends ListFragment
      * Projection for querying the content provider.
      */
     private static final String[] PROJECTION = new String[]{
-            GrindFMProvider.Contract.Entry._ID,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_TITLE,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_LINK,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_PUBLISHED
+            GrindProvider.Contract.Entry._ID,
+            GrindProvider.Contract.Entry.COLUMN_NAME_TITLE,
+            GrindProvider.Contract.Entry.COLUMN_NAME_LINK,
+            GrindProvider.Contract.Entry.COLUMN_NAME_PUBLISHED
     };
 
     // Column indexes. The index of a column in the Cursor is the same as its relative position in
@@ -60,8 +60,8 @@ public class NewsFragment extends ListFragment
      * List of Cursor columns to read from when preparing an adapter to populate the ListView.
      */
     private static final String[] FROM_COLUMNS = new String[]{
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_TITLE,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_PUBLISHED
+            GrindProvider.Contract.Entry.COLUMN_NAME_TITLE,
+            GrindProvider.Contract.Entry.COLUMN_NAME_PUBLISHED
     };
 
     /**
@@ -117,11 +117,11 @@ public class NewsFragment extends ListFragment
         // We only have one loader, so we can ignore the value of i.
         // (It'll be '0', as set in onCreate().)
         return new CursorLoader(getActivity(),  // Context
-                GrindFMProvider.Contract.Entry.CONTENT_URI, // URI
+                GrindProvider.Contract.Entry.CONTENT_URI, // URI
                 PROJECTION,                // Projection
                 null,                           // Selection
                 null,                           // Selection args
-                GrindFMProvider.Contract.Entry.COLUMN_NAME_PUBLISHED + " desc"); // Sort
+                GrindProvider.Contract.Entry.COLUMN_NAME_PUBLISHED + " desc"); // Sort
     }
 
     /**

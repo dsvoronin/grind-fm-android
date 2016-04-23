@@ -17,7 +17,7 @@ public class SyncUtils {
 
     private static final long SYNC_FREQUENCY_SECONDS = TimeUnit.HOURS.toSeconds(24);
 
-    private static final String CONTENT_AUTHORITY = GrindFMProvider.Contract.CONTENT_AUTHORITY;
+    private static final String CONTENT_AUTHORITY = GrindProvider.Contract.CONTENT_AUTHORITY;
 
     private static final String PREF_SETUP_COMPLETE = "setup_complete";
 
@@ -84,7 +84,7 @@ public class SyncUtils {
         b.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(
                 AccountService.getAccount(ACCOUNT_TYPE),
-                GrindFMProvider.Contract.CONTENT_AUTHORITY,
+                GrindProvider.Contract.CONTENT_AUTHORITY,
                 b);
     }
 }

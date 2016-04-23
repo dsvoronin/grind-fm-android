@@ -65,7 +65,7 @@
         </service>
 
         <provider
-            android:name=".sync.GrindFMProvider"
+            android:name=".sync.GrindProvider"
             android:authorities="com.dsvoronin.grindfm"
             android:exported="false"
             android:syncable="true" />

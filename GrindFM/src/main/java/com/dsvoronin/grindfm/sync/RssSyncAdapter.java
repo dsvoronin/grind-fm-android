@@ -43,11 +43,11 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
      * Project used when querying content provider. Returns all known fields.
      */
     private static final String[] PROJECTION = new String[]{
-            GrindFMProvider.Contract.Entry._ID,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_TITLE,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_LINK,
-            GrindFMProvider.Contract.Entry.COLUMN_NAME_PUBLISHED};
+            GrindProvider.Contract.Entry._ID,
+            GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID,
+            GrindProvider.Contract.Entry.COLUMN_NAME_TITLE,
+            GrindProvider.Contract.Entry.COLUMN_NAME_LINK,
+            GrindProvider.Contract.Entry.COLUMN_NAME_PUBLISHED};
 
     // Constants representing column positions from PROJECTION.
     public static final int COLUMN_ID = 0;
@@ -90,9 +90,9 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
             addNewItems(incomingEntriesMap, batch, syncResult);
 
             Log.i(TAG, "Merge solution ready. Applying batch update");
-            contentResolver.applyBatch(GrindFMProvider.Contract.CONTENT_AUTHORITY, batch);
+            contentResolver.applyBatch(GrindProvider.Contract.CONTENT_AUTHORITY, batch);
             contentResolver.notifyChange(
-                    GrindFMProvider.Contract.Entry.CONTENT_URI, // URI where data was modified
+                    GrindProvider.Contract.Entry.CONTENT_URI, // URI where data was modified
                     null,                           // No local observer
                     false);                         // IMPORTANT: Do not sync to network
             // This sample doesn't support uploads, but if *your* code does, make sure you set
@@ -139,7 +139,7 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private Cursor getLocalEntries() {
-        Uri uri = GrindFMProvider.Contract.Entry.CONTENT_URI;
+        Uri uri = GrindProvider.Contract.Entry.CONTENT_URI;
         Cursor c = contentResolver.query(uri, PROJECTION, null, null, null);
         assert c != null;
         return c;
@@ -153,7 +153,7 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param syncResult syncResult to update affected meta info
      */
     private void removeLocalEntry(int dbId, ArrayList<ContentProviderOperation> batch, SyncResult syncResult) {
-        Uri deleteUri = GrindFMProvider.Contract.Entry.CONTENT_URI.buildUpon()
+        Uri deleteUri = GrindProvider.Contract.Entry.CONTENT_URI.buildUpon()
                 .appendPath(Integer.toString(dbId)).build();
         Log.i(TAG, "Scheduling delete: " + deleteUri);
         batch.add(ContentProviderOperation.newDelete(deleteUri).build());
@@ -178,15 +178,15 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
                 // Entry exists. Remove from entry map to prevent insert later.
                 incomingMap.remove(entryId);
                 // Check to see if the entry needs to be updated
-                Uri existingUri = GrindFMProvider.Contract.Entry.CONTENT_URI.buildUpon()
+                Uri existingUri = GrindProvider.Contract.Entry.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
                 if ((match.getTitle() != null && !match.getTitle().equals(title)) ||
                         (match.getLink() != null && !match.getLink().equals(link))) {
                     // Update existing record
                     Log.i(TAG, "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
-                            .withValue(GrindFMProvider.Contract.Entry.COLUMN_NAME_TITLE, match.getTitle())
-                            .withValue(GrindFMProvider.Contract.Entry.COLUMN_NAME_LINK, match.getLink())
+                            .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_TITLE, match.getTitle())
+                            .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_LINK, match.getLink())
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
@@ -204,10 +204,10 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
         for (Article article : incomingArticleMap.values()) {
             int articleId = extractId(article);
             Log.i(TAG, "Scheduling insert: entry_id=" + articleId);
-            batch.add(ContentProviderOperation.newInsert(GrindFMProvider.Contract.Entry.CONTENT_URI)
-                    .withValue(GrindFMProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID, articleId)
-                    .withValue(GrindFMProvider.Contract.Entry.COLUMN_NAME_TITLE, article.getTitle())
-                    .withValue(GrindFMProvider.Contract.Entry.COLUMN_NAME_LINK, article.getLink())
+            batch.add(ContentProviderOperation.newInsert(GrindProvider.Contract.Entry.CONTENT_URI)
+                    .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID, articleId)
+                    .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_TITLE, article.getTitle())
+                    .withValue(GrindProvider.Contract.Entry.COLUMN_NAME_LINK, article.getLink())
                     .build());
             syncResult.stats.numInserts++;
         }
