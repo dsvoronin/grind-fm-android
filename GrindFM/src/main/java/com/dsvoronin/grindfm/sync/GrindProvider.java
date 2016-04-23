@@ -74,7 +74,14 @@ public class GrindProvider extends ContentProvider {
             /**
              * Date article was published.
              */
-            String COLUMN_NAME_PUBLISHED = "published";
+            String COLUMN_NAME_PUB_DATE = "pub_date";
+
+            /**
+             * full description html
+             */
+            String COLUMN_NAME_DESCRIPTION = "description";
+
+            String COLUMN_NAME_IMAGE_URL = "image_url";
         }
     }
 
@@ -135,7 +142,7 @@ public class GrindProvider extends ContentProvider {
 
     /**
      * Perform a database query by URI.
-     * <p>
+     * <p/>
      * <p>Currently supports returning all entries (/entries) and individual entries by ID
      * (/entries/{ID}).
      */
@@ -230,7 +237,7 @@ public class GrindProvider extends ContentProvider {
     }
 
     /**
-     * Update an etry in the database by URI.
+     * Update an entry in the database by URI.
      */
     public int update(
             @NonNull Uri uri,
@@ -266,7 +273,7 @@ public class GrindProvider extends ContentProvider {
 
     /**
      * SQLite backend for @{link GrindProvider}.
-     * <p>
+     * <p/>
      * Provides access to an disk-backed, SQLite datastore which is utilized by GrindProvider.
      * This database should never be accessed by other parts of the application directly.
      */
@@ -284,6 +291,7 @@ public class GrindProvider extends ContentProvider {
 
         private static final String TYPE_TEXT = " TEXT";
         private static final String TYPE_INTEGER = " INTEGER";
+        private static final String TYPE_DATETIME = " DATETIME";
         private static final String COMMA_SEP = ",";
 
         /**
@@ -292,10 +300,12 @@ public class GrindProvider extends ContentProvider {
         private static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE " + Contract.Entry.TABLE_NAME + " (" +
                         Contract.Entry._ID + " INTEGER PRIMARY KEY," +
-                        Contract.Entry.COLUMN_NAME_ENTRY_ID + TYPE_TEXT + COMMA_SEP +
+                        Contract.Entry.COLUMN_NAME_ENTRY_ID + TYPE_INTEGER + COMMA_SEP +
                         Contract.Entry.COLUMN_NAME_TITLE + TYPE_TEXT + COMMA_SEP +
                         Contract.Entry.COLUMN_NAME_LINK + TYPE_TEXT + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_PUBLISHED + TYPE_INTEGER + ")";
+                        Contract.Entry.COLUMN_NAME_PUB_DATE + TYPE_DATETIME + COMMA_SEP +
+                        Contract.Entry.COLUMN_NAME_DESCRIPTION + TYPE_TEXT + COMMA_SEP +
+                        Contract.Entry.COLUMN_NAME_IMAGE_URL + TYPE_TEXT + ")";
 
         /**
          * SQL statement to drop "entry" table.

@@ -9,6 +9,9 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
@@ -19,6 +22,11 @@ public class App extends Application {
 
     private GrindService grindService;
 
+    /**
+     * 300mb cache
+     */
+    private static final int CACHE_SIZE = 1024 * 1024 * 300;
+
     public static App fromContext(Context context) {
         return (App) context.getApplicationContext();
     }
@@ -28,8 +36,11 @@ public class App extends Application {
         super.onCreate();
         Stetho.initializeWithDefaults(this);
 
+        File cacheDir = getDir("okhttp_cache", Context.MODE_PRIVATE);
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
+                .cache(new Cache(cacheDir, CACHE_SIZE))
                 .build();
 
         picasso = new Picasso.Builder(this)

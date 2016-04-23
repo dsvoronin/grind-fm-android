@@ -18,9 +18,9 @@
 
 <resources>
 
-    <style name="Theme.GrindFM" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/bg_start</item>
-        <item name="colorPrimaryDark">@color/bg_end</item>
+    <style name="Theme.GrindFM" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/bg_gradient_start</item>
+        <item name="colorPrimaryDark">@color/bg_gradient_end</item>
         <item name="colorAccent">@color/action_bar_line</item>
     </style>
 

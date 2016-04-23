@@ -7,22 +7,22 @@ import org.simpleframework.xml.Root;
 public class Article {
 
     @Element
-    private String title;
+    public String title;
 
     @Element
-    private String description;
+    public String description;
 
     @Element
-    private String link;
+    public String link;
 
     @Element(name = "dc:creator", required = false)
-    private String author;
+    public String author;
 
     @Element(required = false)
-    private String pubDate;
+    public String pubDate;
 
     @Element
-    private String guid;
+    public String guid;
 
     public String getTitle() {
         return title;
