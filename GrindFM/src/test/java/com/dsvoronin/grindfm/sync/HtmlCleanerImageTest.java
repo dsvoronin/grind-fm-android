@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class HtmlCleanerTest {
+public class HtmlCleanerImageTest {
 
     String testHtml = "<p> Четвертый выпуск нашего шоу \"О стримерах с любовью\" пройдет сегодня в 21:00. В гости к Grind.FM внезапно заглянет популярный стример Денис \"WELOVEGAMES\"!\n" +
             "</p>\n" +
