@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dsvoronin.grindfm">
 
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -42,7 +43,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".sync.AuthenticatorService">
+        <service android:name=".sync.AccountService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -63,8 +64,8 @@
         </service>
 
         <provider
-            android:name=".sync.StubProvider"
-            android:authorities="fm.grind.feed"
+            android:name=".sync.GrindFMProvider"
+            android:authorities="com.dsvoronin.grindfm"
             android:exported="false"
             android:syncable="true" />
 

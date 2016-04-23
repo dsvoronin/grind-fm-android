@@ -10,7 +10,20 @@ import android.support.annotation.NonNull;
  * Define an implementation of ContentProvider that stubs out
  * all methods
  */
-public class StubProvider extends ContentProvider {
+public class GrindFMProvider extends ContentProvider {
+
+    public interface Contract {
+        /**
+         * Content provider authority.
+         */
+        String CONTENT_AUTHORITY = "com.dsvoronin.grindfm";
+
+        /**
+         * Base URI. (content://com.example.android.basicsyncadapter)
+         */
+        Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    }
+
     /*
      * Always return true, indicating that the
      * provider loaded correctly.

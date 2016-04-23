@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.dsvoronin.grindfm.player.PlayerService;
+import com.dsvoronin.grindfm.sync.SyncUtils;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_CONNECTING;
@@ -137,10 +138,7 @@ public class PlayerFragment extends Fragment {
         sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true); // Performing a sync no matter if it's off
-                bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true); // Performing a sync no matter if it's off
-                ContentResolver.requestSync(null, "fm.grind.feed", bundle);
+                SyncUtils.triggerRefresh();
             }
         });
 

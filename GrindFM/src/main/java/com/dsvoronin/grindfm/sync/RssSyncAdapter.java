@@ -1,7 +1,6 @@
 package com.dsvoronin.grindfm.sync;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
@@ -11,19 +10,22 @@ import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
 import com.dsvoronin.grindfm.network.GrindService;
+import com.dsvoronin.grindfm.network.rss.Article;
 import com.dsvoronin.grindfm.network.rss.RSS;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private final String TAG = "RssSyncAdapter";
 
-    private final AccountManager mAccountManager;
-
     private final GrindService grindService;
 
     public RssSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
-        mAccountManager = AccountManager.get(context);
         grindService = App.fromContext(context).getGrindService();
     }
 
@@ -32,9 +34,14 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(TAG, "onPerformSync");
         try {
 
-            RSS rss = grindService.getGrindFeed();
+            Call<RSS> call = grindService.getGrindFeed();
+            Response<RSS> response = call.execute();
+            RSS rss = response.body();
+            List<Article> articles = rss.getChannel().getArticleList();
 
-            Log.d(TAG, rss.toString());
+            for (Article article : articles) {
+                Log.d(TAG, article.getTitle() + " : " + article.getGuid());
+            }
 
             // Get the auth token for the current account
 //            String authToken = mAccountManager.blockingGetAuthToken(account,

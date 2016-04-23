@@ -10,7 +10,7 @@ import java.util.List;
 public class Channel {
 
     @ElementList(name = "item", inline = true)
-    List<Article> articleList;
+    private List<Article> articleList;
 
     @Element
     private String title;
@@ -18,8 +18,20 @@ public class Channel {
     @Element
     private String link;
 
-    @Element
+    @Element(required = false)
     private String description;
+
+    public List<Article> getArticleList() {
+        return articleList;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getLink() {
+        return link;
+    }
 
     @Override
     public String toString() {
