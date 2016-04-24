@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,8 +24,6 @@ import com.dsvoronin.grindfm.entities.Track;
 import com.dsvoronin.grindfm.player.PlayerService;
 import com.dsvoronin.grindfm.sync.CurrentTrackLoader;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING;
@@ -56,7 +55,15 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
 
     private MediaControllerCompat mediaController;
 
-    private Timer timer;
+    private Handler handler = new Handler();
+
+    private Runnable pollTracks = new Runnable() {
+        @Override
+        public void run() {
+            getLoaderManager().getLoader(0).forceLoad();
+            handler.postDelayed(this, TICK);
+        }
+    };
 
     private final MediaControllerCompat.Callback controllerCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -163,19 +170,13 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onResume() {
         super.onResume();
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                getLoaderManager().getLoader(0).forceLoad();
-            }
-        }, 0, TICK);
+        handler.post(pollTracks);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        timer.cancel();
+        handler.removeCallbacks(pollTracks);
     }
 
     @Override

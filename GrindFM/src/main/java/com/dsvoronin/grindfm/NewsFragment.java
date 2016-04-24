@@ -20,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dsvoronin.grindfm.utils.BetterViewAnimator;
-import com.dsvoronin.grindfm.utils.CursorRecyclerViewAdapter;
+import com.dsvoronin.grindfm.utils.CursorRecyclerAdapter;
 import com.squareup.picasso.Picasso;
 
 import static android.provider.BaseColumns._ID;
@@ -35,6 +35,8 @@ public class NewsFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "NewsFragment";
+
+    private static final int NEWS_LOADER_ID = 0;
 
     private BetterViewAnimator viewAnimator;
 
@@ -88,7 +90,13 @@ public class NewsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         adapter = new NewsItemAdapter(getActivity(), null);
         recyclerView.setAdapter(adapter);
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(NEWS_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getLoaderManager().destroyLoader(NEWS_LOADER_ID);
     }
 
     /**
@@ -136,12 +144,12 @@ public class NewsFragment extends Fragment
         adapter.changeCursor(null);
     }
 
-    private class NewsItemAdapter extends CursorRecyclerViewAdapter<NewsItemViewHolder> {
+    private class NewsItemAdapter extends CursorRecyclerAdapter<NewsItemViewHolder> {
 
         private LayoutInflater layoutInflater;
 
         public NewsItemAdapter(Context context, Cursor cursor) {
-            super(context, cursor);
+            super(cursor);
             layoutInflater = (LayoutInflater) context.getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -152,8 +160,8 @@ public class NewsFragment extends Fragment
         }
 
         @Override
-        public void onBindViewHolder(NewsItemViewHolder viewHolder, Cursor cursor) {
-            viewHolder.bind(cursor, picasso);
+        public void onBindViewHolderCursor(NewsItemViewHolder holder, Cursor cursor) {
+            holder.bind(cursor, picasso);
         }
     }
 
