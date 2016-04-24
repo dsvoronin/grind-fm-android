@@ -10,6 +10,7 @@
         android:id="@+id/player_artwork"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginRight="8dp"
         android:src="@mipmap/ic_launcher" />
 
     <ImageButton
@@ -21,9 +22,25 @@
         tools:src="@drawable/ic_play_arrow_black_24dp" />
 
     <TextView
+        android:id="@+id/track_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/play_pause"
-        android:layout_toRightOf="@id/player_artwork" />
+        android:layout_toRightOf="@id/player_artwork"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="Moonrise" />
+
+    <TextView
+        android:id="@+id/track_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/track_name"
+        android:layout_toLeftOf="@id/play_pause"
+        android:layout_toRightOf="@id/player_artwork"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="18sp"
+        tools:text="Sithu Aye" />
 
 </RelativeLayout>

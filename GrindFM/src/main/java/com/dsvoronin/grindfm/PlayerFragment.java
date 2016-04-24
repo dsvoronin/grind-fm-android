@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -14,11 +16,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
+import com.dsvoronin.grindfm.entities.Track;
 import com.dsvoronin.grindfm.player.PlayerService;
-import com.dsvoronin.grindfm.utils.SyncUtils;
+import com.dsvoronin.grindfm.sync.CurrentTrackLoader;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_CONNECTING;
@@ -33,15 +40,23 @@ import static android.support.v4.media.session.PlaybackStateCompat.STATE_SKIPPIN
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED;
 
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Track> {
 
-    private final String TAG = "PlayerFragment";
+    private static final String TAG = "PlayerFragment";
+
+    private static final long TICK = TimeUnit.SECONDS.toMillis(30);
 
     private ImageButton button;
+
+    private TextView trackName;
+
+    private TextView trackArtist;
 
     private MediaBrowserCompat mediaBrowser;
 
     private MediaControllerCompat mediaController;
+
+    private Timer timer;
 
     private final MediaControllerCompat.Callback controllerCallback = new MediaControllerCompat.Callback() {
         @Override
@@ -133,15 +148,34 @@ public class PlayerFragment extends Fragment {
             }
         });
 
-//        Button sync = (Button) view.findViewById(R.id.sync);
-//        sync.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                SyncUtils.triggerRefresh();
-//            }
-//        });
+        trackName = (TextView) view.findViewById(R.id.track_name);
+        trackArtist = (TextView) view.findViewById(R.id.track_artist);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                getLoaderManager().getLoader(0).forceLoad();
+            }
+        }, 0, TICK);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
     }
 
     @Override
@@ -149,6 +183,23 @@ public class PlayerFragment extends Fragment {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         mediaBrowser.disconnect();
+    }
+
+    @Override
+    public Loader<Track> onCreateLoader(int id, Bundle args) {
+        return new CurrentTrackLoader(getContext());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Track> loader, Track track) {
+        trackName.setText(track.getTrack());
+        trackArtist.setText(track.getArtist());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Track> loader) {
+        trackName.setText("");
+        trackArtist.setText("");
     }
 }
 

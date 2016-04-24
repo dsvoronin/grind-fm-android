@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.dsvoronin.grindfm.sync.GrindService;
+import com.dsvoronin.grindfm.utils.CurrentTrackConverterFactory;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jakewharton.picasso.OkHttp3Downloader;
@@ -52,6 +53,7 @@ public class App extends Application {
         grindService = new Retrofit.Builder()
                 .baseUrl("http://grind.fm")
                 .client(okHttpClient)
+                .addConverterFactory(CurrentTrackConverterFactory.create())
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build()
                 .create(GrindService.class);

@@ -71,7 +71,6 @@ public class NewsFragment extends Fragment
         picasso = App.fromContext(context).getPicasso();
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -137,7 +136,7 @@ public class NewsFragment extends Fragment
         adapter.changeCursor(null);
     }
 
-    class NewsItemAdapter extends CursorRecyclerViewAdapter<NewsItemViewHolder> {
+    private class NewsItemAdapter extends CursorRecyclerViewAdapter<NewsItemViewHolder> {
 
         private LayoutInflater layoutInflater;
 
@@ -155,6 +154,13 @@ public class NewsFragment extends Fragment
         @Override
         public void onBindViewHolder(NewsItemViewHolder viewHolder, Cursor cursor) {
             viewHolder.bind(cursor, picasso);
+        }
+    }
+
+    private void closeCursor() {
+        Cursor cursor = adapter.getCursor();
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
         }
     }
 
