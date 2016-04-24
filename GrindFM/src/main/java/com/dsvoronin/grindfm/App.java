@@ -7,6 +7,7 @@ import com.dsvoronin.grindfm.sync.GrindService;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.leakcanary.LeakCanary;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Stetho.initializeWithDefaults(this);
+        LeakCanary.install(this);
 
         File cacheDir = getDir("okhttp_cache", Context.MODE_PRIVATE);
 

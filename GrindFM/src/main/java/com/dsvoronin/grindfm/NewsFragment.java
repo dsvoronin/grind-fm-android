@@ -71,11 +71,6 @@ public class NewsFragment extends Fragment
         picasso = App.fromContext(context).getPicasso();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        adapter = new NewsItemAdapter(getActivity(), null);
-    }
 
     @Nullable
     @Override
@@ -84,7 +79,6 @@ public class NewsFragment extends Fragment
         viewAnimator = (BetterViewAnimator) view.findViewById(R.id.view_animator);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         return view;
@@ -93,17 +87,9 @@ public class NewsFragment extends Fragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        adapter = new NewsItemAdapter(getActivity(), null);
+        recyclerView.setAdapter(adapter);
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public void onDestroy() {
-        Cursor cursor = adapter.getCursor();
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
-        super.onDestroy();
     }
 
     /**

@@ -133,13 +133,13 @@ public class PlayerFragment extends Fragment {
             }
         });
 
-        Button sync = (Button) view.findViewById(R.id.sync);
-        sync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SyncUtils.triggerRefresh();
-            }
-        });
+//        Button sync = (Button) view.findViewById(R.id.sync);
+//        sync.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SyncUtils.triggerRefresh();
+//            }
+//        });
 
         return view;
     }

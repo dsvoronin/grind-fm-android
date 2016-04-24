@@ -185,22 +185,20 @@ public class PlayerService extends MediaBrowserServiceCompat implements
     private void pauseRadio() {
         Log.d(TAG, "pauseRadio");
 
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            try {
-                unregisterReceiver(noisyReceiver);
-            } catch (Exception e) {
-                //we don't care if register was not registered or we trying to unregister it second time
-            }
-            stopForeground(false);
-
-            mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0.0f)
-                    .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE).build());
-
-            delayedStopHandler.removeCallbacksAndMessages(null);
-            delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+        mediaPlayer.pause();
+        try {
+            unregisterReceiver(noisyReceiver);
+        } catch (Exception e) {
+            //we don't care if register was not registered or we trying to unregister it second time
         }
+        stopForeground(false);
+
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0.0f)
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE).build());
+
+        delayedStopHandler.removeCallbacksAndMessages(null);
+        delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }
 
     private void lowerVolume() {
@@ -270,6 +268,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
                     return;
                 }
                 Log.d(TAG, "Stopping service with delay handler.");
+                service.stopForeground(true);
                 service.stopSelf();
             }
         }
