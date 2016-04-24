@@ -1,7 +1,6 @@
 package com.dsvoronin.grindfm;
 
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.dsvoronin.grindfm.player.PlayerService;
-import com.dsvoronin.grindfm.sync.SyncUtils;
+import com.dsvoronin.grindfm.utils.SyncUtils;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_CONNECTING;

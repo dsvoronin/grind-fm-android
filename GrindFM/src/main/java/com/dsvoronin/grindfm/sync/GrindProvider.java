@@ -12,6 +12,18 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
+import com.dsvoronin.grindfm.utils.SelectionBuilder;
+
+import static android.provider.BaseColumns._ID;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_DESCRIPTION;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_FORMATTED_DATE;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_IMAGE_URL;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_LINK;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_PUB_DATE;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_TITLE;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.TABLE_NAME;
+
 /*
  * Define an implementation of ContentProvider that stubs out
  * all methods
@@ -82,6 +94,8 @@ public class GrindProvider extends ContentProvider {
             String COLUMN_NAME_DESCRIPTION = "description";
 
             String COLUMN_NAME_IMAGE_URL = "image_url";
+
+            String COLUMN_NAME_FORMATTED_DATE = "formatted_date";
         }
     }
 
@@ -161,10 +175,10 @@ public class GrindProvider extends ContentProvider {
             case ROUTE_ENTRIES_ID:
                 // Return a single entry, by ID.
                 String id = uri.getLastPathSegment();
-                builder.where(Contract.Entry._ID + "=?", id);
+                builder.where(_ID + "=?", id);
             case ROUTE_ENTRIES:
                 // Return all known entries.
-                builder.table(Contract.Entry.TABLE_NAME)
+                builder.table(TABLE_NAME)
                         .where(selection, selectionArgs);
                 Cursor c = builder.query(db, projection, sortOrder);
                 // Note: Notification URI must be manually set here for loaders to correctly
@@ -189,7 +203,7 @@ public class GrindProvider extends ContentProvider {
         Uri result;
         switch (match) {
             case ROUTE_ENTRIES:
-                long id = db.insertOrThrow(Contract.Entry.TABLE_NAME, null, values);
+                long id = db.insertOrThrow(TABLE_NAME, null, values);
                 result = Uri.parse(Contract.Entry.CONTENT_URI + "/" + id);
                 break;
             case ROUTE_ENTRIES_ID:
@@ -215,14 +229,14 @@ public class GrindProvider extends ContentProvider {
         int count;
         switch (match) {
             case ROUTE_ENTRIES:
-                count = builder.table(Contract.Entry.TABLE_NAME)
+                count = builder.table(TABLE_NAME)
                         .where(selection, selectionArgs)
                         .delete(db);
                 break;
             case ROUTE_ENTRIES_ID:
                 String id = uri.getLastPathSegment();
-                count = builder.table(Contract.Entry.TABLE_NAME)
-                        .where(Contract.Entry._ID + "=?", id)
+                count = builder.table(TABLE_NAME)
+                        .where(_ID + "=?", id)
                         .where(selection, selectionArgs)
                         .delete(db);
                 break;
@@ -251,14 +265,14 @@ public class GrindProvider extends ContentProvider {
         int count;
         switch (match) {
             case ROUTE_ENTRIES:
-                count = builder.table(Contract.Entry.TABLE_NAME)
+                count = builder.table(TABLE_NAME)
                         .where(selection, selectionArgs)
                         .update(db, values);
                 break;
             case ROUTE_ENTRIES_ID:
                 String id = uri.getLastPathSegment();
-                count = builder.table(Contract.Entry.TABLE_NAME)
-                        .where(Contract.Entry._ID + "=?", id)
+                count = builder.table(TABLE_NAME)
+                        .where(_ID + "=?", id)
                         .where(selection, selectionArgs)
                         .update(db, values);
                 break;
@@ -298,20 +312,21 @@ public class GrindProvider extends ContentProvider {
          * SQL statement to create "entry" table.
          */
         private static final String SQL_CREATE_ENTRIES =
-                "CREATE TABLE " + Contract.Entry.TABLE_NAME + " (" +
-                        Contract.Entry._ID + " INTEGER PRIMARY KEY," +
-                        Contract.Entry.COLUMN_NAME_ENTRY_ID + TYPE_INTEGER + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_TITLE + TYPE_TEXT + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_LINK + TYPE_TEXT + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_PUB_DATE + TYPE_DATETIME + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_DESCRIPTION + TYPE_TEXT + COMMA_SEP +
-                        Contract.Entry.COLUMN_NAME_IMAGE_URL + TYPE_TEXT + ")";
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        _ID + " INTEGER PRIMARY KEY," +
+                        COLUMN_NAME_ENTRY_ID + TYPE_INTEGER + COMMA_SEP +
+                        COLUMN_NAME_TITLE + TYPE_TEXT + COMMA_SEP +
+                        COLUMN_NAME_LINK + TYPE_TEXT + COMMA_SEP +
+                        COLUMN_NAME_PUB_DATE + TYPE_DATETIME + COMMA_SEP +
+                        COLUMN_NAME_DESCRIPTION + TYPE_TEXT + COMMA_SEP +
+                        COLUMN_NAME_IMAGE_URL + TYPE_TEXT + COMMA_SEP +
+                        COLUMN_NAME_FORMATTED_DATE + TYPE_TEXT + ")";
 
         /**
          * SQL statement to drop "entry" table.
          */
         private static final String SQL_DELETE_ENTRIES =
-                "DROP TABLE IF EXISTS " + Contract.Entry.TABLE_NAME;
+                "DROP TABLE IF EXISTS " + TABLE_NAME;
 
         public GrindFMDatabase(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);

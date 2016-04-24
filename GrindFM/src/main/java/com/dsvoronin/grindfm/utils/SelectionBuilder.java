@@ -20,7 +20,7 @@
  * -Changed package name
  */
 
-package com.dsvoronin.grindfm.sync;
+package com.dsvoronin.grindfm.utils;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -36,15 +36,15 @@ import java.util.Map;
 
 /**
  * Helper for building selection clauses for {@link SQLiteDatabase}.
- *
+ * <p/>
  * <p>This class provides a convenient frontend for working with SQL. Instead of composing statements
  * manually using string concatenation, method calls are used to construct the statement one
  * clause at a time. These methods can be chained together.
- *
+ * <p/>
  * <p>If multiple where() statements are provided, they're combined using {@code AND}.
- *
+ * <p/>
  * <p>Example:
- *
+ * <p/>
  * <pre>
  *     SelectionBuilder builder = new SelectionBuilder();
  *     Cursor c = builder.table(FeedContract.Entry.TABLE_NAME)       // String TABLE_NAME = "entry"
@@ -52,17 +52,17 @@ import java.util.Map;
  *                       .query(db, projection, sortOrder)
  *
  * </pre>
- *
+ * <p/>
  * <p>In this example, the table name and filters ({@code WHERE} clauses) are both explicitly
  * specified via method call. SelectionBuilder takes care of issuing a "query" command to the
  * database, and returns the resulting {@link Cursor} object.
- *
+ * <p/>
  * <p>Inner {@code JOIN}s can be accomplished using the mapToTable() function. The map() function
  * can be used to create new columns based on arbitrary (SQL-based) criteria. In advanced usage,
  * entire subqueries can be passed into the map() function.
- *
+ * <p/>
  * <p>Advanced example:
- *
+ * <p/>
  * <pre>
  *     // String SESSIONS_JOIN_BLOCKS_ROOMS = "sessions "
  *     //        + "LEFT OUTER JOIN blocks ON sessions.block_id=blocks.block_id "
@@ -82,12 +82,12 @@ import java.util.Map;
  *               .mapToTable(Sessions.ROOM_ID, Tables.SESSIONS)
  *               .where(Qualified.SESSIONS_BLOCK_ID + "=?", blockId);
  * </pre>
- *
+ * <p/>
  * <p>In this example, we have two different types of {@code JOIN}s: a left outer join using a
  * modified table name (since this class doesn't directly support these), and an inner join using
  * the mapToTable() function. The map() function is used to insert a count based on specific
  * criteria, executed as a sub-query.
- *
+ * <p/>
  * This class is <em>not</em> thread safe.
  */
 public class SelectionBuilder {
@@ -100,7 +100,7 @@ public class SelectionBuilder {
 
     /**
      * Reset any internal state, allowing this builder to be recycled.
-     *
+     * <p/>
      * <p>Calling this method is more efficient than creating a new SelectionBuilder object.
      *
      * @return Fluent interface
@@ -115,29 +115,29 @@ public class SelectionBuilder {
     /**
      * Append the given selection clause to the internal state. Each clause is
      * surrounded with parenthesis and combined using {@code AND}.
-     *
+     * <p/>
      * <p>In the most basic usage, simply provide a selection in SQL {@code WHERE} statement format.
-     *
+     * <p/>
      * <p>Example:
-     *
+     * <p/>
      * <pre>
      *     .where("blog_posts.category = 'PROGRAMMING');
      * </pre>
-     *
+     * <p/>
      * <p>User input should never be directly supplied as as part of the selection statement.
      * Instead, use positional parameters in your selection statement, then pass the user input
      * in via the selectionArgs parameter. This prevents SQL escape characters in user input from
      * causing unwanted side effects. (Failure to follow this convention may have security
      * implications.)
-     *
+     * <p/>
      * <p>Positional parameters are specified using the '?' character.
-     *
+     * <p/>
      * <p>Example:
      * <pre>
      *     .where("blog_posts.title contains ?, userSearchString);
      * </pre>
      *
-     * @param selection SQL where statement
+     * @param selection     SQL where statement
      * @param selectionArgs Values to substitute for positional parameters ('?' characters in
      *                      {@code selection} statement. Will be automatically escaped.
      * @return Fluent interface
@@ -167,12 +167,12 @@ public class SelectionBuilder {
 
     /**
      * Table name to use for SQL {@code FROM} statement.
-     *
+     * <p/>
      * <p>This method may only be called once. If multiple tables are required, concatenate them
      * in SQL-format (typically comma-separated).
-     *
+     * <p/>
      * <p>If you need to do advanced {@code JOIN}s, they can also be specified here.
-     *
+     * <p/>
      * See also: mapToTable()
      *
      * @param table Table name
@@ -196,13 +196,13 @@ public class SelectionBuilder {
 
     /**
      * Perform an inner join.
-     *
+     * <p/>
      * <p>Map columns from a secondary table onto the current result set. References to the column
      * specified in {@code column} will be replaced with {@code table.column} in the SQL {@code
      * SELECT} clause.
      *
      * @param column Column name to join on. Must be the same in both tables.
-     * @param table Secondary table to join.
+     * @param table  Secondary table to join.
      * @return Fluent interface
      */
     public SelectionBuilder mapToTable(String column, String table) {
@@ -212,14 +212,14 @@ public class SelectionBuilder {
 
     /**
      * Create a new column based on custom criteria (such as aggregate functions).
-     *
+     * <p/>
      * <p>This adds a new column to the result set, based upon custom criteria in SQL format. This
      * is equivalent to the SQL statement: {@code SELECT toClause AS fromColumn}
-     *
+     * <p/>
      * <p>This method is useful for executing SQL sub-queries.
      *
      * @param fromColumn Name of column for mapping
-     * @param toClause SQL string representing data to be mapped
+     * @param toClause   SQL string representing data to be mapped
      * @return Fluent interface
      */
     public SelectionBuilder map(String fromColumn, String toClause) {
@@ -249,13 +249,13 @@ public class SelectionBuilder {
 
     /**
      * Process user-supplied projection (column list).
-     *
+     * <p/>
      * <p>In cases where a column is mapped to another data source (either another table, or an
      * SQL sub-query), the column name will be replaced with a more specific, SQL-compatible
      * representation.
-     *
+     * <p/>
      * Assumes that incoming columns are non-null.
-     *
+     * <p/>
      * <p>See also: map(), mapToTable()
      *
      * @param columns User supplied projection (column list).
@@ -282,16 +282,16 @@ public class SelectionBuilder {
 
     /**
      * Execute query (SQL {@code SELECT}) against specified database.
-     *
+     * <p/>
      * <p>Using a null projection (column list) is not supported.
      *
-     * @param db Database to query.
+     * @param db      Database to query.
      * @param columns Database projection (column list) to return, must be non-NULL.
      * @param orderBy How to order the rows, formatted as an SQL ORDER BY clause (excluding the
      *                ORDER BY itself). Passing null will use the default sort order, which may be
      *                unordered.
      * @return A {@link Cursor} object, which is positioned before the first entry. Note that
-     *         {@link Cursor}s are not synchronized, see the documentation for more details.
+     * {@link Cursor}s are not synchronized, see the documentation for more details.
      */
     public Cursor query(SQLiteDatabase db, String[] columns, String orderBy) {
         return query(db, columns, null, null, orderBy, null);
@@ -299,31 +299,31 @@ public class SelectionBuilder {
 
     /**
      * Execute query ({@code SELECT}) against database.
-     *
+     * <p/>
      * <p>Using a null projection (column list) is not supported.
      *
-     * @param db Database to query.
+     * @param db      Database to query.
      * @param columns Database projection (column list) to return, must be non-null.
      * @param groupBy A filter declaring how to group rows, formatted as an SQL GROUP BY clause
      *                (excluding the GROUP BY itself). Passing null will cause the rows to not be
      *                grouped.
-     * @param having A filter declare which row groups to include in the cursor, if row grouping is
-     *               being used, formatted as an SQL HAVING clause (excluding the HAVING itself).
-     *               Passing null will cause all row groups to be included, and is required when
-     *               row grouping is not being used.
+     * @param having  A filter declare which row groups to include in the cursor, if row grouping is
+     *                being used, formatted as an SQL HAVING clause (excluding the HAVING itself).
+     *                Passing null will cause all row groups to be included, and is required when
+     *                row grouping is not being used.
      * @param orderBy How to order the rows, formatted as an SQL ORDER BY clause (excluding the
      *                ORDER BY itself). Passing null will use the default sort order, which may be
      *                unordered.
-     * @param limit Limits the number of rows returned by the query, formatted as LIMIT clause.
-     *              Passing null denotes no LIMIT clause.
+     * @param limit   Limits the number of rows returned by the query, formatted as LIMIT clause.
+     *                Passing null denotes no LIMIT clause.
      * @return A {@link Cursor} object, which is positioned before the first entry. Note that
-     *         {@link Cursor}s are not synchronized, see the documentation for more details.
+     * {@link Cursor}s are not synchronized, see the documentation for more details.
      */
     public Cursor query(SQLiteDatabase db, String[] columns, String groupBy,
                         String having, String orderBy, String limit) {
         assertTable();
         if (columns != null) mapColumns(columns);
-        Log.v(TAG, "query(columns=" + Arrays.toString(columns) + ") " + this);
+        Log.d(TAG, "query(columns=" + Arrays.toString(columns) + ", orderBy=" + orderBy + ") " + this);
         return db.query(mTable, columns, getSelection(), getSelectionArgs(), groupBy, having,
                 orderBy, limit);
     }
@@ -331,14 +331,14 @@ public class SelectionBuilder {
     /**
      * Execute an {@code UPDATE} against database.
      *
-     * @param db Database to query.
+     * @param db     Database to query.
      * @param values A map from column names to new column values. null is a valid value that will
      *               be translated to NULL
      * @return The number of rows affected.
      */
     public int update(SQLiteDatabase db, ContentValues values) {
         assertTable();
-        Log.v(TAG, "update() " + this);
+        Log.d(TAG, "update() " + this);
         return db.update(mTable, values, getSelection(), getSelectionArgs());
     }
 
@@ -350,7 +350,7 @@ public class SelectionBuilder {
      */
     public int delete(SQLiteDatabase db) {
         assertTable();
-        Log.v(TAG, "delete() " + this);
+        Log.d(TAG, "delete() " + this);
         return db.delete(mTable, getSelection(), getSelectionArgs());
     }
 }

@@ -3,7 +3,7 @@ package com.dsvoronin.grindfm;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.dsvoronin.grindfm.sync.SyncUtils;
+import com.dsvoronin.grindfm.utils.SyncUtils;
 
 public class MainActivity extends AppCompatActivity {
 

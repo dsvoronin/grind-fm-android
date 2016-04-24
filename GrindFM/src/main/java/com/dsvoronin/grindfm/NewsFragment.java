@@ -5,36 +5,40 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.dsvoronin.grindfm.utils.BetterViewAnimator;
+import com.dsvoronin.grindfm.utils.CursorRecyclerViewAdapter;
 import com.squareup.picasso.Picasso;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 import static android.provider.BaseColumns._ID;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_FORMATTED_DATE;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_IMAGE_URL;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_LINK;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_PUB_DATE;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_TITLE;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.CONTENT_URI;
 
-public class NewsFragment extends ListFragment
+public class NewsFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "NewsFragment";
+
+    private BetterViewAnimator viewAnimator;
+
+    private RecyclerView recyclerView;
 
     /**
      * Cursor adapter for controlling ListView results.
@@ -51,16 +55,15 @@ public class NewsFragment extends ListFragment
             COLUMN_NAME_TITLE,
             COLUMN_NAME_LINK,
             COLUMN_NAME_IMAGE_URL,
-            COLUMN_NAME_PUB_DATE
+            COLUMN_NAME_FORMATTED_DATE
     };
 
     // Column indexes. The index of a column in the Cursor is the same as its relative position in
-    // the projection.
-    private static final int COLUMN_ID = 0;
+    // the projection. 0 = _ID
     private static final int COLUMN_TITLE = 1;
     private static final int COLUMN_LINK = 2;
     private static final int COLUMN_IMAGE_URL = 3;
-    private static final int COLUMN_PUB_DATE = 4;
+    private static final int COLUMN_FORMATTED_DATE = 4;
 
     @Override
     public void onAttach(Context context) {
@@ -69,12 +72,38 @@ public class NewsFragment extends ListFragment
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adapter = new NewsItemAdapter(getActivity(), null);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        viewAnimator = (BetterViewAnimator) view.findViewById(R.id.view_animator);
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
+        return view;
+    }
+
+    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new NewsItemAdapter(getActivity(), null, false);
-        setListAdapter(adapter);
-        setEmptyText(getText(R.string.loading));
+
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onDestroy() {
+        Cursor cursor = adapter.getCursor();
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        super.onDestroy();
     }
 
     /**
@@ -103,6 +132,11 @@ public class NewsFragment extends ListFragment
      */
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        if (cursor.getCount() > 0) {
+            viewAnimator.setDisplayedChildId(R.id.recycler_view);
+        } else {
+            viewAnimator.setDisplayedChildId(R.id.loading);
+        }
         adapter.changeCursor(cursor);
     }
 
@@ -117,73 +151,72 @@ public class NewsFragment extends ListFragment
         adapter.changeCursor(null);
     }
 
-    /**
-     * Load an article in the default browser when selected by the user.
-     */
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-
-        // Get a URI for the selected item, then start an Activity that displays the URI. Any
-        // Activity that filters for ACTION_VIEW and a URI can accept this. In most cases, this will
-        // be a browser.
-
-        // Get the item at the selected position, in the form of a Cursor.
-        Cursor c = (Cursor) adapter.getItem(position);
-        // Get the link to the article represented by the item.
-        String articleUrlString = c.getString(COLUMN_LINK);
-        if (articleUrlString == null) {
-            Log.e(TAG, "Attempt to launch entry with null link");
-            return;
-        }
-
-        Log.i(TAG, "Opening URL: " + articleUrlString);
-        // Get a Uri object for the URL string
-        Uri articleURL = Uri.parse(articleUrlString);
-        Intent i = new Intent(Intent.ACTION_VIEW, articleURL);
-        startActivity(i);
-    }
-
-    class NewsItemAdapter extends CursorAdapter {
+    class NewsItemAdapter extends CursorRecyclerViewAdapter<NewsItemViewHolder> {
 
         private LayoutInflater layoutInflater;
 
-        private Locale locale = getResources().getConfiguration().locale;
-
-        private SimpleDateFormat dbDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", locale);
-
-        private SimpleDateFormat uiDateFormat = new SimpleDateFormat("EEE, d MMM HH:mm", locale);
-
-        public NewsItemAdapter(Context context, Cursor c, boolean autoRequery) {
-            super(context, c, autoRequery);
+        public NewsItemAdapter(Context context, Cursor cursor) {
+            super(context, cursor);
             layoutInflater = (LayoutInflater) context.getSystemService(
                     Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return layoutInflater.inflate(R.layout.news_item, parent, false);
+        public NewsItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new NewsItemViewHolder(layoutInflater.inflate(R.layout.news_item, parent, false));
         }
 
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            TextView titleView = (TextView) view.findViewById(R.id.news_title);
-            titleView.setText(cursor.getString(COLUMN_TITLE));
+        public void onBindViewHolder(NewsItemViewHolder viewHolder, Cursor cursor) {
+            viewHolder.bind(cursor, picasso);
+        }
+    }
 
-            TextView pubDateView = (TextView) view.findViewById(R.id.news_pub_date);
-            pubDateView.setText(parseDate(cursor));
+    private static class NewsItemViewHolder extends RecyclerView.ViewHolder {
 
-            ImageView imageView = (ImageView) view.findViewById(R.id.news_image);
-            String imageUrl = cursor.getString(COLUMN_IMAGE_URL);
-            picasso.load(imageUrl).into(imageView);
+        private Context context;
+
+        private TextView titleView;
+
+        private TextView pubDateView;
+
+        private ImageView imageView;
+
+        public NewsItemViewHolder(View itemView) {
+            super(itemView);
+            context = itemView.getContext();
+            titleView = (TextView) itemView.findViewById(R.id.news_title);
+            pubDateView = (TextView) itemView.findViewById(R.id.news_pub_date);
+            imageView = (ImageView) itemView.findViewById(R.id.news_image);
         }
 
-        private String parseDate(Cursor cursor) {
-            try {
-                return uiDateFormat.format(dbDateFormat.parse(cursor.getString(COLUMN_PUB_DATE)));
-            } catch (ParseException e) {
-                return "";
-            }
+        public void bind(final Cursor cursor, Picasso picasso) {
+            titleView.setText(cursor.getString(COLUMN_TITLE));
+            pubDateView.setText(cursor.getString(COLUMN_FORMATTED_DATE));
+
+            picasso.load(cursor.getString(COLUMN_IMAGE_URL))
+                    .into(imageView);
+
+            /**
+             * Load an article in the default browser when selected by the user.
+             */
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String articleUrlString = cursor.getString(COLUMN_LINK);
+
+                    if (articleUrlString == null) {
+                        Log.e(TAG, "Attempt to launch entry with null link");
+                        return;
+                    }
+
+                    Log.i(TAG, "Opening URL: " + articleUrlString);
+                    // Get a Uri object for the URL string
+                    Uri articleURL = Uri.parse(articleUrlString);
+                    Intent i = new Intent(Intent.ACTION_VIEW, articleURL);
+                    context.startActivity(i);
+                }
+            });
         }
     }
 }

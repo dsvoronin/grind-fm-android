@@ -4,26 +4,29 @@ import android.support.annotation.Nullable;
 
 public class NewsItem {
 
-    private int itemId;
+    private final int itemId;
 
-    private String title;
+    private final String title;
 
-    private String description;
+    private final String description;
 
-    private String pubDate;
+    private final long pubDate;
 
     @Nullable
-    private String imageUrl;
+    private final String imageUrl;
 
-    private String link;
+    private final String link;
 
-    public NewsItem(int itemId, String title, String description, String pubDate, @Nullable String imageUrl, String link) {
+    private final String formattedDate;
+
+    public NewsItem(int itemId, String title, String description, long pubDate, @Nullable String imageUrl, String link, String formattedDate) {
         this.itemId = itemId;
         this.title = title;
         this.description = description;
         this.pubDate = pubDate;
         this.imageUrl = imageUrl;
         this.link = link;
+        this.formattedDate = formattedDate;
     }
 
     public int getItemId() {
@@ -38,7 +41,7 @@ public class NewsItem {
         return description;
     }
 
-    public String getPubDate() {
+    public long getPubDate() {
         return pubDate;
     }
 
@@ -51,6 +54,10 @@ public class NewsItem {
         return link;
     }
 
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,12 +66,13 @@ public class NewsItem {
         NewsItem newsItem = (NewsItem) o;
 
         if (itemId != newsItem.itemId) return false;
+        if (pubDate != newsItem.pubDate) return false;
         if (!title.equals(newsItem.title)) return false;
         if (!description.equals(newsItem.description)) return false;
-        if (!pubDate.equals(newsItem.pubDate)) return false;
         if (imageUrl != null ? !imageUrl.equals(newsItem.imageUrl) : newsItem.imageUrl != null)
             return false;
-        return link.equals(newsItem.link);
+        if (!link.equals(newsItem.link)) return false;
+        return formattedDate.equals(newsItem.formattedDate);
 
     }
 
@@ -73,9 +81,10 @@ public class NewsItem {
         int result = itemId;
         result = 31 * result + title.hashCode();
         result = 31 * result + description.hashCode();
-        result = 31 * result + pubDate.hashCode();
+        result = 31 * result + (int) (pubDate ^ (pubDate >>> 32));
         result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
         result = 31 * result + link.hashCode();
+        result = 31 * result + formattedDate.hashCode();
         return result;
     }
 
@@ -85,9 +94,10 @@ public class NewsItem {
                 "itemId=" + itemId +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", pubDate='" + pubDate + '\'' +
+                ", pubDate=" + pubDate +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", link='" + link + '\'' +
+                ", formattedDate='" + formattedDate + '\'' +
                 '}';
     }
 }

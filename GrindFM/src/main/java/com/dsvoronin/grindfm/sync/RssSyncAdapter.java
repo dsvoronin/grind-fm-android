@@ -30,6 +30,7 @@ import retrofit2.Response;
 
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_DESCRIPTION;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_ENTRY_ID;
+import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_FORMATTED_DATE;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_IMAGE_URL;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_LINK;
 import static com.dsvoronin.grindfm.sync.GrindProvider.Contract.Entry.COLUMN_NAME_PUB_DATE;
@@ -200,32 +201,36 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
-    private static NewsItem fromCursor(Cursor c) {
+    private NewsItem fromCursor(Cursor c) {
         return new NewsItem(
                 c.getInt(c.getColumnIndex(COLUMN_NAME_ENTRY_ID)),
                 c.getString(c.getColumnIndex(COLUMN_NAME_TITLE)),
                 c.getString(c.getColumnIndex(COLUMN_NAME_DESCRIPTION)),
-                c.getString(c.getColumnIndex(COLUMN_NAME_PUB_DATE)),
+                c.getLong(c.getColumnIndex(COLUMN_NAME_PUB_DATE)),
                 c.getString(c.getColumnIndex(COLUMN_NAME_IMAGE_URL)),
-                c.getString(c.getColumnIndex(COLUMN_NAME_LINK)));
+                c.getString(c.getColumnIndex(COLUMN_NAME_LINK)),
+                c.getString(c.getColumnIndex(COLUMN_NAME_FORMATTED_DATE)));
     }
 
-    private static NewsItem fromArticle(Article article) {
-        Mapper mapper = new Mapper(article);
+    private NewsItem fromArticle(Article article) {
+        Mapper mapper = new Mapper(getContext(), article);
         return new NewsItem(mapper.getId(),
                 article.getTitle(),
                 mapper.getPureText(),
-                article.getPubDate(),
+                mapper.getPubDate(),
                 mapper.getImageUrl(),
-                article.getLink());
+                article.getLink(),
+                mapper.getFormattedDate());
     }
 
     private ContentProviderOperation.Builder fillOperation(ContentProviderOperation.Builder operation, NewsItem newsItem) {
-        return operation.withValue(COLUMN_NAME_ENTRY_ID, newsItem.getItemId())
+        return operation
+                .withValue(COLUMN_NAME_ENTRY_ID, newsItem.getItemId())
                 .withValue(COLUMN_NAME_TITLE, newsItem.getTitle())
                 .withValue(COLUMN_NAME_LINK, newsItem.getLink())
                 .withValue(COLUMN_NAME_PUB_DATE, newsItem.getPubDate())
                 .withValue(COLUMN_NAME_DESCRIPTION, newsItem.getDescription())
-                .withValue(COLUMN_NAME_IMAGE_URL, newsItem.getImageUrl());
+                .withValue(COLUMN_NAME_IMAGE_URL, newsItem.getImageUrl())
+                .withValue(COLUMN_NAME_FORMATTED_DATE, newsItem.getFormattedDate());
     }
 }

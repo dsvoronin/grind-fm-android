@@ -22,6 +22,7 @@
         <item name="colorPrimary">@color/bg_gradient_start</item>
         <item name="colorPrimaryDark">@color/bg_gradient_end</item>
         <item name="colorAccent">@color/action_bar_line</item>
+        <item name="colorControlHighlight">@color/bg_dark</item>
     </style>
 
 </resources>
