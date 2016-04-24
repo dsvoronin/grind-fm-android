@@ -13,17 +13,24 @@ import android.support.v4.content.Loader;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dsvoronin.grindfm.entities.Track;
+import com.dsvoronin.grindfm.entities.TrackListItem;
 import com.dsvoronin.grindfm.player.PlayerService;
 import com.dsvoronin.grindfm.sync.CurrentTrackLoader;
+import com.dsvoronin.grindfm.sync.TracksHistoryLoader;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING;
@@ -39,17 +46,25 @@ import static android.support.v4.media.session.PlaybackStateCompat.STATE_SKIPPIN
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_SKIPPING_TO_QUEUE_ITEM;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED;
 
-public class PlayerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Track> {
+public class PlayerFragment extends Fragment {
 
     private static final String TAG = "PlayerFragment";
 
-    private static final long TICK = TimeUnit.SECONDS.toMillis(30);
+    private static final int CURRENT_TRACK_LOADER_ID = 0;
+    private static final int LAST_PLAYED_TRACKS_LOADER_ID = 1;
 
-    private ImageButton button;
+    private static final long CURRENT_TRACK_POLL_FREQUENCY = TimeUnit.SECONDS.toMillis(30);
+    private static final long LAST_PLAYED_TRACKS_POLL_FREQUENCY = TimeUnit.SECONDS.toMillis(120);
+
+    private ImageView button;
 
     private TextView trackName;
 
     private TextView trackArtist;
+
+    private RecyclerView tracksHistoryView;
+
+    private TrackListAdapter adapter;
 
     private MediaBrowserCompat mediaBrowser;
 
@@ -57,11 +72,56 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
 
     private Handler handler = new Handler();
 
-    private Runnable pollTracks = new Runnable() {
+    private Runnable pollCurrentTrack = new Runnable() {
         @Override
         public void run() {
-            getLoaderManager().getLoader(0).forceLoad();
-            handler.postDelayed(this, TICK);
+            getLoaderManager().getLoader(CURRENT_TRACK_LOADER_ID).forceLoad();
+            handler.postDelayed(this, CURRENT_TRACK_POLL_FREQUENCY);
+        }
+    };
+
+    private Runnable pollLastPlayedTracks = new Runnable() {
+        @Override
+        public void run() {
+            getLoaderManager().getLoader(LAST_PLAYED_TRACKS_LOADER_ID).forceLoad();
+            handler.postDelayed(this, LAST_PLAYED_TRACKS_POLL_FREQUENCY);
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks<Track> currentTrackLoaderCallbacks = new LoaderManager.LoaderCallbacks<Track>() {
+        @Override
+        public Loader<Track> onCreateLoader(int id, Bundle args) {
+            return new CurrentTrackLoader(getContext());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Track> loader, Track data) {
+            trackName.setText(data.getTrack());
+            trackArtist.setText(data.getArtist());
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Track> loader) {
+            Track data = Track.NULL;
+            trackName.setText(data.getTrack());
+            trackArtist.setText(data.getArtist());
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks<List<TrackListItem>> lastPlayedTracksLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<TrackListItem>>() {
+        @Override
+        public Loader<List<TrackListItem>> onCreateLoader(int id, Bundle args) {
+            return new TracksHistoryLoader(getContext());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<List<TrackListItem>> loader, List<TrackListItem> data) {
+            adapter.update(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<TrackListItem>> loader) {
+            adapter.update(Collections.<TrackListItem>emptyList());
         }
     };
 
@@ -141,13 +201,15 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
                 }, null);
 
         mediaBrowser.connect();
+
+        adapter = new TrackListAdapter(context);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
-        button = (ImageButton) view.findViewById(R.id.play_pause);
+        button = (ImageView) view.findViewById(R.id.play_pause);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,25 +220,39 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
         trackName = (TextView) view.findViewById(R.id.track_name);
         trackArtist = (TextView) view.findViewById(R.id.track_artist);
 
+        tracksHistoryView = (RecyclerView) view.findViewById(R.id.track_history);
+        tracksHistoryView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        tracksHistoryView.setAdapter(adapter);
+        getLoaderManager().initLoader(CURRENT_TRACK_LOADER_ID, null, currentTrackLoaderCallbacks);
+        getLoaderManager().initLoader(LAST_PLAYED_TRACKS_LOADER_ID, null, lastPlayedTracksLoaderCallbacks);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        handler.post(pollTracks);
+        handler.post(pollCurrentTrack);
+        handler.post(pollLastPlayedTracks);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        handler.removeCallbacks(pollTracks);
+        handler.removeCallbacks(pollCurrentTrack);
+        handler.removeCallbacks(pollLastPlayedTracks);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getLoaderManager().destroyLoader(CURRENT_TRACK_LOADER_ID);
+        getLoaderManager().destroyLoader(LAST_PLAYED_TRACKS_LOADER_ID);
     }
 
     @Override
@@ -186,21 +262,55 @@ public class PlayerFragment extends Fragment implements LoaderManager.LoaderCall
         mediaBrowser.disconnect();
     }
 
-    @Override
-    public Loader<Track> onCreateLoader(int id, Bundle args) {
-        return new CurrentTrackLoader(getContext());
+    private static class TrackListAdapter extends RecyclerView.Adapter<TrackListItemViewHolder> {
+
+        private LayoutInflater inflater;
+
+        private List<TrackListItem> data = new ArrayList<>();
+
+        public TrackListAdapter(Context context) {
+            setHasStableIds(true);
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public TrackListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new TrackListItemViewHolder(inflater.inflate(R.layout.track_item, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(TrackListItemViewHolder holder, int position) {
+            holder.bind(data.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+
+        public void update(List<TrackListItem> data) {
+            this.data.clear();
+            this.data.addAll(data);
+            notifyDataSetChanged();
+        }
     }
 
-    @Override
-    public void onLoadFinished(Loader<Track> loader, Track track) {
-        trackName.setText(track.getTrack());
-        trackArtist.setText(track.getArtist());
-    }
+    private static class TrackListItemViewHolder extends RecyclerView.ViewHolder {
 
-    @Override
-    public void onLoaderReset(Loader<Track> loader) {
-        trackName.setText("");
-        trackArtist.setText("");
+        private TextView trackView;
+
+        private TextView timeView;
+
+        public TrackListItemViewHolder(View itemView) {
+            super(itemView);
+            trackView = (TextView) itemView.findViewById(R.id.track_name);
+            timeView = (TextView) itemView.findViewById(R.id.played_at);
+        }
+
+        public void bind(TrackListItem trackListItem) {
+            trackView.setText(trackListItem.getTrack());
+            timeView.setText(trackListItem.getDate());
+        }
     }
 }
 

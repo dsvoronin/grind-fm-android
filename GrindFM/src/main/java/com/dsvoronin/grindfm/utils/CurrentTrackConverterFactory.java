@@ -20,7 +20,19 @@ public class CurrentTrackConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<ResponseBody, Track> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
+                                                            Retrofit retrofit) {
+
+        if (!(type instanceof Class<?>)) {
+            return null;
+        }
+
+        Class<?> c = (Class<?>) type;
+
+        if (!Track.class.isAssignableFrom(c)) {
+            return null;
+        }
+
         return new Converter<ResponseBody, Track>() {
             @Override
             public Track convert(ResponseBody value) throws IOException {

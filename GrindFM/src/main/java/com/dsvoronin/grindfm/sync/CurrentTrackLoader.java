@@ -26,7 +26,7 @@ public class CurrentTrackLoader extends AsyncTaskLoader<Track> {
             return grindService.getCurrentSong().execute().body();
         } catch (IOException e) {
             Log.e(TAG, "Can't load current song", e);
-            return null;
+            return Track.NULL;
         }
     }
 }

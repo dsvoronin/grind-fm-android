@@ -13,12 +13,13 @@
         android:layout_marginRight="8dp"
         android:src="@mipmap/ic_launcher" />
 
-    <ImageButton
+    <ImageView
         android:id="@+id/play_pause"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_alignParentRight="true"
-        android:background="@null"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
         tools:src="@drawable/ic_play_arrow_black_24dp" />
 
     <TextView
@@ -42,5 +43,12 @@
         android:fontFamily="sans-serif-condensed"
         android:textSize="18sp"
         tools:text="Sithu Aye" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/track_history"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/player_artwork"
+        android:layout_marginTop="16dp" />
 
 </RelativeLayout>

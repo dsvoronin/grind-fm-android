@@ -2,6 +2,9 @@ package com.dsvoronin.grindfm.sync;
 
 import com.dsvoronin.grindfm.entities.RSS;
 import com.dsvoronin.grindfm.entities.Track;
+import com.dsvoronin.grindfm.entities.TrackListItem;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -13,4 +16,7 @@ public interface GrindService {
 
     @GET("http://radio.goha.ru:8000/7.html")
     Call<Track> getCurrentSong();
+
+    @GET("http://media.goha.ru/radio/meta2.php")
+    Call<List<TrackListItem>> getLastPlayedTracks();
 }

@@ -2,6 +2,8 @@ package com.dsvoronin.grindfm.entities;
 
 public class Track {
 
+    public static final Track NULL = new Track("gaming radiostation", "Grind.FM");
+
     private final String artist;
 
     private final String track;

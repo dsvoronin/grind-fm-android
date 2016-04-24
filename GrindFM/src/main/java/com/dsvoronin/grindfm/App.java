@@ -16,6 +16,7 @@ import java.io.File;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class App extends Application {
@@ -54,6 +55,7 @@ public class App extends Application {
                 .baseUrl("http://grind.fm")
                 .client(okHttpClient)
                 .addConverterFactory(CurrentTrackConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build()
                 .create(GrindService.class);

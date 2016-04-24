@@ -4,52 +4,22 @@ public class TrackListItem {
 
     private String date;
 
-    private String artist;
-
-    private String title;
-
-    private String duration;
+    private String track;
 
     public TrackListItem() {
     }
 
-    public TrackListItem(String date, String artist, String title, String duration) {
+    public TrackListItem(String date, String track) {
         this.date = date;
-        this.artist = artist;
-        this.title = title;
-        this.duration = duration;
+        this.track = track;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
+    public String getTrack() {
+        return track;
     }
 
     @Override
@@ -57,18 +27,18 @@ public class TrackListItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TrackListItem item = (TrackListItem) o;
+        TrackListItem that = (TrackListItem) o;
 
-        if (!artist.equals(item.artist)) return false;
-        if (!title.equals(item.title)) return false;
+        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (track != null ? !track.equals(that.track) : that.track != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = artist.hashCode();
-        result = 31 * result + title.hashCode();
+        int result = date != null ? date.hashCode() : 0;
+        result = 31 * result + (track != null ? track.hashCode() : 0);
         return result;
     }
 
@@ -76,9 +46,7 @@ public class TrackListItem {
     public String toString() {
         return "TrackListItem{" +
                 "date='" + date + '\'' +
-                ", artist='" + artist + '\'' +
-                ", title='" + title + '\'' +
-                ", duration='" + duration + '\'' +
+                ", track='" + track + '\'' +
                 '}';
     }
 }
