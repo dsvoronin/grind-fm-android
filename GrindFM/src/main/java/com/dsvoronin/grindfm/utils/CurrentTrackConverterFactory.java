@@ -1,6 +1,6 @@
 package com.dsvoronin.grindfm.utils;
 
-import com.dsvoronin.grindfm.entities.Track;
+import com.dsvoronin.grindfm.entities.CurrentTrack;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -29,19 +29,19 @@ public class CurrentTrackConverterFactory extends Converter.Factory {
 
         Class<?> c = (Class<?>) type;
 
-        if (!Track.class.isAssignableFrom(c)) {
+        if (!CurrentTrack.class.isAssignableFrom(c)) {
             return null;
         }
 
-        return new Converter<ResponseBody, Track>() {
+        return new Converter<ResponseBody, CurrentTrack>() {
             @Override
-            public Track convert(ResponseBody value) throws IOException {
+            public CurrentTrack convert(ResponseBody value) throws IOException {
                 try {
                     String stringBody = value.string();
                     String[] array = stringBody.trim()
                             .substring(stringBody.indexOf(",,") + 2)
                             .split(" - ");
-                    return new Track(array[1], array[0]);
+                    return new CurrentTrack(array[1], array[0]);
                 } catch (Throwable e) {
                     throw new IOException(e);
                 }

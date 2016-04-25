@@ -22,8 +22,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dsvoronin.grindfm.entities.Track;
-import com.dsvoronin.grindfm.entities.TrackListItem;
+import com.dsvoronin.grindfm.entities.CurrentTrack;
+import com.dsvoronin.grindfm.entities.TrackInList;
 import com.dsvoronin.grindfm.player.PlayerService;
 import com.dsvoronin.grindfm.sync.CurrentTrackLoader;
 import com.dsvoronin.grindfm.sync.TracksHistoryLoader;
@@ -54,7 +54,7 @@ public class PlayerFragment extends Fragment {
     private static final int LAST_PLAYED_TRACKS_LOADER_ID = 1;
 
     private static final long CURRENT_TRACK_POLL_FREQUENCY = TimeUnit.SECONDS.toMillis(30);
-    private static final long LAST_PLAYED_TRACKS_POLL_FREQUENCY = TimeUnit.SECONDS.toMillis(120);
+    private static final long LAST_PLAYED_TRACKS_POLL_FREQUENCY = TimeUnit.SECONDS.toMillis(60);
 
     private ImageView button;
 
@@ -88,40 +88,40 @@ public class PlayerFragment extends Fragment {
         }
     };
 
-    private LoaderManager.LoaderCallbacks<Track> currentTrackLoaderCallbacks = new LoaderManager.LoaderCallbacks<Track>() {
+    private LoaderManager.LoaderCallbacks<CurrentTrack> currentTrackLoaderCallbacks = new LoaderManager.LoaderCallbacks<CurrentTrack>() {
         @Override
-        public Loader<Track> onCreateLoader(int id, Bundle args) {
+        public Loader<CurrentTrack> onCreateLoader(int id, Bundle args) {
             return new CurrentTrackLoader(getContext());
         }
 
         @Override
-        public void onLoadFinished(Loader<Track> loader, Track data) {
+        public void onLoadFinished(Loader<CurrentTrack> loader, CurrentTrack data) {
             trackName.setText(data.getTrack());
             trackArtist.setText(data.getArtist());
         }
 
         @Override
-        public void onLoaderReset(Loader<Track> loader) {
-            Track data = Track.NULL;
+        public void onLoaderReset(Loader<CurrentTrack> loader) {
+            CurrentTrack data = CurrentTrack.NULL;
             trackName.setText(data.getTrack());
             trackArtist.setText(data.getArtist());
         }
     };
 
-    private LoaderManager.LoaderCallbacks<List<TrackListItem>> lastPlayedTracksLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<TrackListItem>>() {
+    private LoaderManager.LoaderCallbacks<List<TrackInList>> lastPlayedTracksLoaderCallbacks = new LoaderManager.LoaderCallbacks<List<TrackInList>>() {
         @Override
-        public Loader<List<TrackListItem>> onCreateLoader(int id, Bundle args) {
+        public Loader<List<TrackInList>> onCreateLoader(int id, Bundle args) {
             return new TracksHistoryLoader(getContext());
         }
 
         @Override
-        public void onLoadFinished(Loader<List<TrackListItem>> loader, List<TrackListItem> data) {
+        public void onLoadFinished(Loader<List<TrackInList>> loader, List<TrackInList> data) {
             adapter.update(data);
         }
 
         @Override
-        public void onLoaderReset(Loader<List<TrackListItem>> loader) {
-            adapter.update(Collections.<TrackListItem>emptyList());
+        public void onLoaderReset(Loader<List<TrackInList>> loader) {
+            adapter.update(Collections.<TrackInList>emptyList());
         }
     };
 
@@ -266,7 +266,7 @@ public class PlayerFragment extends Fragment {
 
         private LayoutInflater inflater;
 
-        private List<TrackListItem> data = new ArrayList<>();
+        private List<TrackInList> data = new ArrayList<>();
 
         public TrackListAdapter(Context context) {
             setHasStableIds(true);
@@ -288,7 +288,7 @@ public class PlayerFragment extends Fragment {
             return data.size();
         }
 
-        public void update(List<TrackListItem> data) {
+        public void update(List<TrackInList> data) {
             this.data.clear();
             this.data.addAll(data);
             notifyDataSetChanged();
@@ -307,9 +307,9 @@ public class PlayerFragment extends Fragment {
             timeView = (TextView) itemView.findViewById(R.id.played_at);
         }
 
-        public void bind(TrackListItem trackListItem) {
-            trackView.setText(trackListItem.getTrack());
-            timeView.setText(trackListItem.getDate());
+        public void bind(TrackInList trackInList) {
+            trackView.setText(trackInList.getTrack());
+            timeView.setText(trackInList.getDate());
         }
     }
 }

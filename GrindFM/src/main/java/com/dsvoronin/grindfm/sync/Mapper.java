@@ -6,7 +6,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
 
-import com.dsvoronin.grindfm.entities.Article;
+import com.dsvoronin.grindfm.entities.dto.Article;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,11 +37,10 @@ public class Mapper {
     private Article article;
     private Spanned spanned;
 
-    public Mapper(Context context, Article article) {
+    public Mapper(Locale locale, Article article) {
         this.article = article;
         spanned = Html.fromHtml(article.getDescription());
 
-        Locale locale = context.getResources().getConfiguration().locale;
         dbDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", locale);
         uiDateFormat = new SimpleDateFormat("EEE, d MMM HH:mm", locale);
     }

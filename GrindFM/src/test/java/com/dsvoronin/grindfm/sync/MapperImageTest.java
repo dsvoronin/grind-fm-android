@@ -1,13 +1,15 @@
 package com.dsvoronin.grindfm.sync;
 
 import com.dsvoronin.grindfm.BuildConfig;
-import com.dsvoronin.grindfm.entities.Article;
+import com.dsvoronin.grindfm.entities.dto.Article;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,7 +46,7 @@ public class MapperImageTest {
     public void setup() {
         Article article = new Article();
         article.description = testHtml;
-        mapper = new Mapper(article);
+        mapper = new Mapper(Locale.US, article);
     }
 
     /**

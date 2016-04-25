@@ -1,4 +1,4 @@
-package com.dsvoronin.grindfm.entities;
+package com.dsvoronin.grindfm.entities.dto;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;

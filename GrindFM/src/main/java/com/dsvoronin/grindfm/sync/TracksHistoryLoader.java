@@ -5,13 +5,13 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
-import com.dsvoronin.grindfm.entities.TrackListItem;
+import com.dsvoronin.grindfm.entities.TrackInList;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-public class TracksHistoryLoader extends AsyncTaskLoader<List<TrackListItem>> {
+public class TracksHistoryLoader extends AsyncTaskLoader<List<TrackInList>> {
 
     private static final String TAG = "TracksHistoryLoader";
 
@@ -23,7 +23,7 @@ public class TracksHistoryLoader extends AsyncTaskLoader<List<TrackListItem>> {
     }
 
     @Override
-    public List<TrackListItem> loadInBackground() {
+    public List<TrackInList> loadInBackground() {
         try {
             return grindService.getLastPlayedTracks().execute().body();
         } catch (IOException e) {

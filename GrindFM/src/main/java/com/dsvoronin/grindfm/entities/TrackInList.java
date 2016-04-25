@@ -1,15 +1,15 @@
 package com.dsvoronin.grindfm.entities;
 
-public class TrackListItem {
+public class TrackInList {
 
     private String date;
 
     private String track;
 
-    public TrackListItem() {
+    public TrackInList() {
     }
 
-    public TrackListItem(String date, String track) {
+    public TrackInList(String date, String track) {
         this.date = date;
         this.track = track;
     }
@@ -27,7 +27,7 @@ public class TrackListItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TrackListItem that = (TrackListItem) o;
+        TrackInList that = (TrackInList) o;
 
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
         if (track != null ? !track.equals(that.track) : that.track != null) return false;
@@ -44,7 +44,7 @@ public class TrackListItem {
 
     @Override
     public String toString() {
-        return "TrackListItem{" +
+        return "TrackInList{" +
                 "date='" + date + '\'' +
                 ", track='" + track + '\'' +
                 '}';

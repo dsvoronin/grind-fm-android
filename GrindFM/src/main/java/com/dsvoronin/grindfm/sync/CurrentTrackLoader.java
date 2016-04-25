@@ -5,11 +5,11 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
-import com.dsvoronin.grindfm.entities.Track;
+import com.dsvoronin.grindfm.entities.CurrentTrack;
 
 import java.io.IOException;
 
-public class CurrentTrackLoader extends AsyncTaskLoader<Track> {
+public class CurrentTrackLoader extends AsyncTaskLoader<CurrentTrack> {
 
     private static final String TAG = "CurrentTrackLoader";
 
@@ -21,12 +21,12 @@ public class CurrentTrackLoader extends AsyncTaskLoader<Track> {
     }
 
     @Override
-    public Track loadInBackground() {
+    public CurrentTrack loadInBackground() {
         try {
             return grindService.getCurrentSong().execute().body();
         } catch (IOException e) {
             Log.e(TAG, "Can't load current song", e);
-            return Track.NULL;
+            return CurrentTrack.NULL;
         }
     }
 }
