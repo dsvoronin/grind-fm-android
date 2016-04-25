@@ -15,14 +15,15 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.dsvoronin.grindfm.App;
-import com.dsvoronin.grindfm.entities.Article;
 import com.dsvoronin.grindfm.entities.NewsItem;
-import com.dsvoronin.grindfm.entities.RSS;
+import com.dsvoronin.grindfm.entities.dto.Article;
+import com.dsvoronin.grindfm.entities.dto.RSS;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -48,6 +49,8 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     private final ContentResolver contentResolver;
 
+    private final Locale locale;
+
     // Constants representing column positions from PROJECTION.
     public static final int COLUMN_ID = 0;
     public static final int COLUMN_ENTRY_ID = 1;
@@ -56,6 +59,7 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
         grindService = App.fromContext(context).getGrindService();
         contentResolver = context.getContentResolver();
+        locale = getContext().getResources().getConfiguration().locale;
     }
 
     @Override
@@ -213,7 +217,7 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private NewsItem fromArticle(Article article) {
-        Mapper mapper = new Mapper(getContext(), article);
+        Mapper mapper = new Mapper(locale, article);
         return new NewsItem(mapper.getId(),
                 article.getTitle(),
                 mapper.getPureText(),
