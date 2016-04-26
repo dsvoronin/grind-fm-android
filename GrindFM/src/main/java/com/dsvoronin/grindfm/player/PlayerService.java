@@ -1,67 +1,73 @@
 package com.dsvoronin.grindfm.player;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.dsvoronin.grindfm.App;
+import com.dsvoronin.grindfm.MainActivity;
 import com.dsvoronin.grindfm.R;
+import com.dsvoronin.grindfm.entities.CurrentTrack;
+import com.dsvoronin.grindfm.sync.GrindService;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerService extends MediaBrowserServiceCompat implements
-        AudioManager.OnAudioFocusChangeListener,
-        MediaPlayer.OnPreparedListener {
+        PlaybackManager.PlaybackServiceCallback {
+
+    // The action of the incoming Intent indicating that it contains a command
+    // to be executed (see {@link #onStartCommand})
+    public static final String ACTION_CMD = "com.example.android.uamp.ACTION_CMD";
+
+    // The key in the extras of the incoming Intent indicating the command that
+    // should be executed (see {@link #onStartCommand})
+    public static final String CMD_NAME = "CMD_NAME";
+
+    // A value of a CMD_NAME key in the extras of the incoming Intent that
+    // indicates that the music playback should be paused (see {@link #onStartCommand})
+    public static final String CMD_PAUSE = "CMD_PAUSE";
 
     private static final String TAG = "PlayerService";
-
-    private static final int NOTIFICATION_ID = 7112;
 
     // Delay stopSelf by using a handler.
     private static final int STOP_DELAY = 10000;
 
-    private static final float DUCK_VOLUME = 0.5f;
+    private static final long CURRENT_TRACK_POLL_FREQUENCY = TimeUnit.SECONDS.toMillis(30);
 
-    private static final float FULL_VOLUME = 1.0f;
-
-    private AudioManager audioManager;
-
-    private MediaPlayer mediaPlayer;
+    private PlaybackManager mPlaybackManager;
 
     private MediaSessionCompat mediaSession;
 
-    private boolean prepared = false;
+    private MusicNotificationManager musicNotificationManager;
+
+    private Handler handler = new Handler();
 
     private final DelayedStopHandler delayedStopHandler = new DelayedStopHandler(this);
 
-    private BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
+    private Runnable pollCurrentTrack = new Runnable() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            pauseRadio();
+        public void run() {
+            new CurrentTrackAsyncTask(PlayerService.this).execute();
+            handler.postDelayed(this, CURRENT_TRACK_POLL_FREQUENCY);
         }
     };
-
-    private IntentFilter noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
     @Override
     public void onCreate() {
@@ -69,72 +75,63 @@ public class PlayerService extends MediaBrowserServiceCompat implements
 
         Log.d(TAG, "onCreate");
 
-        ComponentName receiver = new ComponentName(getPackageName(), RemoteReceiver.class.getName());
-        mediaSession = new MediaSessionCompat(this, TAG, receiver, null);
+        LocalPlayback playback = new LocalPlayback(this, getString(R.string.ogg_stream));
+        mPlaybackManager = new PlaybackManager(this, getResources(), playback);
 
+        // Start a new MediaSession
+        mediaSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mediaSession.getSessionToken());
-
+        mediaSession.setCallback(mPlaybackManager.getMediaSessionCallback());
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
-        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0)
-                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE)
-                .build());
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(context, 99 /*request code*/,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mediaSession.setSessionActivity(pi);
 
-        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "Test Artist")
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Test Album")
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "Test Track Name")
-                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 10000)
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .build());
+        mPlaybackManager.updatePlaybackState(null);
 
-        mediaSession.setCallback(new MediaSessionCompat.Callback() {
-            @Override
-            public void onPlay() {
-                startRadio();
-            }
+        try {
+            musicNotificationManager = new MusicNotificationManager(this);
+        } catch (RemoteException e) {
+            throw new IllegalStateException("Could not create a MediaNotificationManager", e);
+        }
 
-            @Override
-            public void onPause() {
-                pauseRadio();
-            }
-        });
-
-        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setOnPreparedListener(this);
+        handler.post(pollCurrentTrack);
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand: " + intent);
-
-        //todo remove receiver will crash here
-        if (!mediaPlayer.isPlaying()) {
-            startRadio();
+    public int onStartCommand(Intent startIntent, int flags, int startId) {
+        if (startIntent != null) {
+            String action = startIntent.getAction();
+            String command = startIntent.getStringExtra(CMD_NAME);
+            if (ACTION_CMD.equals(action)) {
+                if (CMD_PAUSE.equals(command)) {
+                    mPlaybackManager.handlePauseRequest();
+                }
+            } else {
+                // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
+                MediaButtonReceiver.handleIntent(mediaSession, startIntent);
+            }
         }
-
         // Reset the delay handler to enqueue a message to stop the service if
         // nothing is playing.
         delayedStopHandler.removeCallbacksAndMessages(null);
         delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        stopForeground(true);
         Log.d(TAG, "onDestroy");
-        mediaPlayer.release();
-        mediaSession.release();
+        handler.removeCallbacks(pollCurrentTrack);
+        // Service is being killed, so make sure we release our resources
+        mPlaybackManager.handleStopRequest(null);
+        musicNotificationManager.stopNotification();
         delayedStopHandler.removeCallbacksAndMessages(null);
-        mediaSession.setCallback(null);
-        mediaSession = null;
+        mediaSession.release();
     }
 
     @Nullable
@@ -150,103 +147,44 @@ public class PlayerService extends MediaBrowserServiceCompat implements
         result.sendResult(null);
     }
 
+    /**
+     * Callback method called from PlaybackManager whenever the music is about to play.
+     */
     @Override
-    public void onAudioFocusChange(int focusChange) {
-        switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_LOSS:
-                pauseRadio();
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                pauseRadio();
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                lowerVolume();
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN:
-                startRadio();
-                break;
+    public void onPlaybackStart() {
+        if (!mediaSession.isActive()) {
+            mediaSession.setActive(true);
         }
-    }
-
-    private void startRadio() {
-        if (!prepared) {
-            Uri parse = Uri.parse(getString(R.string.mp3_stream));
-            try {
-                mediaPlayer.setDataSource(this, parse);
-            } catch (IOException e) {
-                Log.e(TAG, "setDataSource error ", e);
-            }
-            mediaPlayer.prepareAsync();
-        } else {
-            actualStartPlayback();
-        }
-    }
-
-    private void pauseRadio() {
-        Log.d(TAG, "pauseRadio");
-
-        mediaPlayer.pause();
-        try {
-            unregisterReceiver(noisyReceiver);
-        } catch (Exception e) {
-            //we don't care if register was not registered or we trying to unregister it second time
-        }
-        stopForeground(false);
-
-        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                .setState(PlaybackStateCompat.STATE_PAUSED, 0, 0.0f)
-                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE).build());
 
         delayedStopHandler.removeCallbacksAndMessages(null);
-        delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+
+        // The service needs to continue running even after the bound client (usually a
+        // MediaController) disconnects, otherwise the music playback will stop.
+        // Calling startService(Intent) will keep the service running until it is explicitly killed.
+        startService(new Intent(getApplicationContext(), PlayerService.class));
     }
 
-    private void lowerVolume() {
-        mediaPlayer.setVolume(DUCK_VOLUME, DUCK_VOLUME);
+
+    /**
+     * Callback method called from PlaybackManager whenever the music stops playing.
+     */
+    @Override
+    public void onPlaybackStop() {
+        // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
+        // potentially stopping the service.
+        delayedStopHandler.removeCallbacksAndMessages(null);
+        delayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+        stopForeground(true);
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-        prepared = true;
-        startRadio();
+    public void onNotificationRequired() {
+        musicNotificationManager.startNotification();
     }
 
-    private void actualStartPlayback() {
-        Log.d(TAG, "actualStartPlayback");
-
-        mediaPlayer.setVolume(FULL_VOLUME, FULL_VOLUME);
-
-        int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-
-            if (!mediaSession.isActive()) {
-                mediaSession.setActive(true);
-            }
-
-            mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1.0f)
-                    .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE).build());
-
-            delayedStopHandler.removeCallbacksAndMessages(null);
-
-            startService(new Intent(getApplicationContext(), PlayerService.class));
-
-            registerReceiver(noisyReceiver, noisyFilter);
-            mediaPlayer.start();
-
-            startForeground(NOTIFICATION_ID,
-                    new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_stat_ic_launcher)
-                            .setContentTitle("Title")
-                            .setContentText("Text")
-                            .setStyle(new NotificationCompat.MediaStyle()
-                                    .setMediaSession(getSessionToken()))
-                            .build());
-
-        } else {
-            Toast.makeText(this, getString(R.string.cant_get_audiofocus), Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
+        mediaSession.setPlaybackState(newState);
     }
 
     /**
@@ -262,15 +200,43 @@ public class PlayerService extends MediaBrowserServiceCompat implements
         @Override
         public void handleMessage(Message msg) {
             PlayerService service = mWeakReference.get();
-            if (service != null && service.mediaPlayer != null) {
-                if (service.mediaPlayer.isPlaying()) {
+            if (service != null && service.mPlaybackManager.getPlayback() != null) {
+                if (service.mPlaybackManager.getPlayback().isPlaying()) {
                     Log.d(TAG, "Ignoring delayed stop since the media player is in use.");
                     return;
                 }
                 Log.d(TAG, "Stopping service with delay handler.");
-                service.stopForeground(true);
                 service.stopSelf();
             }
+        }
+    }
+
+    private class CurrentTrackAsyncTask extends AsyncTask<Void, Void, CurrentTrack> {
+
+        private static final String TAG = "CurrentTrackLoader";
+
+        private GrindService grindService;
+
+        public CurrentTrackAsyncTask(Context context) {
+            grindService = App.fromContext(context).getGrindService();
+        }
+
+        @Override
+        protected CurrentTrack doInBackground(Void... params) {
+            try {
+                return grindService.getCurrentSong().execute().body();
+            } catch (IOException e) {
+                Log.e(TAG, "Can't load current song", e);
+                return CurrentTrack.NULL;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(CurrentTrack currentTrack) {
+            mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, currentTrack.getArtist())
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, currentTrack.getTrack())
+                    .build());
         }
     }
 }
