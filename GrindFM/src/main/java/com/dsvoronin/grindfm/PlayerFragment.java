@@ -22,9 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dsvoronin.grindfm.entities.CurrentTrack;
 import com.dsvoronin.grindfm.entities.TrackInList;
-import com.dsvoronin.grindfm.sync.CurrentTrackLoader;
 import com.dsvoronin.grindfm.sync.TracksHistoryLoader;
 
 import java.util.ArrayList;
