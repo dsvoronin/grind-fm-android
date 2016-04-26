@@ -8,6 +8,8 @@ import com.dsvoronin.grindfm.utils.CurrentTrackConverterFactory;
 import com.dsvoronin.grindfm.utils.LastTracksConverterFactory;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.picasso.Picasso;
@@ -17,7 +19,6 @@ import java.io.File;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class App extends Application {
@@ -25,6 +26,8 @@ public class App extends Application {
     private Picasso picasso;
 
     private GrindService grindService;
+
+    private Tracker tracker;
 
     /**
      * 300mb cache
@@ -68,5 +71,19 @@ public class App extends Application {
 
     public GrindService getGrindService() {
         return grindService;
+    }
+
+    /**
+     * Gets the default {@link Tracker} for this {@link Application}.
+     *
+     * @return tracker
+     */
+    synchronized public Tracker getDefaultTracker() {
+        if (tracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            tracker = analytics.newTracker(R.xml.global_tracker);
+        }
+        return tracker;
     }
 }

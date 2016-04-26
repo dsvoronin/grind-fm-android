@@ -15,6 +15,8 @@ import android.util.Log;
 import com.dsvoronin.grindfm.player.PlayerService;
 import com.dsvoronin.grindfm.utils.NetworkHelper;
 import com.dsvoronin.grindfm.utils.SyncUtils;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SyncUtils.createSyncAccount(this);
+
+        Tracker tracker = App.fromContext(this).getDefaultTracker();
+        tracker.setScreenName("MainActivity");
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         // Connect a media browser just to get the media session token. There are other ways
         // this can be done, for example by sharing the session token directly.

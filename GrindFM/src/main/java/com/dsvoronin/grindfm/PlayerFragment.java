@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.dsvoronin.grindfm.entities.TrackInList;
 import com.dsvoronin.grindfm.sync.TracksHistoryLoader;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +49,8 @@ public class PlayerFragment extends Fragment {
     private RecyclerView tracksHistoryView;
 
     private TrackListAdapter adapter;
+
+    private Tracker tracker;
 
     private Handler handler = new Handler();
 
@@ -82,6 +86,14 @@ public class PlayerFragment extends Fragment {
             switch (v.getId()) {
                 case R.id.play_pause:
                     Log.d(TAG, "Play button pressed, in state " + state);
+
+                    if (tracker != null) {
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory("Action")
+                                .setAction("Play button")
+                                .build());
+                    }
+
                     if (state == PlaybackStateCompat.STATE_PAUSED ||
                             state == PlaybackStateCompat.STATE_STOPPED ||
                             state == PlaybackStateCompat.STATE_NONE) {
@@ -134,6 +146,12 @@ public class PlayerFragment extends Fragment {
             adapter.update(Collections.<TrackInList>emptyList());
         }
     };
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        tracker = App.fromContext(context).getDefaultTracker();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

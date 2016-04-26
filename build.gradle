@@ -5,12 +5,14 @@ buildscript {
         verMaxSdk = 23
         verMinSdk = 16
         verSupport = '23.3.0'
+        verPlayServices = '8.4.0'
     }
     repositories {
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0-rc1'
+        classpath 'com.google.gms:google-services:2.1.0-rc1'
     }
 }
 
