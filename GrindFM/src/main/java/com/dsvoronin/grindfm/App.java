@@ -55,6 +55,8 @@ public class App extends Application {
                 .downloader(new OkHttp3Downloader(okHttpClient))
                 .build();
 
+        Picasso.setSingletonInstance(picasso);
+
         grindService = new Retrofit.Builder()
                 .baseUrl("http://grind.fm")
                 .client(okHttpClient)

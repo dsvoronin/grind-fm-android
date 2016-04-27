@@ -64,11 +64,24 @@
                 android:resource="@xml/rss_sync_adapter" />
         </service>
 
+        <service
+            android:name=".widget.WidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <provider
             android:name=".sync.GrindProvider"
             android:authorities="com.dsvoronin.grindfm"
-            android:exported="false"
+            android:exported="true"
             android:syncable="true" />
+
+        <receiver android:name=".widget.GrindWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/grind_widget_provider" />
+        </receiver>
 
     </application>
 
