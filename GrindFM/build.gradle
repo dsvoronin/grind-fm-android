@@ -45,6 +45,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$verSupport"
 
     compile "com.google.android.gms:play-services-analytics:$verPlayServices"
+    compile "com.google.android.gms:play-services-gcm:$verPlayServices"
 
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'

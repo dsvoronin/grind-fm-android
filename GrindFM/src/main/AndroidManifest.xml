@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dsvoronin.grindfm">
+    package="fm.grind.android">
 
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,15 +14,22 @@
         android:name="android.permission.STATUS_BAR_SERVICE"
         android:protectionLevel="signature" />
 
+    <permission
+        android:name="fm.grind.android.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="fm.grind.android.permission.C2D_MESSAGE" />
+
     <application
-        android:name=".App"
+        android:name="fm.grind.android.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.GrindFM">
 
         <activity
-            android:name=".MainActivity"
+            android:name="fm.grind.android.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,14 +44,14 @@
         </receiver>
 
         <service
-            android:name=".player.PlayerService"
+            android:name="fm.grind.android.player.PlayerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
 
-        <service android:name=".sync.AccountService">
+        <service android:name="fm.grind.android.sync.AccountService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -54,7 +61,7 @@
         </service>
 
         <service
-            android:name=".sync.RssSyncService"
+            android:name="fm.grind.android.sync.RssSyncService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
@@ -65,16 +72,16 @@
         </service>
 
         <service
-            android:name=".widget.WidgetService"
+            android:name="fm.grind.android.widget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <provider
-            android:name=".sync.GrindProvider"
+            android:name="fm.grind.android.sync.GrindProvider"
             android:authorities="com.dsvoronin.grindfm"
             android:exported="true"
             android:syncable="true" />
 
-        <receiver android:name=".widget.GrindWidgetProvider">
+        <receiver android:name="fm.grind.android.widget.GrindWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -82,6 +89,37 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/grind_widget_provider" />
         </receiver>
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="fm.grind.android" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".gcm.MyGcmListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".gcm.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="gcm.play.android.samples.com.gcmquickstart.RegistrationIntentService"
+            android:exported="false"></service>
 
     </application>
 
