@@ -1,7 +1,5 @@
 package fm.grind.android.utils;
 
-import fm.grind.android.entities.TrackInList;
-import fm.grind.android.entities.dto.Track;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
@@ -15,24 +13,29 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import fm.grind.android.entities.TrackInList;
+import fm.grind.android.entities.dto.Track;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 
 public class LastTracksConverterFactory extends Converter.Factory {
 
-    public static LastTracksConverterFactory create() {
-        return new LastTracksConverterFactory(new Gson());
+    public static LastTracksConverterFactory create(Locale locale) {
+        return new LastTracksConverterFactory(new Gson(), locale);
     }
 
-    public static LastTracksConverterFactory create(Gson gson) {
-        return new LastTracksConverterFactory(gson);
+    public static LastTracksConverterFactory create(Gson gson, Locale locale) {
+        return new LastTracksConverterFactory(gson, locale);
     }
 
     private final Gson gson;
+    private final Locale locale;
 
-    private LastTracksConverterFactory(Gson gson) {
+    private LastTracksConverterFactory(Gson gson, Locale locale) {
+        this.locale = locale;
         if (gson == null) throw new NullPointerException("gson == null");
         this.gson = gson;
     }

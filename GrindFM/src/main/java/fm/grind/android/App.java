@@ -12,6 +12,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.util.Locale;
 
 import fm.grind.android.sync.GrindService;
 import fm.grind.android.utils.CurrentTrackConverterFactory;
@@ -57,11 +58,13 @@ public class App extends Application {
 
         Picasso.setSingletonInstance(picasso);
 
+        Locale locale = getResources().getConfiguration().locale;
+
         grindService = new Retrofit.Builder()
                 .baseUrl("http://grind.fm")
                 .client(okHttpClient)
                 .addConverterFactory(CurrentTrackConverterFactory.create())
-                .addConverterFactory(LastTracksConverterFactory.create())
+                .addConverterFactory(LastTracksConverterFactory.create(locale))
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build()
                 .create(GrindService.class);

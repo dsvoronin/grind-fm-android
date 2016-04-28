@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            tools:src="@drawable/cat_status_bar_large" />
+            tools:src="@mipmap/ic_launcher" />
 
         <Space
             android:layout_width="match_parent"

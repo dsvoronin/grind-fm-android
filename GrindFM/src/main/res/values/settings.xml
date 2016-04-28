@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="tracklist_url">http://media.goha.ru/radio/meta2.php</string>
-    <string name="icecast_url">http://radio.goha.ru:8000/7.html</string>
     <string name="ogg_stream">http://radio.goha.ru:8000/grindfm.ogg</string>
-    <string name="mp3_stream">http://radio.goha.ru:8000/grind.fm</string>
-    <string name="rss_url">http://www.grind.fm/rss.xml</string>
 </resources>
