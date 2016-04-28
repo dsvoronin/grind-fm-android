@@ -34,7 +34,9 @@
         android:layout_toLeftOf="@id/play_pause"
         android:layout_toRightOf="@id/player_artwork"
         android:layout_toStartOf="@id/play_pause"
+        android:ellipsize="marquee"
         android:fontFamily="sans-serif-condensed"
+        android:singleLine="true"
         android:textSize="20sp"
         android:textStyle="bold"
         tools:text="Moonrise" />
@@ -48,7 +50,9 @@
         android:layout_toLeftOf="@id/play_pause"
         android:layout_toRightOf="@id/player_artwork"
         android:layout_toStartOf="@id/play_pause"
+        android:ellipsize="marquee"
         android:fontFamily="sans-serif-condensed"
+        android:singleLine="true"
         android:textSize="18sp"
         tools:text="Sithu Aye" />
 

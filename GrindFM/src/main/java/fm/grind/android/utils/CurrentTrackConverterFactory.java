@@ -1,11 +1,12 @@
 package fm.grind.android.utils;
 
-import fm.grind.android.entities.CurrentTrack;
+import android.text.Html;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import fm.grind.android.entities.CurrentTrack;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -41,7 +42,9 @@ public class CurrentTrackConverterFactory extends Converter.Factory {
                     String[] array = stringBody.trim()
                             .substring(stringBody.indexOf(",,") + 2)
                             .split(" - ");
-                    return new CurrentTrack(array[1], array[0]);
+                    return new CurrentTrack(
+                            Html.fromHtml(array[1]).toString(),
+                            Html.fromHtml(array[0]).toString());
                 } catch (Throwable e) {
                     throw new IOException(e);
                 }
