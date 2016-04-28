@@ -9,9 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_gradient_start"
-        android:elevation="4dp"
+        android:elevation="@dimen/half_space"
         android:gravity="center"
-        android:padding="8dp"
+        android:padding="@dimen/space"
         android:text="@string/app_name"
         android:textColor="@color/content_card" />
 

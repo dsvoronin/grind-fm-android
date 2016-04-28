@@ -4,30 +4,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="@dimen/space">
 
     <ImageView
         android:id="@+id/player_artwork"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginRight="8dp"
+        android:layout_width="@dimen/icon"
+        android:layout_height="@dimen/icon"
+        android:layout_marginEnd="@dimen/space"
+        android:layout_marginRight="@dimen/space"
+        android:contentDescription="@string/cd_artwork"
         android:src="@mipmap/ic_launcher" />
 
     <ImageView
         android:id="@+id/play_pause"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/icon"
+        android:layout_height="@dimen/icon"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:background="?selectableItemBackground"
         android:clickable="true"
+        android:contentDescription="@string/cd_play_pause"
         tools:src="@drawable/ic_play_arrow_black_24dp" />
 
     <TextView
         android:id="@+id/track_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/player_artwork"
         android:layout_toLeftOf="@id/play_pause"
         android:layout_toRightOf="@id/player_artwork"
+        android:layout_toStartOf="@id/play_pause"
         android:fontFamily="sans-serif-condensed"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -38,8 +44,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/track_name"
+        android:layout_toEndOf="@id/player_artwork"
         android:layout_toLeftOf="@id/play_pause"
         android:layout_toRightOf="@id/player_artwork"
+        android:layout_toStartOf="@id/play_pause"
         android:fontFamily="sans-serif-condensed"
         android:textSize="18sp"
         tools:text="Sithu Aye" />
@@ -49,6 +57,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/player_artwork"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="@dimen/double_space" />
 
 </RelativeLayout>

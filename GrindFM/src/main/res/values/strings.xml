@@ -2,10 +2,13 @@
 <resources>
 
     <string name="app_name">Grind.FM</string>
-
     <string name="action_player_play">Play</string>
     <string name="action_player_pause">Pause</string>
-
     <string name="loading">Обновляем новости</string>
+
+    <!-- CONTENT DESCRIPTION -->
+    <string name="cd_artwork">Track artwork</string>
+    <string name="cd_play_pause">Play pause button</string>
+    <string name="cd_item_image">News item image</string>
 
 </resources>

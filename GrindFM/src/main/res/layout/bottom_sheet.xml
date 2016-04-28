@@ -7,8 +7,8 @@
     android:layout_height="300dp"
     android:layout_alignParentBottom="true"
     android:background="@android:color/white"
-    android:elevation="16dp"
+    android:elevation="@dimen/double_space"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="@dimen/bottom_peek_height"
+    app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
     tools:showIn="@layout/activity_main" />

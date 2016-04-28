@@ -6,19 +6,22 @@
     android:layout_height="match_parent"
     android:background="#adffffff"
     android:clickable="true"
-    android:padding="4dp">
+    android:padding="@dimen/half_space">
 
     <ImageView
         android:id="@+id/item_image"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginRight="8dp"
+        android:layout_width="@dimen/icon"
+        android:layout_height="@dimen/icon"
+        android:layout_marginEnd="@dimen/space"
+        android:layout_marginRight="@dimen/space"
+        android:contentDescription="@string/cd_item_image"
         android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/item_image"
         android:layout_toRightOf="@id/item_image"
         android:ellipsize="marquee"
         android:fontFamily="sans-serif-condensed"
