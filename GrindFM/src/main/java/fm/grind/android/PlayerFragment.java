@@ -151,7 +151,7 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        tracker = App.fromContext(context).getDefaultTracker();
+        tracker = App.Companion.fromContext(context).getDefaultTracker();
     }
 
     @Override

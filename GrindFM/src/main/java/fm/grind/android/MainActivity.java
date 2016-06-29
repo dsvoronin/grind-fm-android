@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         SyncUtils.createSyncAccount(this);
 
-        Tracker tracker = App.fromContext(this).getDefaultTracker();
+        Tracker tracker = App.Companion.fromContext(this).getDefaultTracker();
         tracker.setScreenName("MainActivity");
         tracker.send(new HitBuilders.ScreenViewBuilder().build());
 

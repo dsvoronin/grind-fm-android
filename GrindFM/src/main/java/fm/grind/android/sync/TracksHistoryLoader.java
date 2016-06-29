@@ -19,7 +19,7 @@ public class TracksHistoryLoader extends AsyncTaskLoader<List<TrackInList>> {
 
     public TracksHistoryLoader(Context context) {
         super(context);
-        grindService = App.fromContext(context).getGrindService();
+        grindService = App.Companion.fromContext(context).getGrindService();
     }
 
     @Override

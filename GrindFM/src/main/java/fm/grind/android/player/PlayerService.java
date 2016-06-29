@@ -218,7 +218,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
         private GrindService grindService;
 
         public CurrentTrackAsyncTask(Context context) {
-            grindService = App.fromContext(context).getGrindService();
+            grindService = App.Companion.fromContext(context).getGrindService();
         }
 
         @Override

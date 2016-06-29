@@ -57,7 +57,7 @@ public class RssSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public RssSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
-        grindService = App.fromContext(context).getGrindService();
+        grindService = App.Companion.fromContext(context).getGrindService();
         contentResolver = context.getContentResolver();
         locale = getContext().getResources().getConfiguration().locale;
     }

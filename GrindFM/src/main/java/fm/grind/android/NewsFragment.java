@@ -71,7 +71,7 @@ public class NewsFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        picasso = App.fromContext(context).getPicasso();
+        picasso = App.Companion.fromContext(context).getPicasso();
     }
 
     @Nullable
