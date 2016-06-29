@@ -1,8 +1,21 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0-alpha4'
+        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.ben-manes.versions'
 
 ext {
     verSupport = '24.0.0'
     verPlayServices = '9.2.0'
+    verRetrofit = '2.1.0'
 }
 
 android {
@@ -41,6 +54,10 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     compile "com.android.support:appcompat-v7:$verSupport"
     compile "com.android.support:support-v4:$verSupport"
@@ -52,12 +69,12 @@ dependencies {
     compile "com.google.android.gms:play-services-analytics:$verPlayServices"
     compile "com.google.android.gms:play-services-gcm:$verPlayServices"
 
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
-    compile('com.squareup.retrofit2:converter-simplexml:2.0.2') {
+    compile "com.squareup.retrofit2:retrofit:$verRetrofit"
+    compile "com.squareup.retrofit2:converter-gson:$verRetrofit"
+    compile("com.squareup.retrofit2:converter-simplexml:$verRetrofit") {
         exclude module: 'stax'
         exclude module: 'stax-api'
         exclude module: 'xpp3'
@@ -70,7 +87,7 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
     testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.0"
+    testCompile "org.robolectric:robolectric:3.1"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2"
 }
 
