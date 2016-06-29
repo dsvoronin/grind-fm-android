@@ -1,14 +1,19 @@
 apply plugin: 'com.android.application'
 
+ext {
+    verSupport = '24.0.0'
+    verPlayServices = '9.2.0'
+}
+
 android {
-    compileSdkVersion verMaxSdk
-    buildToolsVersion verBuildTools
+    compileSdkVersion 24
+    buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "fm.grind.android"
 
-        minSdkVersion verMinSdk
-        targetSdkVersion verMaxSdk
+        minSdkVersion 16
+        targetSdkVersion 24
         versionCode 11
         versionName "0.5"
     }
