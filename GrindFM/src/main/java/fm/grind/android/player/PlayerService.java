@@ -227,7 +227,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements
                 return grindService.getCurrentSong().execute().body();
             } catch (IOException e) {
                 Log.e(TAG, "Can't load current song", e);
-                return CurrentTrack.NULL;
+                return CurrentTrack.Companion.getNULL();
             }
         }
 

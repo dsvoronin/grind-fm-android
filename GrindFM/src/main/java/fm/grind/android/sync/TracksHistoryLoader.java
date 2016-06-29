@@ -4,12 +4,12 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import fm.grind.android.App;
-import fm.grind.android.entities.TrackInList;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import fm.grind.android.App;
+import fm.grind.android.entities.TrackInList;
 
 public class TracksHistoryLoader extends AsyncTaskLoader<List<TrackInList>> {
 

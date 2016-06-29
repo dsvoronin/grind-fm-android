@@ -70,13 +70,13 @@ public class LastTracksConverterFactory extends Converter.Factory {
                     List<TrackInList> tracksInList = new ArrayList<>(7);
                     for (Track track : read.subList(1, 7)) {
 
-                        String timestampString = track.dt.substring(0, track.dt.indexOf('.'));
+                        String timestampString = track.getDt().substring(0, track.getDt().indexOf('.'));
                         Long timestamp = Long.valueOf(timestampString) * 1000;
                         String formattedDate = dateFormat.format(new Date(timestamp));
 
                         tracksInList.add(new TrackInList(
                                 formattedDate,
-                                track.artist + " - " + track.title));
+                                track.getArtist() + " - " + track.getTitle()));
                     }
                     return tracksInList;
                 } finally {
