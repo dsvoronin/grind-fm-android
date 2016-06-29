@@ -1,22 +1,25 @@
 buildscript {
+    ext {
+        verKotlin = '1.0.3-eap-68'
+        verSupport = '24.0.0'
+        verPlayServices = '9.2.0'
+        verRetrofit = '2.1.0'
+    }
     repositories {
         jcenter()
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap/" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.0-alpha4'
         classpath 'com.google.gms:google-services:3.0.0'
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$verKotlin"
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.github.ben-manes.versions'
-
-ext {
-    verSupport = '24.0.0'
-    verPlayServices = '9.2.0'
-    verRetrofit = '2.1.0'
-}
 
 android {
     compileSdkVersion 24
