@@ -51,7 +51,7 @@ class App : Application() {
                 .baseUrl("http://grind.fm")
                 .client(okHttpClient)
                 .addConverterFactory(CurrentTrackConverterFactory.create())
-                .addConverterFactory(LastTracksConverterFactory.create(locale))
+                .addConverterFactory(LastTracksConverterFactory(locale))
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .build()
                 .create<GrindService>(GrindService::class.java)

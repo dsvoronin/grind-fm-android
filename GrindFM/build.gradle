@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        verKotlin = '1.0.3-eap-68'
+        verKotlin = '1.0.3'
         verSupport = '24.0.0'
         verPlayServices = '9.2.0'
         verRetrofit = '2.1.0'
@@ -75,6 +75,8 @@ dependencies {
 
     compile "com.google.android.gms:play-services-analytics:$verPlayServices"
     compile "com.google.android.gms:play-services-gcm:$verPlayServices"
+
+    compile 'com.github.salomonbrys.kotson:kotson:2.3.0'
 
     compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
